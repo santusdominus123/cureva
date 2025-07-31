@@ -8,7 +8,7 @@ const Dashboard: React.FC = () => {
   return <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold mb-1">Welcome back, John</h1>
+          <h1 className="text-2xl font-bold mb-1">Welcome back</h1>
           <p className="text-gray-400">
             Here's what's happening with your projects today.
           </p>

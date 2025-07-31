@@ -1,3 +1,4 @@
+// src/pages/auth/Login.tsx
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
@@ -12,7 +13,7 @@ import {
 } from 'lucide-react';
 
 interface LoginProps {
-  onLogin: () => void;
+  onLogin: (user: any) => void; // Updated to pass user data
 }
 
 const slides = [
@@ -52,16 +53,85 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Helper function to save user data to localStorage
+  const saveUserData = (user: any) => {
+    const userData = {
+      uid: user.uid,
+      email: user.email,
+      displayName: user.displayName || user.email?.split('@')[0] || 'User',
+      photoURL: user.photoURL,
+      provider: user.providerData?.[0]?.providerId || 'email',
+      role: 'Admin', // Default role, can be customized
+      loginTime: new Date().toISOString()
+    };
+    
+    localStorage.setItem('cureva-user', JSON.stringify(userData));
+    return userData;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onLogin(); // mock login
+    setLoading(true);
+    
+    try {
+      const { signInWithEmailAndPassword } = await import('firebase/auth');
+      const { auth } = await import('../../lib/firebase');
+      
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const userData = saveUserData(userCredential.user);
+      onLogin(userData);
+    } catch (error) {
+      console.error('Login error:', error);
+      alert('Login failed. Please check your credentials.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Google Sign In
+  const handleGoogleSignIn = async () => {
+    setLoading(true);
+    try {
+      const { signInWithPopup, GoogleAuthProvider } = await import('firebase/auth');
+      const { auth } = await import('../../lib/firebase');
+      
+      const provider = new GoogleAuthProvider();
+      const userCredential = await signInWithPopup(auth, provider);
+      const userData = saveUserData(userCredential.user);
+      onLogin(userData);
+    } catch (error) {
+      console.error('Google sign in error:', error);
+      alert('Google sign in failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // GitHub Sign In
+  const handleGitHubSignIn = async () => {
+    setLoading(true);
+    try {
+      const { signInWithPopup, GithubAuthProvider } = await import('firebase/auth');
+      const { auth } = await import('../../lib/firebase');
+      
+      const provider = new GithubAuthProvider();
+      const userCredential = await signInWithPopup(auth, provider);
+      const userData = saveUserData(userCredential.user);
+      onLogin(userData);
+    } catch (error) {
+      console.error('GitHub sign in error:', error);
+      alert('GitHub sign in failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   /* ---------- Render ---------- */
   if (showIntro) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-between bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white p-4">
+      <div className="min-h-screen flex flex-col items-center justify-between bg-gradient-to-br from-indigo-950 via-purple-900 to-blue-950 text-white p-4">
         {/* Logo */}
         <div className="pt-8">
           <h1 className="text-4xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">
@@ -69,6 +139,8 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
           </h1>
           <p className="text-sm text-gray-300 mt-1 text-center">
             Melestarikan masa lalu, membangun masa depan.
+            note untuk teman teman "ohyaa disini nanti background transisinya bisa pakai foto atau nggak pake video yang berhubungan sama project kita"
+            Made By Santus Ganteng mwahchh
           </p>
         </div>
 
@@ -93,7 +165,9 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
           </div>
 
           <button
-            onClick={() => (step < slides.length - 1 ? setStep(step + 1) : finishIntro())}
+            onClick={() =>
+              step < slides.length - 1 ? setStep(step + 1) : finishIntro()
+            }
             className="w-full flex items-center justify-center py-2.5 px-4 rounded-xl text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
           >
             {step < slides.length - 1 ? (
@@ -118,68 +192,72 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
 
   /* ---------- Login Form ---------- */
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-gray-900 to-black">
-      <div className="max-w-md w-full space-y-6 bg-gray-900/70 backdrop-blur-md p-8 rounded-2xl border border-gray-800 shadow-xl">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-indigo-950 via-purple-900 to-blue-950">
+      <div className="max-w-md w-full space-y-6 bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl shadow-2xl shadow-purple-500/20 p-8">
         {/* Logo */}
         <div className="text-center">
-          <div className="mx-auto h-14 w-14 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
-            <span className="text-white font-bold text-2xl">C</span>
-          </div>
-          <h2 className="mt-4 text-3xl font-extrabold text-white">DigiHeritage</h2>
-          <p className="mt-1 text-sm text-gray-400">Sign in to continue</p>
+          <img
+            src="/src/assets/cureva_logo.jpg"
+            alt="Cureva Logo"
+            className="mx-auto h-20 w-20 rounded-full object-cover border-2 border-white/20"
+          />
+          <h2 className="mt-4 text-5xl font-extrabold text-white">Cureva</h2>
+          <p className="mt-1 text-sm text-gray-300">Sign in to continue</p>
         </div>
 
         <form className="space-y-5" onSubmit={handleSubmit}>
+          {/* Email */}
           <div>
             <label htmlFor="email" className="sr-only">
               Email address
             </label>
             <div className="relative">
-              <MailIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500" />
+              <MailIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
               <input
                 id="email"
-                name="email"
                 type="email"
-                autoComplete="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full pl-10 pr-3 py-3 border border-gray-700 rounded-lg bg-gray-800/50 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                disabled={loading}
+                className="w-full pl-10 pr-3 py-3 border border-white/20 rounded-lg bg-white/5 placeholder-gray-400 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
                 placeholder="Email address"
               />
             </div>
           </div>
 
+          {/* Password */}
           <div>
             <label htmlFor="password" className="sr-only">
               Password
             </label>
             <div className="relative">
-              <LockIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500" />
+              <LockIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
               <input
                 id="password"
-                name="password"
                 type={showPassword ? 'text' : 'password'}
-                autoComplete="current-password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-10 pr-10 py-3 border border-gray-700 rounded-lg bg-gray-800/50 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                disabled={loading}
+                className="w-full pl-10 pr-10 py-3 border border-white/20 rounded-lg bg-white/5 placeholder-gray-400 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
                 placeholder="Password"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300"
+                disabled={loading}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white disabled:opacity-50"
               >
                 {showPassword ? <EyeOffIcon size={20} /> : <EyeIcon size={20} />}
               </button>
             </div>
           </div>
 
+          {/* Options */}
           <div className="flex items-center justify-between text-sm">
-            <label className="flex items-center text-gray-400">
-              <input type="checkbox" className="h-4 w-4 mr-2 rounded bg-gray-800 border-gray-600 focus:ring-blue-500" />
+            <label className="flex items-center text-gray-300">
+              <input type="checkbox" className="h-4 w-4 mr-2 rounded bg-white/5 border-white/30" />
               Remember me
             </label>
             <a href="#" className="text-blue-400 hover:text-blue-300">
@@ -189,18 +267,56 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
 
           <button
             type="submit"
-            className="w-full flex justify-center py-3 px-4 rounded-lg text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            disabled={loading}
+            className="w-full flex justify-center py-3 px-4 rounded-lg text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Sign in
+            {loading ? 'Signing in...' : 'Sign in'}
           </button>
         </form>
 
-        <p className="text-center text-sm text-gray-400">
-          Don’t have an account?{' '}
+        <p className="text-center text-sm text-gray-300">
+          Don't have an account?{' '}
           <Link to="/register" className="text-blue-400 hover:text-blue-300">
             Register
           </Link>
         </p>
+
+        {/* ---------- Social Login ---------- */}
+        <div className="space-y-3 mt-4">
+          <button
+            onClick={handleGoogleSignIn}
+            disabled={loading}
+            className="w-full flex items-center justify-center py-2.5 px-4 border border-white/20 rounded-lg bg-white/5 hover:bg-white/10 transition disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <img src="https://authjs.dev/img/providers/google.svg" alt="G" className="h-5 w-5 mr-2" />
+            {loading ? 'Connecting...' : 'Continue with Google'}
+          </button>
+
+          <button
+            onClick={handleGitHubSignIn}
+            disabled={loading}
+            className="w-full flex items-center justify-center py-2.5 px-4 border border-white/20 rounded-lg bg-white/5 hover:bg-white/10 transition disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <img src="https://authjs.dev/img/providers/github-dark.svg" alt="GH" className="h-5 w-5 mr-2" />
+            {loading ? 'Connecting...' : 'Continue with GitHub'}
+          </button>
+        </div>
+
+        {/* Tombol kembali ke Intro */}
+        {localStorage.getItem('cureva-intro-seen') === 'true' && (
+          <div className="text-center">
+            <button
+              onClick={() => {
+                localStorage.removeItem('cureva-intro-seen');
+                window.location.reload();
+              }}
+              disabled={loading}
+              className="text-xs text-gray-400 underline mt-2 disabled:opacity-50"
+            >
+              Tonton pengenalan lagi
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
