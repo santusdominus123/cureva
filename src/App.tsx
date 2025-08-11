@@ -72,6 +72,7 @@ const MainContent = () => (
       <Route path="/export" element={<ExportHub />} />
       <Route path="/admin" element={<AdminPanel />} />
       <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="/viewer" element={<Viewer3D />} />
     </Routes>
   </main>
 );

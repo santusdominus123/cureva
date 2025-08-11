@@ -7,11 +7,13 @@ import {
   TagIcon,
   ShareIcon,
   ShieldIcon,
+  EyeIcon, // <-- ikon baru
 } from 'lucide-react';
 
 const navItems = [
   { name: 'Home',    icon: <HomeIcon   size={22}/>, path: '/' },
   { name: 'Scan',    icon: <CameraIcon size={22}/>, path: '/scan' },
+  { name: '3D',      icon: <EyeIcon    size={22}/>, path: '/viewer' }, // <-- baru
   { name: 'Projects',icon: <FolderIcon size={22}/>, path: '/projects' },
   { name: 'Semantic',icon: <TagIcon    size={22}/>, path: '/semantic' },
   { name: 'Export',  icon: <ShareIcon  size={22}/>, path: '/export' },
@@ -37,4 +39,5 @@ const BottomNavigation: React.FC = () => (
     ))}
   </nav>
 );
+
 export default BottomNavigation;

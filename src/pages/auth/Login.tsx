@@ -139,8 +139,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
           </h1>
           <p className="text-sm text-gray-300 mt-1 text-center">
             Melestarikan masa lalu, membangun masa depan.
-            note untuk teman teman "ohyaa disini nanti background transisinya bisa pakai foto atau nggak pake video yang berhubungan sama project kita"
-            Made By Santus Ganteng mwahchh
+            
           </p>
         </div>
 

@@ -1,6 +1,8 @@
 // src/lib/firebase.ts
 import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, GithubAuthProvider, signInWithPopup, signInWithEmailAndPassword } from 'firebase/auth';
+import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc } from 'firebase/firestore';
+import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -11,21 +13,23 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
-// Debug: Log konfigurasi (hapus setelah selesai debug)
-console.log('Firebase Config:', {
-  apiKey: firebaseConfig.apiKey ? '***' + firebaseConfig.apiKey.slice(-4) : 'MISSING',
-  authDomain: firebaseConfig.authDomain,
-  projectId: firebaseConfig.projectId,
-});
-
 const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
 
+// Auth
+export const auth = getAuth(app);
 export const providers = {
   google: new GoogleAuthProvider(),
   github: new GithubAuthProvider(),
 };
-
 export const signInGoogle = () => signInWithPopup(auth, providers.google);
 export const signInGitHub = () => signInWithPopup(auth, providers.github);
-export const signInEmail = (email: string, password: string) => signInWithEmailAndPassword(auth, email, password);
+export const signInEmail   = (email: string, password: string) =>
+  signInWithEmailAndPassword(auth, email, password);
+
+// Firestore & Storage
+export const db      = getFirestore(app);
+export const storage = getStorage(app);
+
+export const capturesCol       = collection(db, 'captures');
+export const captureStorageRef = (name: string) =>
+  ref(storage, `captures/${name}`);
