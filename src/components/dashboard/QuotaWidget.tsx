@@ -21,26 +21,77 @@ const QuotaWidget: React.FC = () => {
     total: 5000,
     color: 'from-yellow-500 to-orange-500'
   }];
-  return <div className="space-y-4">
-      {quotas.map(quota => <div key={quota.name} className="space-y-2">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center">
-              <div className="p-1 rounded bg-gray-800 mr-2">{quota.icon}</div>
-              <span className="text-sm">{quota.name}</span>
+  return <div className="space-y-6">
+      {quotas.map(quota => {
+        const percentage = (quota.used / quota.total) * 100;
+        const circumference = 2 * Math.PI * 16; // radius = 16
+        const strokeDashoffset = circumference - (percentage / 100) * circumference;
+        
+        return (
+          <div key={quota.name} className="bg-gray-800/40 rounded-xl p-4 border border-gray-700/30">
+            <div className="flex items-center justify-between">
+              {/* Left side - Icon and info */}
+              <div className="flex items-center space-x-3">
+                <div className="p-2 rounded-xl bg-gray-700/50">{quota.icon}</div>
+                <div>
+                  <h3 className="text-sm font-semibold text-white">{quota.name}</h3>
+                  <p className="text-xs text-gray-400">
+                    {quota.used}{quota.unit} / {quota.total}{quota.unit}
+                  </p>
+                </div>
+              </div>
+              
+              {/* Right side - Circular progress */}
+              <div className="relative w-12 h-12">
+                <svg className="w-12 h-12 transform -rotate-90" viewBox="0 0 36 36">
+                  {/* Background circle */}
+                  <circle
+                    cx="18"
+                    cy="18"
+                    r="16"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="3"
+                    className="text-gray-700"
+                  />
+                  {/* Progress circle */}
+                  <circle
+                    cx="18"
+                    cy="18"
+                    r="16"
+                    fill="none"
+                    strokeWidth="3"
+                    strokeLinecap="round"
+                    className={`text-transparent`}
+                    style={{
+                      stroke: `url(#gradient-${quota.name.replace(' ', '')})`,
+                      strokeDasharray: circumference,
+                      strokeDashoffset: strokeDashoffset,
+                      transition: 'stroke-dashoffset 0.5s ease-in-out'
+                    }}
+                  />
+                  {/* Gradient definition */}
+                  <defs>
+                    <linearGradient id={`gradient-${quota.name.replace(' ', '')}`} x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" className={quota.name === 'GPU Hours' ? 'text-purple-500' : quota.name === 'Storage' ? 'text-blue-500' : 'text-yellow-500'} stopColor="currentColor" />
+                      <stop offset="100%" className={quota.name === 'GPU Hours' ? 'text-blue-500' : quota.name === 'Storage' ? 'text-cyan-500' : 'text-orange-500'} stopColor="currentColor" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+                
+                {/* Percentage text */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="text-xs font-bold text-white">
+                    {Math.round(percentage)}%
+                  </span>
+                </div>
+              </div>
             </div>
-            <span className="text-sm font-medium">
-              {quota.used}
-              {quota.unit} / {quota.total}
-              {quota.unit}
-            </span>
           </div>
-          <div className="w-full bg-gray-800 rounded-full h-2">
-            <div className={`bg-gradient-to-r ${quota.color} h-2 rounded-full`} style={{
-          width: `${quota.used / quota.total * 100}%`
-        }}></div>
-          </div>
-        </div>)}
-      <button className="w-full mt-4 py-2 bg-blue-600/20 text-blue-400 border border-blue-600/30 rounded-lg hover:bg-blue-600/30 transition-colors text-sm">
+        );
+      })}
+      
+      <button className="w-full mt-4 py-3 bg-gradient-to-r from-blue-600/20 to-purple-600/20 text-blue-400 border border-blue-600/30 rounded-xl hover:from-blue-600/30 hover:to-purple-600/30 transition-all text-sm font-semibold">
         Upgrade Plan
       </button>
     </div>;

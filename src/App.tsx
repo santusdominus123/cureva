@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from './lib/firebase';
 import {
   BrowserRouter as Router,
   Routes,
@@ -19,9 +21,20 @@ import Login  from './pages/auth/Login';
 import Register from './pages/auth/Register';
 
 export function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const handleLogin = () => setIsAuthenticated(true);
+
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, (user) => {
+      setIsAuthenticated(!!user);
+    });
+    return () => unsub();
+  }, []);
+
+  if (isAuthenticated === null) {
+    return null;
+  }
 
   if (!isAuthenticated) {
     return (
