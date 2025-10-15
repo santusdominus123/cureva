@@ -2,20 +2,20 @@ import React from 'react';
 import { CpuIcon, CloudIcon, ZapIcon } from 'lucide-react';
 const QuotaWidget: React.FC = () => {
   const quotas = [{
-    name: 'GPU Hours',
+    name: 'Jam GPU',
     icon: <CpuIcon size={16} className="text-purple-400" />,
     used: 76.2,
     total: 100,
     color: 'from-purple-500 to-blue-500'
   }, {
-    name: 'Storage',
+    name: 'Penyimpanan',
     icon: <CloudIcon size={16} className="text-blue-400" />,
     used: 48.7,
     total: 100,
     unit: 'GB',
     color: 'from-blue-500 to-cyan-500'
   }, {
-    name: 'API Tokens',
+    name: 'Token API',
     icon: <ZapIcon size={16} className="text-yellow-400" />,
     used: 3450,
     total: 5000,
@@ -73,8 +73,8 @@ const QuotaWidget: React.FC = () => {
                   {/* Gradient definition */}
                   <defs>
                     <linearGradient id={`gradient-${quota.name.replace(' ', '')}`} x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" className={quota.name === 'GPU Hours' ? 'text-purple-500' : quota.name === 'Storage' ? 'text-blue-500' : 'text-yellow-500'} stopColor="currentColor" />
-                      <stop offset="100%" className={quota.name === 'GPU Hours' ? 'text-blue-500' : quota.name === 'Storage' ? 'text-cyan-500' : 'text-orange-500'} stopColor="currentColor" />
+                      <stop offset="0%" className={quota.name === 'Jam GPU' ? 'text-purple-500' : quota.name === 'Penyimpanan' ? 'text-blue-500' : 'text-yellow-500'} stopColor="currentColor" />
+                      <stop offset="100%" className={quota.name === 'Jam GPU' ? 'text-blue-500' : quota.name === 'Penyimpanan' ? 'text-cyan-500' : 'text-orange-500'} stopColor="currentColor" />
                     </linearGradient>
                   </defs>
                 </svg>
@@ -92,7 +92,7 @@ const QuotaWidget: React.FC = () => {
       })}
       
       <button className="w-full mt-4 py-3 bg-gradient-to-r from-blue-600/20 to-purple-600/20 text-blue-400 border border-blue-600/30 rounded-xl hover:from-blue-600/30 hover:to-purple-600/30 transition-all text-sm font-semibold">
-        Upgrade Plan
+        Tingkatkan Paket
       </button>
     </div>;
 };

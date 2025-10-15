@@ -2,10 +2,16 @@ import React, { useState, useRef, useEffect } from "react";
 import { auth } from "../lib/firebase";
 import { CloudConnectionStatus } from "../components/CloudConnectionStatus";
 import { FirebaseConnectionModal } from "../components/FirebaseConnectionModal";
-import { onAuthStateChanged, signOut } from "firebase/auth";
+import { signOut } from "firebase/auth";
 import { createDataset, addPhoto, getDataset } from "../lib/simpleDB";
 import { storage } from "../lib/firebase";
 import { useNavigate } from "react-router-dom";
+import {
+  MobileScanWrapper,
+  MobileScanHeader,
+  MobileScanTabs,
+  MobileScanContent,
+} from "../components/MobileScanWrapper";
 import {
   CameraIcon,
   VideoIcon,
@@ -164,10 +170,10 @@ const createNewDataset = async (userId: string, name: string, description: strin
           { level: 1, captured: 0 },
           { level: 2, captured: 0 },
           { level: 3, captured: 0 },
-          { level: 4, captured: 0 }
+          { level: 4, captured: 0 },
         ],
-        angles: []
-      }
+        angles: [],
+      },
     };
     return dataset;
   } catch (error) {
@@ -185,35 +191,35 @@ const uploadAndAddPhoto = async (datasetId: string, dataUrl: string, metadata: {
       level: metadata.level,
       dataUrl: dataUrl,
       timestamp: metadata.timestamp,
-      caption: metadata.caption
+      caption: metadata.caption,
     };
-    
+
     // Update the dataset with the new photo
-    const datasetIndex = globalDatasets.findIndex(d => d.id === datasetId);
+    const datasetIndex = globalDatasets.findIndex((d) => d.id === datasetId);
     if (datasetIndex !== -1) {
       globalDatasets[datasetIndex].photos.push(photo);
       globalDatasets[datasetIndex].metadata.totalPhotos = globalDatasets[datasetIndex].photos.length;
-      
+
       // Update level counts
       const levelCounts = { 1: 0, 2: 0, 3: 0, 4: 0 };
       const angles = new Set<number>();
-      
-      globalDatasets[datasetIndex].photos.forEach(p => {
+
+      globalDatasets[datasetIndex].photos.forEach((p) => {
         levelCounts[p.level]++;
         angles.add(p.angle);
       });
-      
+
       globalDatasets[datasetIndex].metadata.levels = [
         { level: 1, captured: levelCounts[1] },
         { level: 2, captured: levelCounts[2] },
         { level: 3, captured: levelCounts[3] },
-        { level: 4, captured: levelCounts[4] }
+        { level: 4, captured: levelCounts[4] },
       ];
       globalDatasets[datasetIndex].metadata.angles = Array.from(angles).sort((a, b) => a - b);
-      
+
       saveToStorage("datasets", globalDatasets);
     }
-    
+
     return photo;
   } catch (error) {
     console.error("Error uploading photo:", error);
@@ -317,8 +323,8 @@ const RecentPhotosGallery: React.FC<{ captures: Capture[]; onDelete: (index: num
             <ImageIcon size={20} className="text-purple-400" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-white">Photo Gallery</h3>
-            <p className="text-sm text-gray-400">{captures.length} photos captured</p>
+            <h3 className="text-lg font-bold text-white">Galeri Foto</h3>
+            <p className="text-sm text-gray-400">{captures.length} foto ditangkap</p>
           </div>
         </div>
 
@@ -326,54 +332,40 @@ const RecentPhotosGallery: React.FC<{ captures: Capture[]; onDelete: (index: num
         <div className="flex flex-wrap gap-2 sm:gap-3 w-full sm:w-auto">
           {/* Level Filter with Visual Indicators */}
           <div className="relative">
-            <select 
-              value={filterLevel} 
-              onChange={(e) => setFilterLevel(e.target.value)} 
+            <select
+              value={filterLevel}
+              onChange={(e) => setFilterLevel(e.target.value)}
               className="px-3 py-1.5 sm:px-4 sm:py-2 bg-gray-800/50 border border-gray-700/50 rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-purple-500/50 backdrop-blur-sm transition-all appearance-none pr-8 min-w-0"
             >
-              <option value="all">All Levels ({captures.length})</option>
-              <option value="1">🔴 Low Angle ({captures.filter(c => c.level === 1).length})</option>
-              <option value="2">🔵 Eye Level ({captures.filter(c => c.level === 2).length})</option>
-              <option value="3">🟢 High Angle ({captures.filter(c => c.level === 3).length})</option>
-              <option value="4">🟡 Overhead ({captures.filter(c => c.level === 4).length})</option>
+              <option value="all">Semua Level ({captures.length})</option>
+              <option value="1">🔴 Sudut Rendah ({captures.filter((c) => c.level === 1).length})</option>
+              <option value="2">🔵 Level Mata ({captures.filter((c) => c.level === 2).length})</option>
+              <option value="3">🟢 Sudut Tinggi ({captures.filter((c) => c.level === 3).length})</option>
+              <option value="4">🟡 Atas Kepala ({captures.filter((c) => c.level === 4).length})</option>
             </select>
             <ChevronDownIcon size={16} className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" />
           </div>
 
           {/* Sort Options */}
           <div className="relative">
-            <select 
-              value={sortBy} 
-              onChange={(e) => setSortBy(e.target.value)} 
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
               className="px-3 py-1.5 sm:px-4 sm:py-2 bg-gray-800/50 border border-gray-700/50 rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-purple-500/50 backdrop-blur-sm transition-all appearance-none pr-8 min-w-0"
             >
-              <option value="recent">Most Recent</option>
-              <option value="angle">By Angle (0-360°)</option>
-              <option value="level">By Level (1-4)</option>
+              <option value="recent">Terbaru</option>
+              <option value="angle">Berdasarkan Sudut (0-360°)</option>
+              <option value="level">Berdasarkan Level (1-4)</option>
             </select>
             <ChevronDownIcon size={16} className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" />
           </div>
 
           {/* View Mode Toggle */}
           <div className="flex bg-gray-800/50 rounded-xl p-1 border border-gray-700/50">
-            <button
-              onClick={() => setViewMode("grid")}
-              className={`p-2 rounded-lg transition-all ${
-                viewMode === "grid" 
-                  ? "bg-purple-500/20 text-purple-400" 
-                  : "text-gray-400 hover:text-white"
-              }`}
-            >
+            <button onClick={() => setViewMode("grid")} className={`p-2 rounded-lg transition-all ${viewMode === "grid" ? "bg-purple-500/20 text-purple-400" : "text-gray-400 hover:text-white"}`}>
               <GridIcon size={16} />
             </button>
-            <button
-              onClick={() => setViewMode("list")}
-              className={`p-2 rounded-lg transition-all ${
-                viewMode === "list" 
-                  ? "bg-purple-500/20 text-purple-400" 
-                  : "text-gray-400 hover:text-white"
-              }`}
-            >
+            <button onClick={() => setViewMode("list")} className={`p-2 rounded-lg transition-all ${viewMode === "list" ? "bg-purple-500/20 text-purple-400" : "text-gray-400 hover:text-white"}`}>
               <ListIcon size={16} />
             </button>
           </div>
@@ -386,23 +378,21 @@ const RecentPhotosGallery: React.FC<{ captures: Capture[]; onDelete: (index: num
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-2">
               <BarChart3Icon size={18} className="text-blue-400" />
-              <h4 className="text-sm font-semibold text-white">Capture Progress</h4>
+              <h4 className="text-sm font-semibold text-white">Progres Pengambilan</h4>
             </div>
-            <div className="text-xs text-gray-400">
-              {captures.length} / 144 total (36 per level)
-            </div>
+            <div className="text-xs text-gray-400">{captures.length} / 144 total (36 per level)</div>
           </div>
 
           {/* Level Distribution */}
           <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mb-4">
             {[1, 2, 3, 4].map((level) => {
-              const count = captures.filter(c => c.level === level).length;
+              const count = captures.filter((c) => c.level === level).length;
               const percentage = (count / 36) * 100; // Progress based on 36 photos per level
               const levelInfo = {
-                1: { name: "Low Angle", emoji: "🔴", color: "red", bgColor: "bg-red-500/10", borderColor: "border-red-500/30", textColor: "text-red-400" },
-                2: { name: "Eye Level", emoji: "🔵", color: "blue", bgColor: "bg-blue-500/10", borderColor: "border-blue-500/30", textColor: "text-blue-400" },
-                3: { name: "High Angle", emoji: "🟢", color: "green", bgColor: "bg-green-500/10", borderColor: "border-green-500/30", textColor: "text-green-400" },
-                4: { name: "Overhead", emoji: "🟡", color: "yellow", bgColor: "bg-yellow-500/10", borderColor: "border-yellow-500/30", textColor: "text-yellow-400" },
+                1: { name: "Sudut Rendah", emoji: "🔴", color: "red", bgColor: "bg-red-500/10", borderColor: "border-red-500/30", textColor: "text-red-400" },
+                2: { name: "Level Mata", emoji: "🔵", color: "blue", bgColor: "bg-blue-500/10", borderColor: "border-blue-500/30", textColor: "text-blue-400" },
+                3: { name: "Sudut Tinggi", emoji: "🟢", color: "green", bgColor: "bg-green-500/10", borderColor: "border-green-500/30", textColor: "text-green-400" },
+                4: { name: "Atas Kepala", emoji: "🟡", color: "yellow", bgColor: "bg-yellow-500/10", borderColor: "border-yellow-500/30", textColor: "text-yellow-400" },
               }[level as 1 | 2 | 3 | 4];
 
               return (
@@ -416,12 +406,15 @@ const RecentPhotosGallery: React.FC<{ captures: Capture[]; onDelete: (index: num
                   </div>
                   <div className="mb-2">
                     <div className="w-full bg-gray-700/50 rounded-full h-1.5">
-                      <div 
+                      <div
                         className={`h-1.5 rounded-full transition-all duration-500 ${
-                          level === 1 ? "bg-gradient-to-r from-red-500 to-red-400" :
-                          level === 2 ? "bg-gradient-to-r from-blue-500 to-blue-400" :
-                          level === 3 ? "bg-gradient-to-r from-green-500 to-green-400" :
-                          "bg-gradient-to-r from-yellow-500 to-yellow-400"
+                          level === 1
+                            ? "bg-gradient-to-r from-red-500 to-red-400"
+                            : level === 2
+                            ? "bg-gradient-to-r from-blue-500 to-blue-400"
+                            : level === 3
+                            ? "bg-gradient-to-r from-green-500 to-green-400"
+                            : "bg-gradient-to-r from-yellow-500 to-yellow-400"
                         }`}
                         style={{ width: `${Math.min(percentage, 100)}%` }}
                       />
@@ -438,34 +431,24 @@ const RecentPhotosGallery: React.FC<{ captures: Capture[]; onDelete: (index: num
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center space-x-2">
                 <Target size={16} className="text-purple-400" />
-                <span className="text-sm font-medium text-white">Angle Coverage</span>
+                <span className="text-sm font-medium text-white">Cakupan Sudut</span>
               </div>
-              <span className="text-xs text-gray-400">
-                {new Set(captures.map(c => Math.round(c.angle / 10) * 10)).size}/36 positions
-              </span>
+              <span className="text-xs text-gray-400">{new Set(captures.map((c) => Math.round(c.angle / 10) * 10)).size}/36 positions</span>
             </div>
-            
+
             {/* Circular Progress Indicator */}
             <div className="flex items-center justify-center mb-3">
               <div className="relative w-24 h-24">
                 <svg className="w-24 h-24 transform -rotate-90" viewBox="0 0 100 100">
                   {/* Background circle */}
-                  <circle
-                    cx="50"
-                    cy="50"
-                    r="40"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="8"
-                    className="text-gray-700/50"
-                  />
+                  <circle cx="50" cy="50" r="40" fill="none" stroke="currentColor" strokeWidth="8" className="text-gray-700/50" />
                   {/* Progress circles for each 45-degree sector */}
-                  {Array.from({length: 36}, (_, i) => i * 10).map((angle, index) => {
-                    const hasPhotos = captures.some(c => Math.abs(c.angle - angle) < 5 || Math.abs(c.angle - angle) > 355);
+                  {Array.from({ length: 36 }, (_, i) => i * 10).map((angle, index) => {
+                    const hasPhotos = captures.some((c) => Math.abs(c.angle - angle) < 5 || Math.abs(c.angle - angle) > 355);
                     const circumference = 2 * Math.PI * 40;
                     const sectorLength = circumference / 36;
-                    const offset = circumference - (index * sectorLength) - sectorLength;
-                    
+                    const offset = circumference - index * sectorLength - sectorLength;
+
                     return hasPhotos ? (
                       <circle
                         key={angle}
@@ -482,7 +465,7 @@ const RecentPhotosGallery: React.FC<{ captures: Capture[]; onDelete: (index: num
                       />
                     ) : null;
                   })}
-                  
+
                   {/* Gradient definition */}
                   <defs>
                     <linearGradient id="angleGradient" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -491,12 +474,10 @@ const RecentPhotosGallery: React.FC<{ captures: Capture[]; onDelete: (index: num
                     </linearGradient>
                   </defs>
                 </svg>
-                
+
                 {/* Center text */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-lg font-bold text-white">
-                    {Math.round((new Set(captures.map(c => Math.round(c.angle / 10) * 10)).size / 36) * 100)}%
-                  </span>
+                  <span className="text-lg font-bold text-white">{Math.round((new Set(captures.map((c) => Math.round(c.angle / 10) * 10)).size / 36) * 100)}%</span>
                   <span className="text-xs text-gray-400">coverage</span>
                 </div>
               </div>
@@ -504,28 +485,24 @@ const RecentPhotosGallery: React.FC<{ captures: Capture[]; onDelete: (index: num
 
             {/* 10-degree sectors indicator */}
             <div className="grid grid-cols-4 gap-0.5 text-xs">
-              {Array.from({length: 12}, (_, i) => {
+              {Array.from({ length: 12 }, (_, i) => {
                 const startAngle = i * 30;
                 const endAngle = (i * 30 + 30) % 360;
                 const range = `${startAngle}-${endAngle === 0 ? 360 : endAngle}°`;
-                
-                const sectorPhotos = captures.filter(c => 
-                  c.angle >= startAngle && c.angle < (endAngle === 0 ? 360 : endAngle)
-                ).length;
-                
+
+                const sectorPhotos = captures.filter((c) => c.angle >= startAngle && c.angle < (endAngle === 0 ? 360 : endAngle)).length;
+
                 const maxPhotosInSector = 3; // 3 positions per 30° sector (every 10°)
                 const completion = Math.min(100, (sectorPhotos / maxPhotosInSector) * 100);
-                
+
                 return (
                   <div key={range} className="flex flex-col items-center p-1 rounded-md bg-gray-800/30">
-                    <div className={`w-3 h-3 rounded-full mb-1 transition-all ${
-                      completion > 0 ? "bg-purple-400" : "bg-gray-600"
-                    }`} style={{ opacity: completion / 100 }} />
+                    <div className={`w-3 h-3 rounded-full mb-1 transition-all ${completion > 0 ? "bg-purple-400" : "bg-gray-600"}`} style={{ opacity: completion / 100 }} />
                     <span className="text-xs text-gray-400">{startAngle}°</span>
                     <span className="text-xs text-purple-400">{sectorPhotos}/3</span>
                   </div>
                 );
-              }).slice(0, 12)} 
+              }).slice(0, 12)}
             </div>
           </div>
 
@@ -535,23 +512,13 @@ const RecentPhotosGallery: React.FC<{ captures: Capture[]; onDelete: (index: num
               <div className="flex items-start space-x-3 p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl">
                 <LightbulbIcon size={16} className="text-blue-400 mt-0.5 flex-shrink-0" />
                 <div>
-                  <p className="text-sm text-blue-400 font-medium mb-1">Capture Recommendations</p>
+                  <p className="text-sm text-blue-400 font-medium mb-1">Rekomendasi Pengambilan</p>
                   <ul className="text-xs text-gray-300 space-y-1">
-                    {captures.filter(c => c.level === 1).length < 36 && (
-                      <li>• Level 1: {36 - captures.filter(c => c.level === 1).length} more low-angle shots needed</li>
-                    )}
-                    {captures.filter(c => c.level === 2).length < 36 && (
-                      <li>• Level 2: {36 - captures.filter(c => c.level === 2).length} more eye-level photos needed</li>
-                    )}
-                    {captures.filter(c => c.level === 3).length < 36 && (
-                      <li>• Level 3: {36 - captures.filter(c => c.level === 3).length} more high-angle photos needed</li>
-                    )}
-                    {captures.filter(c => c.level === 4).length < 36 && (
-                      <li>• Level 4: {36 - captures.filter(c => c.level === 4).length} more overhead photos needed</li>
-                    )}
-                    {new Set(captures.map(c => Math.round(c.angle / 10) * 10)).size < 36 && (
-                      <li>• Cover more angles: {36 - new Set(captures.map(c => Math.round(c.angle / 10) * 10)).size} positions remaining</li>
-                    )}
+                    {captures.filter((c) => c.level === 1).length < 36 && <li>• Level 1: Perlu {36 - captures.filter((c) => c.level === 1).length} foto sudut rendah lagi</li>}
+                    {captures.filter((c) => c.level === 2).length < 36 && <li>• Level 2: Perlu {36 - captures.filter((c) => c.level === 2).length} foto level mata lagi</li>}
+                    {captures.filter((c) => c.level === 3).length < 36 && <li>• Level 3: Perlu {36 - captures.filter((c) => c.level === 3).length} foto sudut tinggi lagi</li>}
+                    {captures.filter((c) => c.level === 4).length < 36 && <li>• Level 4: Perlu {36 - captures.filter((c) => c.level === 4).length} foto atas kepala lagi</li>}
+                    {new Set(captures.map((c) => Math.round(c.angle / 10) * 10)).size < 36 && <li>• Tambah sudut lagi: {36 - new Set(captures.map((c) => Math.round(c.angle / 10) * 10)).size} posisi tersisa</li>}
                   </ul>
                 </div>
               </div>
@@ -569,94 +536,84 @@ const RecentPhotosGallery: React.FC<{ captures: Capture[]; onDelete: (index: num
               const totalItems = filteredCaptures.length;
               const itemsPerRow = totalItems <= maxRows ? 1 : Math.ceil(totalItems / maxRows);
               const actualRows = Math.ceil(totalItems / itemsPerRow);
-              
+
               return Array.from({ length: actualRows }, (_, rowIndex) => {
                 const startIndex = rowIndex * itemsPerRow;
                 const endIndex = Math.min(startIndex + itemsPerRow, totalItems);
                 const rowCaptures = filteredCaptures.slice(startIndex, endIndex);
-              
-              return (
-                <div key={rowIndex} className="flex gap-2 sm:gap-3 overflow-x-auto pb-2">
-                  {rowCaptures.map((capture: Capture, index: number) => {
-                    const actualIndex = startIndex + index;
-                    return (
-                      <div 
-                        key={`${capture.timestamp}-${actualIndex}`} 
-                        className={`flex-shrink-0 w-32 sm:w-40 md:w-48 relative group cursor-pointer rounded-xl overflow-hidden border-2 transition-all duration-300 hover:scale-105 hover:shadow-lg ${levelColors[capture.level]} hover:shadow-purple-500/25`} 
-                        onClick={() => setSelectedPhoto(capture)}
-                      >
-                        <div className="aspect-square relative">
-                          <img 
-                            src={capture.dataUrl} 
-                            alt={`Capture ${actualIndex + 1}`} 
-                            className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-110" 
-                          />
-                          
-                          {/* Level Badge */}
-                          <div className="absolute top-1 left-1">
-                            <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-bold bg-black/70 text-white backdrop-blur-sm">
-                              L{capture.level}
-                            </span>
-                          </div>
-                        </div>
 
-                        {/* Lightweight Overlay */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-200">
-                          <div className="absolute bottom-1 left-1 text-white">
-                            <div className="text-xs font-bold">{capture.angle}°</div>
+                return (
+                  <div key={rowIndex} className="flex gap-2 sm:gap-3 overflow-x-auto pb-2">
+                    {rowCaptures.map((capture: Capture, index: number) => {
+                      const actualIndex = startIndex + index;
+                      return (
+                        <div
+                          key={`${capture.timestamp}-${actualIndex}`}
+                          className={`flex-shrink-0 w-32 sm:w-40 md:w-48 relative group cursor-pointer rounded-xl overflow-hidden border-2 transition-all duration-300 hover:scale-105 hover:shadow-lg ${
+                            levelColors[capture.level]
+                          } hover:shadow-purple-500/25`}
+                          onClick={() => setSelectedPhoto(capture)}
+                        >
+                          <div className="aspect-square relative">
+                            <img src={capture.dataUrl} alt={`Capture ${actualIndex + 1}`} className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-110" />
+
+                            {/* Level Badge */}
+                            <div className="absolute top-1 left-1">
+                              <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-bold bg-black/70 text-white backdrop-blur-sm">L{capture.level}</span>
+                            </div>
                           </div>
-                          
-                          <div className="absolute top-1 right-1 flex space-x-1">
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setSelectedPhoto(capture);
-                              }}
-                              className="p-1 bg-blue-500/80 hover:bg-blue-500 rounded-md backdrop-blur-sm transition-all hover:scale-110"
-                            >
-                              <EyeIcon size={10} className="text-white" />
-                            </button>
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                onDelete(actualIndex);
-                              }}
-                              className="p-1 bg-red-500/80 hover:bg-red-500 rounded-md backdrop-blur-sm transition-all hover:scale-110"
-                            >
-                              <TrashIcon size={10} className="text-white" />
-                            </button>
+
+                          {/* Lightweight Overlay */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-200">
+                            <div className="absolute bottom-1 left-1 text-white">
+                              <div className="text-xs font-bold">{capture.angle}°</div>
+                            </div>
+
+                            <div className="absolute top-1 right-1 flex space-x-1">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedPhoto(capture);
+                                }}
+                                className="p-1 bg-blue-500/80 hover:bg-blue-500 rounded-md backdrop-blur-sm transition-all hover:scale-110"
+                              >
+                                <EyeIcon size={10} className="text-white" />
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  onDelete(actualIndex);
+                                }}
+                                className="p-1 bg-red-500/80 hover:bg-red-500 rounded-md backdrop-blur-sm transition-all hover:scale-110"
+                              >
+                                <TrashIcon size={10} className="text-white" />
+                              </button>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              );
-            });
+                      );
+                    })}
+                  </div>
+                );
+              });
             })()}
           </div>
         ) : (
           <div className="space-y-3">
             {filteredCaptures.map((capture: Capture, index: number) => (
-              <div 
-                key={`${capture.timestamp}-${index}`} 
+              <div
+                key={`${capture.timestamp}-${index}`}
                 className={`flex items-center space-x-3 sm:space-x-4 p-3 sm:p-4 rounded-2xl border-2 transition-all duration-300 hover:shadow-lg cursor-pointer ${levelColors[capture.level]} hover:shadow-purple-500/25`}
                 onClick={() => setSelectedPhoto(capture)}
               >
                 {/* Thumbnail */}
                 <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden flex-shrink-0 relative">
-                  <img 
-                    src={capture.dataUrl} 
-                    alt={`Capture ${index + 1}`} 
-                    className="w-full h-full object-cover transition-transform duration-300 hover:scale-110" 
-                  />
+                  <img src={capture.dataUrl} alt={`Capture ${index + 1}`} className="w-full h-full object-cover transition-transform duration-300 hover:scale-110" />
                   <div className="absolute top-1 left-1">
-                    <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-bold bg-black/70 text-white backdrop-blur-sm border border-white/20">
-                      L{capture.level}
-                    </span>
+                    <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-bold bg-black/70 text-white backdrop-blur-sm border border-white/20">L{capture.level}</span>
                   </div>
                 </div>
-                
+
                 {/* Details */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
@@ -664,7 +621,7 @@ const RecentPhotosGallery: React.FC<{ captures: Capture[]; onDelete: (index: num
                       <h4 className="text-white font-semibold text-sm">Capture #{index + 1}</h4>
                       <div className="flex items-center space-x-3 mt-1">
                         <span className="text-gray-400 text-xs">
-                          <span className="font-medium">Angle:</span> {capture.angle}°
+                          <span className="font-medium">Sudut:</span> {capture.angle}°
                         </span>
                         <span className="text-gray-400 text-xs">
                           <span className="font-medium">Level:</span> {capture.level}
@@ -674,23 +631,20 @@ const RecentPhotosGallery: React.FC<{ captures: Capture[]; onDelete: (index: num
                         {new Date(capture.timestamp).toLocaleDateString()} • {new Date(capture.timestamp).toLocaleTimeString()}
                       </p>
                     </div>
-                    
+
                     {/* Level Badge */}
                     <div className="flex items-center space-x-2">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        capture.level === 1 ? "bg-red-500/20 text-red-400" :
-                        capture.level === 2 ? "bg-blue-500/20 text-blue-400" :
-                        capture.level === 3 ? "bg-green-500/20 text-green-400" :
-                        "bg-yellow-500/20 text-yellow-400"
-                      }`}>
-                        {capture.level === 1 ? "🔴 Low" :
-                         capture.level === 2 ? "🔵 Eye" :
-                         capture.level === 3 ? "🟢 High" : "🟡 Over"}
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          capture.level === 1 ? "bg-red-500/20 text-red-400" : capture.level === 2 ? "bg-blue-500/20 text-blue-400" : capture.level === 3 ? "bg-green-500/20 text-green-400" : "bg-yellow-500/20 text-yellow-400"
+                        }`}
+                      >
+                        {capture.level === 1 ? "🔴 Rendah" : capture.level === 2 ? "🔵 Mata" : capture.level === 3 ? "🟢 Tinggi" : "🟡 Atas"}
                       </span>
                     </div>
                   </div>
                 </div>
-                
+
                 {/* Actions */}
                 <div className="flex space-x-2 flex-shrink-0">
                   <button
@@ -724,21 +678,15 @@ const RecentPhotosGallery: React.FC<{ captures: Capture[]; onDelete: (index: num
             </div>
             <div className="absolute inset-0 bg-gradient-to-r from-purple-600/5 via-pink-600/5 to-blue-600/5 rounded-3xl blur-2xl"></div>
           </div>
-          <h3 className="text-xl font-bold text-white mb-3">Ready to Capture</h3>
-          <p className="text-gray-400 max-w-sm mx-auto">Start taking photos to build your 3D model dataset. Each photo brings you closer to a perfect reconstruction.</p>
+          <h3 className="text-xl font-bold text-white mb-3">Siap untuk Menangkap</h3>
+          <p className="text-gray-400 max-w-sm mx-auto">Mulai mengambil foto untuk membangun dataset model 3D Anda. Setiap foto membawa Anda lebih dekat ke rekonstruksi sempurna.</p>
         </div>
       )}
 
       {/* Enhanced Photo Preview Modal */}
       {selectedPhoto && (
-        <div 
-          className="fixed inset-0 bg-black/95 backdrop-blur-xl z-50 flex items-center justify-center p-2 sm:p-4 animate-in fade-in duration-300" 
-          onClick={() => setSelectedPhoto(null)}
-        >
-          <div 
-            className="relative max-w-5xl w-full mx-2 sm:mx-0 bg-gray-900/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl border border-gray-700/50 overflow-hidden shadow-2xl" 
-            onClick={(e) => e.stopPropagation()}
-          >
+        <div className="fixed inset-0 bg-black/95 backdrop-blur-xl z-50 flex items-center justify-center p-2 sm:p-4 animate-in fade-in duration-300" onClick={() => setSelectedPhoto(null)}>
+          <div className="relative max-w-5xl w-full mx-2 sm:mx-0 bg-gray-900/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl border border-gray-700/50 overflow-hidden shadow-2xl" onClick={(e) => e.stopPropagation()}>
             {/* Modal Header */}
             <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-700/50">
               <div className="flex items-center space-x-3">
@@ -746,28 +694,23 @@ const RecentPhotosGallery: React.FC<{ captures: Capture[]; onDelete: (index: num
                   <ImageIcon size={16} className="text-blue-400" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-white">Photo Preview</h3>
-                  <p className="text-sm text-gray-400">Level {selectedPhoto.level} • {selectedPhoto.angle}°</p>
+                  <h3 className="text-lg font-bold text-white">Pratinjau Foto</h3>
+                  <p className="text-sm text-gray-400">
+                    Level {selectedPhoto.level} • {selectedPhoto.angle}°
+                  </p>
                 </div>
               </div>
-              
-              <button 
-                onClick={() => setSelectedPhoto(null)} 
-                className="p-3 hover:bg-gray-800/50 rounded-2xl transition-all hover:scale-110 active:scale-95"
-              >
+
+              <button onClick={() => setSelectedPhoto(null)} className="p-3 hover:bg-gray-800/50 rounded-2xl transition-all hover:scale-110 active:scale-95">
                 <XIcon size={20} className="text-gray-400" />
               </button>
             </div>
-            
+
             {/* Modal Image */}
             <div className="relative p-6">
               <div className="relative rounded-2xl overflow-hidden bg-black/30">
-                <img 
-                  src={selectedPhoto.dataUrl} 
-                  alt="Selected capture" 
-                  className="w-full h-auto max-h-[70vh] object-contain mx-auto" 
-                />
-                
+                <img src={selectedPhoto.dataUrl} alt="Selected capture" className="w-full h-auto max-h-[70vh] object-contain mx-auto" />
+
                 {/* Image Overlay Info */}
                 <div className="absolute top-4 left-4">
                   <div className="bg-black/70 backdrop-blur-sm rounded-xl px-3 py-2 border border-white/20">
@@ -778,7 +721,7 @@ const RecentPhotosGallery: React.FC<{ captures: Capture[]; onDelete: (index: num
                 </div>
               </div>
             </div>
-            
+
             {/* Modal Footer */}
             <div className="flex items-center justify-between p-6 bg-gray-800/30 border-t border-gray-700/50">
               <div className="flex items-center space-x-4 text-sm text-gray-400">
@@ -791,19 +734,16 @@ const RecentPhotosGallery: React.FC<{ captures: Capture[]; onDelete: (index: num
                   <span>{new Date(selectedPhoto.timestamp).toLocaleTimeString()}</span>
                 </div>
               </div>
-              
+
               <div className="flex items-center space-x-3">
-                <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                  selectedPhoto.level === 1 ? "bg-red-500/20 text-red-400" :
-                  selectedPhoto.level === 2 ? "bg-blue-500/20 text-blue-400" :
-                  selectedPhoto.level === 3 ? "bg-green-500/20 text-green-400" :
-                  "bg-yellow-500/20 text-yellow-400"
-                }`}>
+                <span
+                  className={`px-3 py-1 rounded-full text-xs font-medium ${
+                    selectedPhoto.level === 1 ? "bg-red-500/20 text-red-400" : selectedPhoto.level === 2 ? "bg-blue-500/20 text-blue-400" : selectedPhoto.level === 3 ? "bg-green-500/20 text-green-400" : "bg-yellow-500/20 text-yellow-400"
+                  }`}
+                >
                   Level {selectedPhoto.level}
                 </span>
-                <span className="px-3 py-1 bg-purple-500/20 text-purple-400 rounded-full text-xs font-medium">
-                  {selectedPhoto.angle}° Angle
-                </span>
+                <span className="px-3 py-1 bg-purple-500/20 text-purple-400 rounded-full text-xs font-medium">Sudut {selectedPhoto.angle}°</span>
               </div>
             </div>
           </div>
@@ -816,10 +756,10 @@ const RecentPhotosGallery: React.FC<{ captures: Capture[]; onDelete: (index: num
 // ========== CAPTURE PROGRESS DASHBOARD ==========
 const CaptureProgressDashboard: React.FC<{ captures: Capture[] }> = ({ captures }) => {
   const levels = [
-    { id: 1, name: "Low Angle", color: "#ef4444", target: 18, description: "Below object level" },
-    { id: 2, name: "Eye Level", color: "#3b82f6", target: 36, description: "Object center level" },
-    { id: 3, name: "High Angle", color: "#10b981", target: 18, description: "Above object level" },
-    { id: 4, name: "Overhead", color: "#f59e0b", target: 12, description: "Top-down view" },
+    { id: 1, name: "Sudut Rendah", color: "#ef4444", target: 18, description: "Di bawah level objek" },
+    { id: 2, name: "Level Mata", color: "#3b82f6", target: 36, description: "Level tengah objek" },
+    { id: 3, name: "Sudut Tinggi", color: "#10b981", target: 18, description: "Di atas level objek" },
+    { id: 4, name: "Atas Kepala", color: "#f59e0b", target: 12, description: "Tampilan dari atas" },
   ];
 
   const totalTarget = levels.reduce((sum, level) => sum + level.target, 0);
@@ -835,15 +775,15 @@ const CaptureProgressDashboard: React.FC<{ captures: Capture[] }> = ({ captures 
     <div className="bg-gray-800/50 rounded-xl p-6 space-y-6">
       <h3 className="text-lg font-semibold flex items-center">
         <BarChart3Icon size={20} className="mr-2 text-blue-400" />
-        Capture Progress
+        Progres Pengambilan
       </h3>
 
       {/* Overall Progress */}
       <div className="space-y-3">
         <div className="flex justify-between items-center">
-          <span className="text-sm font-medium">Overall Progress</span>
+          <span className="text-sm font-medium">Progres Keseluruhan</span>
           <span className="text-sm text-gray-400">
-            {totalCaptured} / {totalTarget} photos
+            {totalCaptured} / {totalTarget} foto
           </span>
         </div>
         <div className="w-full bg-gray-700 rounded-full h-3">
@@ -883,17 +823,17 @@ const CaptureProgressDashboard: React.FC<{ captures: Capture[] }> = ({ captures 
       {/* Quality Score */}
       <div className="bg-gray-900/50 rounded-lg p-4">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-medium">Quality Score</span>
+          <span className="text-sm font-medium">Skor Kualitas</span>
           <span className="text-lg font-bold text-purple-400">{Math.round(Math.min(100, (totalCaptured / totalTarget) * 100))}%</span>
         </div>
         <div className="flex space-x-2">
           <div className="flex items-center text-xs text-gray-400">
             <div className="w-2 h-2 bg-green-500 rounded-full mr-1"></div>
-            {levelStats.filter((l) => l.progress >= 100).length} levels complete
+            {levelStats.filter((l) => l.progress >= 100).length} level selesai
           </div>
           <div className="flex items-center text-xs text-gray-400">
             <div className="w-2 h-2 bg-yellow-500 rounded-full mr-1"></div>
-            {levelStats.filter((l) => l.progress > 0 && l.progress < 100).length} in progress
+            {levelStats.filter((l) => l.progress > 0 && l.progress < 100).length} dalam proses
           </div>
         </div>
       </div>
@@ -990,18 +930,18 @@ const CloudUploadProgress: React.FC<{ isOpen: boolean; onClose: () => void; data
 
   const stageInfo: Record<UploadStage, { title: string; description: string; icon: JSX.Element }> = {
     preparing: {
-      title: "Preparing Upload",
-      description: "Organizing files and checking prerequisites...",
+      title: "Mempersiapkan Upload",
+      description: "Mengorganisir file dan memeriksa prasyarat...",
       icon: <RotateIcon size={32} className="animate-spin" />,
     },
     uploading: {
-      title: "Uploading Files",
-      description: `Uploading ${dataset.photos.length} photos to ${provider}...`,
+      title: "Mengunggah File",
+      description: `Mengunggah ${dataset.photos.length} foto ke ${provider}...`,
       icon: <CloudUploadIcon size={32} className="animate-pulse" />,
     },
     processing: {
-      title: "Processing Dataset",
-      description: "Finalizing upload and generating thumbnails...",
+      title: "Memproses Dataset",
+      description: "Menyelesaikan upload dan membuat thumbnail...",
       icon: <CheckCircleIcon size={32} />,
     },
   };
@@ -1025,25 +965,25 @@ const CloudUploadProgress: React.FC<{ isOpen: boolean; onClose: () => void; data
           <div className="grid grid-cols-3 gap-4 text-center">
             <div>
               <div className="text-lg font-bold">{Math.round(progress)}%</div>
-              <div className="text-xs text-gray-400">Progress</div>
+              <div className="text-xs text-gray-400">Progres</div>
             </div>
             <div>
               <div className="text-lg font-bold">{uploadSpeed.toFixed(1)} MB/s</div>
-              <div className="text-xs text-gray-400">Speed</div>
+              <div className="text-xs text-gray-400">Kecepatan</div>
             </div>
             <div>
               <div className="text-lg font-bold">{Math.round(bytesUploaded / 1024 / 1024)}MB</div>
-              <div className="text-xs text-gray-400">Uploaded</div>
+              <div className="text-xs text-gray-400">Terunggah</div>
             </div>
           </div>
 
           <div className="text-xs text-gray-400 text-center">
-            Dataset: {dataset.name} ({dataset.photos.length} photos)
+            Dataset: {dataset.name} ({dataset.photos.length} foto)
           </div>
         </div>
 
         <button onClick={onClose} className="w-full mt-6 px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors text-sm">
-          Cancel Upload
+          Batalkan Upload
         </button>
       </div>
     </div>
@@ -1073,7 +1013,7 @@ const DatasetCardHeader: React.FC<{ dataset: Dataset }> = ({ dataset }) => {
         </h4>
       )}
       <button className="px-2 py-1 text-xs bg-gray-800 hover:bg-gray-700 rounded border border-gray-700" onClick={() => setIsEditing((v) => !v)}>
-        {isEditing ? "Save" : "Rename"}
+        {isEditing ? "Simpan" : "Ganti Nama"}
       </button>
     </div>
   );
@@ -1091,7 +1031,7 @@ const CloudIntegration: React.FC<{
       <div className="bg-gray-900/95 rounded-xl border border-gray-700 p-4 sm:p-6 w-full max-w-xs sm:max-w-md mx-2 sm:mx-0">
         <h3 className="text-lg font-semibold mb-4 flex items-center">
           <CloudIcon size={18} className="mr-2 text-blue-400" />
-          Connect to Cloud
+          Hubungkan ke Cloud
         </h3>
         <div className="space-y-2">
           {providers.map((p) => (
@@ -1103,12 +1043,12 @@ const CloudIntegration: React.FC<{
               }}
               className="w-full px-4 py-2 bg-blue-600/20 text-blue-300 border border-blue-500/30 rounded-lg hover:bg-blue-600/30 transition-colors"
             >
-              Connect {p}
+              Hubungkan {p}
             </button>
           ))}
         </div>
         <button onClick={onClose} className="w-full mt-4 px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg">
-          Cancel
+          Batal
         </button>
       </div>
     </div>
@@ -1119,11 +1059,11 @@ const CloudIntegration: React.FC<{
 const DatasetManagerTab: React.FC = () => {
   const [datasets, setDatasets] = useState<Dataset[]>([]);
   const [selectedDataset, setSelectedDataset] = useState<Dataset | null>(null);
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [sortBy, setSortBy] = useState<'name' | 'date' | 'photos'>('date');
-  const [filterLevel, setFilterLevel] = useState<1 | 2 | 3 | 4 | 'all'>('all');
-  const [groupBy, setGroupBy] = useState<'none' | 'level' | 'date' | 'tags'>('none');
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState<"name" | "date" | "photos">("date");
+  const [filterLevel, setFilterLevel] = useState<1 | 2 | 3 | 4 | "all">("all");
+  const [groupBy, setGroupBy] = useState<"none" | "level" | "date" | "tags">("none");
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -1137,29 +1077,26 @@ const DatasetManagerTab: React.FC = () => {
 
   // Auto-expand groups when grouping changes
   useEffect(() => {
-    if (groupBy !== 'none') {
-      const allGroupKeys = getGroupedDatasets().map(group => group.key);
+    if (groupBy !== "none") {
+      const allGroupKeys = getGroupedDatasets().map((group) => group.key);
       setExpandedGroups(new Set(allGroupKeys));
     }
   }, [groupBy, datasets]); // Include datasets to recalculate when data changes
 
   // Filter and sort datasets
   const filteredAndSortedDatasets = datasets
-    .filter(dataset => 
-      dataset.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      dataset.description.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-    .filter(dataset => {
-      if (filterLevel === 'all') return true;
-      return dataset.metadata.levels.some(level => level.level === filterLevel && level.captured > 0);
+    .filter((dataset) => dataset.name.toLowerCase().includes(searchQuery.toLowerCase()) || dataset.description.toLowerCase().includes(searchQuery.toLowerCase()))
+    .filter((dataset) => {
+      if (filterLevel === "all") return true;
+      return dataset.metadata.levels.some((level) => level.level === filterLevel && level.captured > 0);
     })
     .sort((a, b) => {
       switch (sortBy) {
-        case 'name':
+        case "name":
           return a.name.localeCompare(b.name);
-        case 'date':
+        case "date":
           return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-        case 'photos':
+        case "photos":
           return b.photos.length - a.photos.length;
         default:
           return 0;
@@ -1168,27 +1105,26 @@ const DatasetManagerTab: React.FC = () => {
 
   // Group datasets based on groupBy setting
   const getGroupedDatasets = () => {
-    if (groupBy === 'none') {
-      return [{ key: 'all', title: '', datasets: filteredAndSortedDatasets }];
+    if (groupBy === "none") {
+      return [{ key: "all", title: "", datasets: filteredAndSortedDatasets }];
     }
 
     const groups: { [key: string]: Dataset[] } = {};
 
-    filteredAndSortedDatasets.forEach(dataset => {
-      let groupKey = '';
+    filteredAndSortedDatasets.forEach((dataset) => {
+      let groupKey = "";
       switch (groupBy) {
-        case 'level':
-          const dominantLevel = dataset.metadata.levels
-            .reduce((prev, current) => prev.captured > current.captured ? prev : current);
+        case "level":
+          const dominantLevel = dataset.metadata.levels.reduce((prev, current) => (prev.captured > current.captured ? prev : current));
           groupKey = `level-${dominantLevel.level}`;
           break;
-        case 'date':
+        case "date":
           const date = new Date(dataset.createdAt);
-          groupKey = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
+          groupKey = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, "0")}`;
           break;
-        case 'tags':
+        case "tags":
           if (dataset.tags.length === 0) {
-            groupKey = 'untagged';
+            groupKey = "untagged";
           } else {
             groupKey = dataset.tags[0]; // Group by first tag
           }
@@ -1206,35 +1142,30 @@ const DatasetManagerTab: React.FC = () => {
       title: getGroupTitle(key, groupBy),
       datasets: datasets.sort((a, b) => {
         switch (sortBy) {
-          case 'name':
+          case "name":
             return a.name.localeCompare(b.name);
-          case 'date':
+          case "date":
             return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-          case 'photos':
+          case "photos":
             return b.photos.length - a.photos.length;
           default:
             return 0;
         }
-      })
+      }),
     }));
   };
 
   const getGroupTitle = (key: string, groupByType: string): string => {
     switch (groupByType) {
-      case 'level':
-        const levelNum = key.split('-')[1];
-        return `Level ${levelNum} - ${
-          levelNum === '1' ? 'Low Angle' :
-          levelNum === '2' ? 'Eye Level' :
-          levelNum === '3' ? 'High Angle' : 'Overhead'
-        }`;
-      case 'date':
-        const [year, month] = key.split('-');
-        const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-                           'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      case "level":
+        const levelNum = key.split("-")[1];
+        return `Level ${levelNum} - ${levelNum === "1" ? "Sudut Rendah" : levelNum === "2" ? "Level Mata" : levelNum === "3" ? "Sudut Tinggi" : "Atas Kepala"}`;
+      case "date":
+        const [year, month] = key.split("-");
+        const monthNames = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
         return `${monthNames[parseInt(month) - 1]} ${year}`;
-      case 'tags':
-        return key === 'untagged' ? 'Untagged' : `#${key}`;
+      case "tags":
+        return key === "untagged" ? "Tanpa Tag" : `#${key}`;
       default:
         return key;
     }
@@ -1253,9 +1184,9 @@ const DatasetManagerTab: React.FC = () => {
   };
 
   const handleDeleteDataset = (datasetId: string) => {
-    if (confirm('Are you sure you want to delete this dataset?')) {
+    if (confirm("Apakah Anda yakin ingin menghapus dataset ini?")) {
       DatasetStorage.deleteDataset(datasetId);
-      setDatasets(prev => prev.filter(d => d.id !== datasetId));
+      setDatasets((prev) => prev.filter((d) => d.id !== datasetId));
       if (selectedDataset?.id === datasetId) {
         setSelectedDataset(null);
       }
@@ -1267,21 +1198,21 @@ const DatasetManagerTab: React.FC = () => {
     setShowEditModal(true);
   };
 
-  const handleCreateDataset = (newDataset: Omit<Dataset, 'id' | 'createdAt'>) => {
+  const handleCreateDataset = (newDataset: Omit<Dataset, "id" | "createdAt">) => {
     const dataset: Dataset = {
       ...newDataset,
       id: Date.now().toString(),
       createdAt: new Date().toISOString(),
     };
-    
+
     DatasetStorage.saveDataset(dataset);
-    setDatasets(prev => [dataset, ...prev]);
+    setDatasets((prev) => [dataset, ...prev]);
     setShowCreateModal(false);
   };
 
   const handleUpdateDataset = (updatedDataset: Dataset) => {
     DatasetStorage.saveDataset(updatedDataset);
-    setDatasets(prev => prev.map(d => d.id === updatedDataset.id ? updatedDataset : d));
+    setDatasets((prev) => prev.map((d) => (d.id === updatedDataset.id ? updatedDataset : d)));
     setShowEditModal(false);
     setEditingDataset(null);
     if (selectedDataset?.id === updatedDataset.id) {
@@ -1294,61 +1225,62 @@ const DatasetManagerTab: React.FC = () => {
       {/* Header & Controls */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-white mb-2">Dataset Manager</h2>
-          <p className="text-gray-400">{datasets.length} datasets • {datasets.reduce((acc, d) => acc + d.photos.length, 0)} total photos</p>
+          <h2 className="text-2xl font-bold text-white mb-2">Pengelola Dataset</h2>
+          <p className="text-gray-400">
+            {datasets.length} dataset • {datasets.reduce((acc, d) => acc + d.photos.length, 0)} total foto
+          </p>
         </div>
-        
+
         <div className="flex gap-2">
-          <button
-            onClick={() => setShowCreateModal(true)}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg font-medium transition-colors flex items-center gap-2"
-          >
+          <button onClick={() => setShowCreateModal(true)} className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg font-medium transition-colors flex items-center gap-2">
             <DatabaseIcon size={16} />
-            New Dataset
+            Dataset Baru
           </button>
-          
+
           {/* Debug button to create sample dataset */}
           <button
             onClick={() => {
               const sampleDataset: Dataset = {
-                id: 'sample_' + Date.now(),
-                name: 'Sample Dataset',
-                description: 'Test dataset with sample photos',
+                id: "sample_" + Date.now(),
+                name: "Sample Dataset",
+                description: "Test dataset with sample photos",
                 photos: [
                   {
                     angle: 0,
                     level: 1,
-                    dataUrl: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iIzMzNzNkYyIvPgogIDx0ZXh0IHg9IjUwIiB5PSI1MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkwxIDDCsDwvdGV4dD4KPC9zdmc+',
+                    dataUrl:
+                      "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iIzMzNzNkYyIvPgogIDx0ZXh0IHg9IjUwIiB5PSI1MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkwxIDDCsDwvdGV4dD4KPC9zdmc+",
                     timestamp: Date.now(),
-                    caption: 'L1_Low_000deg'
+                    caption: "L1_Low_000deg",
                   },
                   {
                     angle: 90,
                     level: 2,
-                    dataUrl: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iIzEwYjk4MSIvPgogIDx0ZXh0IHg9IjUwIiB5PSI1MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkwyIDkwwrA8L3RleHQ+Cjwvc3ZnPg==',
+                    dataUrl:
+                      "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iIzEwYjk4MSIvPgogIDx0ZXh0IHg9IjUwIiB5PSI1MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkwyIDkwwrA8L3RleHQ+Cjwvc3ZnPg==",
                     timestamp: Date.now() + 1000,
-                    caption: 'L2_Eye_090deg'
-                  }
+                    caption: "L2_Eye_090deg",
+                  },
                 ],
                 createdAt: new Date().toISOString(),
-                tags: ['Test', 'Sample'],
+                tags: ["Test", "Sample"],
                 metadata: {
                   totalPhotos: 2,
                   levels: [
                     { level: 1, captured: 1 },
                     { level: 2, captured: 1 },
                     { level: 3, captured: 0 },
-                    { level: 4, captured: 0 }
+                    { level: 4, captured: 0 },
                   ],
-                  angles: [0, 90]
-                }
+                  angles: [0, 90],
+                },
               };
               DatasetStorage.saveDataset(sampleDataset);
-              setDatasets(prev => [sampleDataset, ...prev]);
+              setDatasets((prev) => [sampleDataset, ...prev]);
             }}
             className="px-3 py-2 bg-gray-600 hover:bg-gray-700 rounded-lg font-medium transition-colors text-sm"
           >
-            Test Dataset
+            Dataset Uji Coba
           </button>
         </div>
       </div>
@@ -1361,7 +1293,7 @@ const DatasetManagerTab: React.FC = () => {
             <SearchIcon size={16} className="absolute left-3 top-3 text-gray-400" />
             <input
               type="text"
-              placeholder="Search datasets..."
+              placeholder="Cari dataset..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -1369,60 +1301,44 @@ const DatasetManagerTab: React.FC = () => {
           </div>
 
           {/* Sort By */}
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value as any)}
-            className="px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="date">Sort by Date</option>
-            <option value="name">Sort by Name</option>
-            <option value="photos">Sort by Photos</option>
+          <select value={sortBy} onChange={(e) => setSortBy(e.target.value as any)} className="px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500">
+            <option value="date">Urutkan Berdasarkan Tanggal</option>
+            <option value="name">Urutkan Berdasarkan Nama</option>
+            <option value="photos">Urutkan Berdasarkan Foto</option>
           </select>
 
           {/* Filter by Level */}
-          <select
-            value={filterLevel}
-            onChange={(e) => setFilterLevel(e.target.value as any)}
-            className="px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="all">All Levels</option>
-            <option value={1}>Level 1 - Low Angle</option>
-            <option value={2}>Level 2 - Eye Level</option>
-            <option value={3}>Level 3 - High Angle</option>
-            <option value={4}>Level 4 - Overhead</option>
+          <select value={filterLevel} onChange={(e) => setFilterLevel(e.target.value as any)} className="px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500">
+            <option value="all">Semua Level</option>
+            <option value={1}>Level 1 - Sudut Rendah</option>
+            <option value={2}>Level 2 - Level Mata</option>
+            <option value={3}>Level 3 - Sudut Tinggi</option>
+            <option value={4}>Level 4 - Atas Kepala</option>
           </select>
 
           {/* Group By */}
-          <select
-            value={groupBy}
-            onChange={(e) => setGroupBy(e.target.value as any)}
-            className="px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="none">No Grouping</option>
-            <option value="level">Group by Level</option>
-            <option value="date">Group by Date</option>
-            <option value="tags">Group by Tags</option>
+          <select value={groupBy} onChange={(e) => setGroupBy(e.target.value as any)} className="px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500">
+            <option value="none">Tanpa Pengelompokan</option>
+            <option value="level">Kelompokkan Berdasarkan Level</option>
+            <option value="date">Kelompokkan Berdasarkan Tanggal</option>
+            <option value="tags">Kelompokkan Berdasarkan Tag</option>
           </select>
 
           {/* View Mode */}
           <div className="flex border border-gray-600 rounded-lg overflow-hidden">
             <button
-              onClick={() => setViewMode('grid')}
-              className={`flex-1 px-3 py-2 flex items-center justify-center gap-2 transition-colors ${
-                viewMode === 'grid' ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-              }`}
+              onClick={() => setViewMode("grid")}
+              className={`flex-1 px-3 py-2 flex items-center justify-center gap-2 transition-colors ${viewMode === "grid" ? "bg-blue-600 text-white" : "bg-gray-700 text-gray-300 hover:bg-gray-600"}`}
             >
               <GridIcon size={14} />
-              Grid
+              Kisi
             </button>
             <button
-              onClick={() => setViewMode('list')}
-              className={`flex-1 px-3 py-2 flex items-center justify-center gap-2 transition-colors ${
-                viewMode === 'list' ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-              }`}
+              onClick={() => setViewMode("list")}
+              className={`flex-1 px-3 py-2 flex items-center justify-center gap-2 transition-colors ${viewMode === "list" ? "bg-blue-600 text-white" : "bg-gray-700 text-gray-300 hover:bg-gray-600"}`}
             >
               <ListIcon size={14} />
-              List
+              Daftar
             </button>
           </div>
         </div>
@@ -1432,13 +1348,10 @@ const DatasetManagerTab: React.FC = () => {
       {filteredAndSortedDatasets.length === 0 ? (
         <div className="text-center py-12 bg-gray-800/30 rounded-xl">
           <DatabaseIcon size={48} className="mx-auto text-gray-400 mb-4" />
-          <h3 className="text-xl font-semibold mb-2">No Datasets Found</h3>
-          <p className="text-gray-400 mb-6">Create your first dataset to get started</p>
-          <button
-            onClick={() => setShowCreateModal(true)}
-            className="px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg font-medium transition-colors"
-          >
-            Create Dataset
+          <h3 className="text-xl font-semibold mb-2">Tidak Ada Dataset</h3>
+          <p className="text-gray-400 mb-6">Buat dataset pertama Anda untuk memulai</p>
+          <button onClick={() => setShowCreateModal(true)} className="px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg font-medium transition-colors">
+            Buat Dataset
           </button>
         </div>
       ) : (
@@ -1446,37 +1359,25 @@ const DatasetManagerTab: React.FC = () => {
           {groupedDatasets.map((group) => (
             <div key={group.key} className="space-y-4">
               {/* Group Header (only show if grouping is enabled) */}
-              {groupBy !== 'none' && group.title && (
+              {groupBy !== "none" && group.title && (
                 <div className="flex items-center justify-between">
-                  <button
-                    onClick={() => toggleGroup(group.key)}
-                    className="flex items-center gap-3 text-lg font-semibold text-white hover:text-blue-400 transition-colors"
-                  >
-                    <div className={`transition-transform ${expandedGroups.has(group.key) || groupBy === 'none' ? 'rotate-90' : 'rotate-0'}`}>
+                  <button onClick={() => toggleGroup(group.key)} className="flex items-center gap-3 text-lg font-semibold text-white hover:text-blue-400 transition-colors">
+                    <div className={`transition-transform ${expandedGroups.has(group.key) || groupBy === "none" ? "rotate-90" : "rotate-0"}`}>
                       <ChevronDownIcon size={20} className="rotate-[-90deg]" />
                     </div>
                     <span>{group.title}</span>
                     <span className="text-sm text-gray-400 font-normal">({group.datasets.length})</span>
                   </button>
-                  
-                  <div className="text-sm text-gray-400">
-                    {group.datasets.reduce((acc, d) => acc + d.photos.length, 0)} photos
-                  </div>
+
+                  <div className="text-sm text-gray-400">{group.datasets.reduce((acc, d) => acc + d.photos.length, 0)} foto</div>
                 </div>
               )}
 
               {/* Group Content */}
-              {(expandedGroups.has(group.key) || groupBy === 'none') && (
-                <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'space-y-4'}>
+              {(expandedGroups.has(group.key) || groupBy === "none") && (
+                <div className={viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" : "space-y-4"}>
                   {group.datasets.map((dataset) => (
-                    <DatasetCard
-                      key={dataset.id}
-                      dataset={dataset}
-                      viewMode={viewMode}
-                      onSelect={setSelectedDataset}
-                      onEdit={handleEditDataset}
-                      onDelete={handleDeleteDataset}
-                    />
+                    <DatasetCard key={dataset.id} dataset={dataset} viewMode={viewMode} onSelect={setSelectedDataset} onEdit={handleEditDataset} onDelete={handleDeleteDataset} />
                   ))}
                 </div>
               )}
@@ -1489,22 +1390,12 @@ const DatasetManagerTab: React.FC = () => {
       {selectedDataset && (
         <>
           {console.log("Rendering DatasetDetailsModal with:", selectedDataset)}
-          <DatasetDetailsModal
-            dataset={selectedDataset}
-            onClose={() => setSelectedDataset(null)}
-            onEdit={handleEditDataset}
-            onDelete={handleDeleteDataset}
-          />
+          <DatasetDetailsModal dataset={selectedDataset} onClose={() => setSelectedDataset(null)} onEdit={handleEditDataset} onDelete={handleDeleteDataset} />
         </>
       )}
 
       {/* Create Dataset Modal */}
-      {showCreateModal && (
-        <CreateDatasetModal
-          onClose={() => setShowCreateModal(false)}
-          onCreate={handleCreateDataset}
-        />
-      )}
+      {showCreateModal && <CreateDatasetModal onClose={() => setShowCreateModal(false)} onCreate={handleCreateDataset} />}
 
       {/* Edit Dataset Modal */}
       {showEditModal && editingDataset && (
@@ -1524,19 +1415,19 @@ const DatasetManagerTab: React.FC = () => {
 // Dataset Card Component
 const DatasetCard: React.FC<{
   dataset: Dataset;
-  viewMode: 'grid' | 'list';
+  viewMode: "grid" | "list";
   onSelect: (dataset: Dataset) => void;
   onEdit: (dataset: Dataset) => void;
   onDelete: (datasetId: string) => void;
 }> = ({ dataset, viewMode, onSelect, onEdit, onDelete }) => {
-  const levelStats = [1, 2, 3, 4].map(level => ({
+  const levelStats = [1, 2, 3, 4].map((level) => ({
     level,
-    count: dataset.photos.filter(p => p.level === level).length
+    count: dataset.photos.filter((p) => p.level === level).length,
   }));
 
   const coveragePercentage = Math.round((dataset.photos.length / 144) * 100);
 
-  if (viewMode === 'list') {
+  if (viewMode === "list") {
     return (
       <div className="bg-gray-800/50 rounded-xl p-4 hover:bg-gray-800/70 transition-colors">
         <div className="flex items-center justify-between">
@@ -1546,12 +1437,7 @@ const DatasetCard: React.FC<{
               {dataset.photos.length > 0 ? (
                 <div className="grid grid-cols-2 h-full">
                   {dataset.photos.slice(0, 4).map((photo, idx) => (
-                    <img
-                      key={idx}
-                      src={photo.dataUrl}
-                      alt=""
-                      className="w-full h-full object-cover"
-                    />
+                    <img key={idx} src={photo.dataUrl} alt="" className="w-full h-full object-cover" />
                   ))}
                 </div>
               ) : (
@@ -1566,8 +1452,8 @@ const DatasetCard: React.FC<{
               <h3 className="font-semibold text-white truncate">{dataset.name}</h3>
               <p className="text-sm text-gray-400 truncate">{dataset.description}</p>
               <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
-                <span>{dataset.photos.length} photos</span>
-                <span>{coveragePercentage}% coverage</span>
+                <span>{dataset.photos.length} foto</span>
+                <span>{coveragePercentage}% cakupan</span>
                 <span>{new Date(dataset.createdAt).toLocaleDateString()}</span>
               </div>
             </div>
@@ -1576,12 +1462,11 @@ const DatasetCard: React.FC<{
             <div className="hidden sm:flex items-center gap-2">
               {levelStats.map(({ level, count }) => (
                 <div key={level} className="text-center">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
-                    level === 1 ? 'bg-red-500/20 text-red-400' :
-                    level === 2 ? 'bg-blue-500/20 text-blue-400' :
-                    level === 3 ? 'bg-green-500/20 text-green-400' :
-                    'bg-yellow-500/20 text-yellow-400'
-                  }`}>
+                  <div
+                    className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
+                      level === 1 ? "bg-red-500/20 text-red-400" : level === 2 ? "bg-blue-500/20 text-blue-400" : level === 3 ? "bg-green-500/20 text-green-400" : "bg-yellow-500/20 text-yellow-400"
+                    }`}
+                  >
                     {level}
                   </div>
                   <div className="text-xs text-gray-400 mt-1">{count}</div>
@@ -1599,22 +1484,14 @@ const DatasetCard: React.FC<{
                 onSelect(dataset);
               }}
               className="p-2 text-gray-400 hover:text-blue-400 transition-colors"
-              title="View Details"
+              title="Lihat Detail"
             >
               <EyeIcon size={16} />
             </button>
-            <button
-              onClick={() => onEdit(dataset)}
-              className="p-2 text-gray-400 hover:text-green-400 transition-colors"
-              title="Edit Dataset"
-            >
+            <button onClick={() => onEdit(dataset)} className="p-2 text-gray-400 hover:text-green-400 transition-colors" title="Edit Dataset">
               <EditIcon size={16} />
             </button>
-            <button
-              onClick={() => onDelete(dataset.id)}
-              className="p-2 text-gray-400 hover:text-red-400 transition-colors"
-              title="Delete Dataset"
-            >
+            <button onClick={() => onDelete(dataset.id)} className="p-2 text-gray-400 hover:text-red-400 transition-colors" title="Hapus Dataset">
               <TrashIcon size={16} />
             </button>
           </div>
@@ -1630,12 +1507,7 @@ const DatasetCard: React.FC<{
         {dataset.photos.length > 0 ? (
           <div className="grid grid-cols-3 h-full">
             {dataset.photos.slice(0, 9).map((photo, idx) => (
-              <img
-                key={idx}
-                src={photo.dataUrl}
-                alt=""
-                className="w-full h-full object-cover"
-              />
+              <img key={idx} src={photo.dataUrl} alt="" className="w-full h-full object-cover" />
             ))}
           </div>
         ) : (
@@ -1643,7 +1515,7 @@ const DatasetCard: React.FC<{
             <ImageIcon size={32} className="text-gray-400" />
           </div>
         )}
-        
+
         {/* Coverage Badge */}
         <div className="absolute top-2 right-2 bg-black/70 backdrop-blur-sm rounded-lg px-2 py-1">
           <span className="text-xs font-bold text-white">{coveragePercentage}%</span>
@@ -1662,18 +1534,10 @@ const DatasetCard: React.FC<{
           >
             <EyeIcon size={16} />
           </button>
-          <button
-            onClick={() => onEdit(dataset)}
-            className="p-2 bg-white/20 backdrop-blur-sm rounded-lg text-white hover:bg-white/30 transition-colors"
-            title="Edit Dataset"
-          >
+          <button onClick={() => onEdit(dataset)} className="p-2 bg-white/20 backdrop-blur-sm rounded-lg text-white hover:bg-white/30 transition-colors" title="Edit Dataset">
             <EditIcon size={16} />
           </button>
-          <button
-            onClick={() => onDelete(dataset.id)}
-            className="p-2 bg-white/20 backdrop-blur-sm rounded-lg text-white hover:bg-red-500/50 transition-colors"
-            title="Delete Dataset"
-          >
+          <button onClick={() => onDelete(dataset.id)} className="p-2 bg-white/20 backdrop-blur-sm rounded-lg text-white hover:bg-red-500/50 transition-colors" title="Delete Dataset">
             <TrashIcon size={16} />
           </button>
         </div>
@@ -1683,7 +1547,7 @@ const DatasetCard: React.FC<{
       <div className="p-4">
         <h3 className="font-semibold text-white truncate mb-1">{dataset.name}</h3>
         <p className="text-sm text-gray-400 line-clamp-2 mb-3">{dataset.description}</p>
-        
+
         {/* Stats */}
         <div className="flex items-center justify-between text-xs text-gray-500 mb-3">
           <span>{dataset.photos.length} photos</span>
@@ -1694,12 +1558,11 @@ const DatasetCard: React.FC<{
         <div className="flex items-center justify-between">
           {levelStats.map(({ level, count }) => (
             <div key={level} className="text-center">
-              <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                level === 1 ? 'bg-red-500/20 text-red-400' :
-                level === 2 ? 'bg-blue-500/20 text-blue-400' :
-                level === 3 ? 'bg-green-500/20 text-green-400' :
-                'bg-yellow-500/20 text-yellow-400'
-              }`}>
+              <div
+                className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+                  level === 1 ? "bg-red-500/20 text-red-400" : level === 2 ? "bg-blue-500/20 text-blue-400" : level === 3 ? "bg-green-500/20 text-green-400" : "bg-yellow-500/20 text-yellow-400"
+                }`}
+              >
                 {level}
               </div>
               <div className="text-xs text-gray-400 mt-1">{count}</div>
@@ -1718,16 +1581,9 @@ const Enhanced3DPhotoScanTab: React.FC<{ onSwitchToViewer: () => void }> = ({ on
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [captures, setCaptures] = useState<Capture[]>([]);
 
-  // Check authentication status
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        navigate("/auth/login");
-      }
-    });
-
-    return () => unsubscribe();
-  }, [navigate]);
+  // Check authentication status - REMOVED
+  // Authentication is already handled in App.tsx
+  // No need to check again here
 
   const handleLogout = async () => {
     try {
@@ -1744,7 +1600,7 @@ const Enhanced3DPhotoScanTab: React.FC<{ onSwitchToViewer: () => void }> = ({ on
       localStorage.removeItem("gdrive_email");
       localStorage.removeItem("upload_folder");
 
-      navigate("/auth/login");
+      navigate("/login"); // Fixed: correct login path
     } catch (error) {
       console.error("Error during logout:", error);
     }
@@ -1763,11 +1619,12 @@ const Enhanced3DPhotoScanTab: React.FC<{ onSwitchToViewer: () => void }> = ({ on
   const [controlsMinimized, setControlsMinimized] = useState(false);
   const [fullMinimize, setFullMinimize] = useState(false);
   const [compactMode, setCompactMode] = useState(false);
-  
+
   // Auto-minimize on mobile screens and auto-hide after inactivity
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 640) { // sm breakpoint
+      if (window.innerWidth < 640) {
+        // sm breakpoint
         setControlsMinimized(true);
         setCompactMode(true);
       } else {
@@ -1775,27 +1632,27 @@ const Enhanced3DPhotoScanTab: React.FC<{ onSwitchToViewer: () => void }> = ({ on
         setControlsMinimized(false);
       }
     };
-    
+
     handleResize(); // Check on mount
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   // Auto-hide interface after 3 seconds of inactivity
   useEffect(() => {
     let timer: NodeJS.Timeout | null = null;
-    
+
     const resetTimer = () => {
       if (timer) {
         clearTimeout(timer);
       }
-      
+
       // Show controls when user interacts
       if (fullMinimize) {
         setFullMinimize(false);
         setControlsMinimized(true);
       }
-      
+
       // Hide after 3 seconds of no interaction
       timer = setTimeout(() => {
         setFullMinimize(true);
@@ -1803,41 +1660,41 @@ const Enhanced3DPhotoScanTab: React.FC<{ onSwitchToViewer: () => void }> = ({ on
     };
 
     // Show interface on any interaction
-    document.addEventListener('touchstart', resetTimer);
-    document.addEventListener('mousedown', resetTimer);
-    document.addEventListener('mousemove', resetTimer);
-    
+    document.addEventListener("touchstart", resetTimer);
+    document.addEventListener("mousedown", resetTimer);
+    document.addEventListener("mousemove", resetTimer);
+
     resetTimer(); // Start timer initially
-    
+
     return () => {
       if (timer) {
         clearTimeout(timer);
       }
-      document.removeEventListener('touchstart', resetTimer);
-      document.removeEventListener('mousedown', resetTimer);
-      document.removeEventListener('mousemove', resetTimer);
+      document.removeEventListener("touchstart", resetTimer);
+      document.removeEventListener("mousedown", resetTimer);
+      document.removeEventListener("mousemove", resetTimer);
     };
   }, [fullMinimize]);
-  
+
   // Touch/swipe gestures for mobile
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
-  
+
   const handleTouchStart = (e: React.TouchEvent) => {
     setTouchEnd(null);
     setTouchStart(e.targetTouches[0].clientX);
   };
-  
+
   const handleTouchMove = (e: React.TouchEvent) => {
     setTouchEnd(e.targetTouches[0].clientX);
   };
-  
+
   const handleTouchEnd = () => {
     if (!touchStart || !touchEnd) return;
     const distance = touchStart - touchEnd;
     const isLeftSwipe = distance > 50;
     const isRightSwipe = distance < -50;
-    
+
     // Swipe left to minimize, swipe right to show controls
     if (isLeftSwipe && !fullMinimize) {
       setFullMinimize(true);
@@ -1845,7 +1702,7 @@ const Enhanced3DPhotoScanTab: React.FC<{ onSwitchToViewer: () => void }> = ({ on
       setFullMinimize(false);
       setControlsMinimized(true);
     }
-    
+
     if (isLeftSwipe) {
       setCurrentAngle((currentAngle + 10) % 360); // Swipe left = next angle
     } else if (isRightSwipe) {
@@ -1853,15 +1710,13 @@ const Enhanced3DPhotoScanTab: React.FC<{ onSwitchToViewer: () => void }> = ({ on
     }
   };
   const [currentAngle, setCurrentAngle] = useState(0);
-  
+
   // Helper function to get next recommended angle
   const [currentLevel, setCurrentLevel] = useState<1 | 2 | 3 | 4>(1);
-  
+
   const getNextRecommendedAngle = () => {
-    const capturedAngles = new Set(captures
-      .filter(c => c.level === currentLevel)
-      .map(c => c.angle));
-    
+    const capturedAngles = new Set(captures.filter((c) => c.level === currentLevel).map((c) => c.angle));
+
     for (let angle = 0; angle < 360; angle += 10) {
       if (!capturedAngles.has(angle)) {
         return angle;
@@ -1869,7 +1724,7 @@ const Enhanced3DPhotoScanTab: React.FC<{ onSwitchToViewer: () => void }> = ({ on
     }
     return 0; // All positions captured
   };
-  
+
   // Get suggested next angle
   const nextRecommendedAngle = getNextRecommendedAngle();
   const [assistantEnabled, setAssistantEnabled] = useState(true);
@@ -1921,16 +1776,16 @@ const Enhanced3DPhotoScanTab: React.FC<{ onSwitchToViewer: () => void }> = ({ on
     if (datasetToDelete) {
       // Simpan dataset untuk undo
       setDeletedDataset(datasetToDelete);
-      
+
       // Hapus dataset
       DatasetStorage.deleteDataset(datasetToDelete.id);
       setDatasets(DatasetStorage.getDatasets());
-      
+
       // Tutup modal dan tampilkan undo toast
       setShowDeleteModal(false);
       setDatasetToDelete(null);
       setShowUndoToast(true);
-      
+
       // Auto hide undo toast setelah 10 detik
       setTimeout(() => {
         setShowUndoToast(false);
@@ -1946,11 +1801,11 @@ const Enhanced3DPhotoScanTab: React.FC<{ onSwitchToViewer: () => void }> = ({ on
         globalDatasets.unshift(deletedDataset);
         saveToStorage("datasets", globalDatasets);
         setDatasets(DatasetStorage.getDatasets());
-        
+
         // Hide undo toast
         setShowUndoToast(false);
         setDeletedDataset(null);
-        
+
         // Dispatch event untuk update UI
         window.dispatchEvent(new CustomEvent("datasetAdded", { detail: deletedDataset }));
       } catch (error) {
@@ -2066,20 +1921,21 @@ const Enhanced3DPhotoScanTab: React.FC<{ onSwitchToViewer: () => void }> = ({ on
 
   const capture = () => {
     try {
+      console.log("capture() called - debugging click source");
       if (!videoRef.current || !canvasRef.current) {
         console.error("Video or canvas ref not available");
         return;
       }
-      
+
       const video = videoRef.current as HTMLVideoElement;
       const canvas = canvasRef.current as HTMLCanvasElement;
-      
+
       // Check if video is ready and playing
       if (video.readyState < 2 || video.videoWidth === 0 || video.videoHeight === 0) {
         console.error("Video not ready:", {
           readyState: video.readyState,
           videoWidth: video.videoWidth,
-          videoHeight: video.videoHeight
+          videoHeight: video.videoHeight,
         });
         alert("Camera is not ready. Please wait for video to load.");
         return;
@@ -2087,13 +1943,13 @@ const Enhanced3DPhotoScanTab: React.FC<{ onSwitchToViewer: () => void }> = ({ on
 
       // Validate and snap to 10-degree intervals
       const snappedAngle = Math.round(currentAngle / 10) * 10;
-      const existingCapture = captures.find(c => c.angle === snappedAngle && c.level === currentLevel);
-      
+      const existingCapture = captures.find((c) => c.angle === snappedAngle && c.level === currentLevel);
+
       if (existingCapture) {
         const proceed = confirm(`A photo already exists at ${snappedAngle}° Level ${currentLevel}. Replace it?`);
         if (!proceed) return;
       }
-      
+
       // Update current angle to snapped value
       if (snappedAngle !== currentAngle) {
         setCurrentAngle(snappedAngle);
@@ -2111,25 +1967,25 @@ const Enhanced3DPhotoScanTab: React.FC<{ onSwitchToViewer: () => void }> = ({ on
 
       // Clear canvas first
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
+
       // Draw video frame to canvas
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      
+
       // Use JPEG with high quality for better file size management
       const dataUrl = canvas.toDataURL("image/jpeg", 0.95);
-      
+
       // Check if dataUrl is valid
       if (!dataUrl || dataUrl === "data:,") {
         console.error("Failed to generate image data");
-        alert("Failed to capture photo. Please try again.");
+        alert("Gagal menangkap foto. Silakan coba lagi.");
         return;
       }
 
       // Generate smart filename based on level and angle
-      const levelName = currentLevel === 1 ? 'Low' : currentLevel === 2 ? 'Eye' : currentLevel === 3 ? 'High' : 'Top';
-      const formattedAngle = snappedAngle.toString().padStart(3, '0');
+      const levelName = currentLevel === 1 ? "Low" : currentLevel === 2 ? "Eye" : currentLevel === 3 ? "High" : "Top";
+      const formattedAngle = snappedAngle.toString().padStart(3, "0");
       const photoName = `L${currentLevel}_${levelName}_${formattedAngle}deg`;
-      
+
       const newCapture: Capture = {
         angle: snappedAngle,
         level: currentLevel,
@@ -2140,16 +1996,14 @@ const Enhanced3DPhotoScanTab: React.FC<{ onSwitchToViewer: () => void }> = ({ on
 
       setCaptures((prev) => {
         // Remove existing capture if replacing
-        const filtered = existingCapture 
-          ? prev.filter(c => !(c.angle === snappedAngle && c.level === currentLevel))
-          : prev;
+        const filtered = existingCapture ? prev.filter((c) => !(c.angle === snappedAngle && c.level === currentLevel)) : prev;
         return [...filtered, newCapture];
       });
-      
+
       console.log("Capture successful:", { angle: snappedAngle, level: currentLevel });
     } catch (error) {
       console.error("Capture failed:", error);
-      alert("Failed to capture photo. Please try again.");
+      alert("Gagal menangkap foto. Silakan coba lagi.");
     }
 
     // Auto-advance to next position
@@ -2188,7 +2042,7 @@ const Enhanced3DPhotoScanTab: React.FC<{ onSwitchToViewer: () => void }> = ({ on
             { level: 1, captured: captures.filter((c) => c.level === 1).length },
             { level: 2, captured: captures.filter((c) => c.level === 2).length },
             { level: 3, captured: captures.filter((c) => c.level === 3).length },
-            { level: 4, captured: captures.filter((c) => c.level === 4).length }
+            { level: 4, captured: captures.filter((c) => c.level === 4).length },
           ],
           angles: [...new Set(captures.map((c) => c.angle))].sort((a, b) => a - b),
         },
@@ -2208,7 +2062,7 @@ const Enhanced3DPhotoScanTab: React.FC<{ onSwitchToViewer: () => void }> = ({ on
       console.log("Dataset saved successfully");
     } catch (error) {
       console.error("Error saving dataset:", error);
-      alert("Failed to save dataset. Please try again.");
+      alert("Gagal menyimpan dataset. Silakan coba lagi.");
     }
   };
 
@@ -2329,14 +2183,14 @@ const Enhanced3DPhotoScanTab: React.FC<{ onSwitchToViewer: () => void }> = ({ on
   const uploadImageToDrive = async (token: string, folderId: string, filename: string, blob: Blob) => {
     // Use FormData untuk upload binary yang benar
     const formData = new FormData();
-    
+
     // Metadata sebagai JSON
     const metadata = { name: filename, parents: [folderId] };
-    formData.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
-    
+    formData.append("metadata", new Blob([JSON.stringify(metadata)], { type: "application/json" }));
+
     // File binary
-    formData.append('file', blob, filename);
-    
+    formData.append("file", blob, filename);
+
     const res = await fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart", {
       method: "POST",
       headers: {
@@ -2345,14 +2199,14 @@ const Enhanced3DPhotoScanTab: React.FC<{ onSwitchToViewer: () => void }> = ({ on
       },
       body: formData,
     });
-    
+
     if (!res.ok) {
       const t = await res.text();
       throw new Error(`Upload gagal: ${t}`);
     }
-    
+
     const result = await res.json();
-    
+
     // Set permission agar file bisa diakses
     try {
       await fetch(`https://www.googleapis.com/drive/v3/files/${result.id}/permissions`, {
@@ -2363,17 +2217,17 @@ const Enhanced3DPhotoScanTab: React.FC<{ onSwitchToViewer: () => void }> = ({ on
         },
         body: JSON.stringify({
           role: "reader",
-          type: "anyone"
+          type: "anyone",
         }),
       });
     } catch (permError) {
       console.warn("Warning: Gagal set permission file:", permError);
     }
-    
+
     return {
       ...result,
       viewUrl: `https://drive.google.com/file/d/${result.id}/view`,
-      downloadUrl: `https://drive.google.com/uc?export=download&id=${result.id}`
+      downloadUrl: `https://drive.google.com/uc?export=download&id=${result.id}`,
     };
   };
 
@@ -2430,18 +2284,16 @@ const Enhanced3DPhotoScanTab: React.FC<{ onSwitchToViewer: () => void }> = ({ on
 
   const processWithGaussianSplatting = () => {
     if (captures.length === 0) {
-      alert("Please capture photos first!");
+      alert("Silakan ambil foto terlebih dahulu!");
       return;
     }
 
-    const incompleteLevels = [1, 2, 3, 4].filter(level => 
-      captures.filter(c => c.level === level).length < 36
-    );
-    
+    const incompleteLevels = [1, 2, 3, 4].filter((level) => captures.filter((c) => c.level === level).length < 36);
+
     if (incompleteLevels.length > 0) {
-      const proceed = confirm(`Some levels are incomplete:\n${incompleteLevels.map(l => 
-        `Level ${l}: ${captures.filter(c => c.level === l).length}/36 photos`
-      ).join('\n')}\n\nFor optimal 3D reconstruction, capture 36 photos per level. Continue anyway?`);
+      const proceed = confirm(
+        `Beberapa level belum lengkap:\n${incompleteLevels.map((l) => `Level ${l}: ${captures.filter((c) => c.level === l).length}/36 foto`).join("\n")}\n\nUntuk rekonstruksi 3D optimal, ambil 36 foto per level. Lanjutkan?`
+      );
       if (!proceed) return;
     }
 
@@ -2473,7 +2325,7 @@ const Enhanced3DPhotoScanTab: React.FC<{ onSwitchToViewer: () => void }> = ({ on
       ModelStorage.addModel(newModel);
       setIsProcessing(false);
 
-      if (confirm("3D model created successfully! View it now?")) {
+      if (confirm("Model 3D berhasil dibuat! Lihat sekarang?")) {
         onSwitchToViewer();
       }
     }, 3000);
@@ -2499,8 +2351,8 @@ const Enhanced3DPhotoScanTab: React.FC<{ onSwitchToViewer: () => void }> = ({ on
             <div className="flex items-center justify-center mb-4">
               <CheckCircleIcon className="w-12 h-12 text-green-400" />
             </div>
-            <h3 className="text-xl font-semibold text-center mb-2">Dataset Saved Successfully!</h3>
-            <p className="text-gray-300 text-center mb-4">{savedPhotosCount} photos have been saved to your dataset.</p>
+            <h3 className="text-xl font-semibold text-center mb-2">Dataset Berhasil Disimpan!</h3>
+            <p className="text-gray-300 text-center mb-4">{savedPhotosCount} foto telah disimpan ke dataset Anda.</p>
             <button onClick={() => setShowSaveSuccess(false)} className="w-full px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg text-white font-medium transition-colors">
               OK
             </button>
@@ -2512,23 +2364,16 @@ const Enhanced3DPhotoScanTab: React.FC<{ onSwitchToViewer: () => void }> = ({ on
       {showDeleteModal && datasetToDelete && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4">
           <div className="bg-gray-900/95 rounded-xl border border-gray-700 p-4 sm:p-6 w-full max-w-xs sm:max-w-md mx-2 sm:mx-0">
-            <h3 className="text-xl font-semibold mb-4 text-red-400">Delete Dataset</h3>
+            <h3 className="text-xl font-semibold mb-4 text-red-400">Hapus Dataset</h3>
             <p className="text-gray-300 mb-6">
-              Are you sure you want to delete "<strong>{datasetToDelete.name}</strong>"? 
-              This will permanently remove {datasetToDelete.photos.length} photos and cannot be undone.
+              Apakah Anda yakin ingin menghapus "<strong>{datasetToDelete.name}</strong>"? Ini akan menghapus {datasetToDelete.photos.length} foto secara permanen dan tidak dapat dibatalkan.
             </p>
             <div className="flex space-x-3">
-              <button 
-                onClick={cancelDeleteDataset}
-                className="flex-1 px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-white font-medium transition-colors"
-              >
-                Cancel
+              <button onClick={cancelDeleteDataset} className="flex-1 px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-white font-medium transition-colors">
+                Batal
               </button>
-              <button 
-                onClick={confirmDeleteDataset}
-                className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-white font-medium transition-colors"
-              >
-                Delete
+              <button onClick={confirmDeleteDataset} className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-white font-medium transition-colors">
+                Hapus
               </button>
             </div>
           </div>
@@ -2539,22 +2384,22 @@ const Enhanced3DPhotoScanTab: React.FC<{ onSwitchToViewer: () => void }> = ({ on
       {showGDriveWizard && uploadDataset && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4">
           <div className="bg-gray-900/95 rounded-xl border border-gray-700 p-6 w-full max-w-lg">
-            <h3 className="text-xl font-semibold mb-4">Upload to Google Drive</h3>
+            <h3 className="text-xl font-semibold mb-4">Upload ke Google Drive</h3>
             <div className="space-y-4 text-sm text-gray-300">
               <div className="flex items-center justify-between bg-gray-800/50 border border-gray-700 rounded-lg p-3">
                 <div>
-                  <div className="font-medium">1) Authorize Google Drive</div>
+                  <div className="font-medium">1) Otorisasi Google Drive</div>
                   <div className="text-gray-400 text-xs">Berikan izin agar aplikasi bisa menyimpan ke Drive Anda</div>
                   {connectedGoogleEmail && <div className="text-green-300 text-xs mt-1">Tersambung sebagai: {connectedGoogleEmail}</div>}
                 </div>
                 <button onClick={authorizeWithGoogle} disabled={isAuthorizing} className="px-3 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg disabled:opacity-50">
-                  {isAuthorizing ? "Authorizing..." : googleAccessToken ? "Authorized" : "Authorize"}
+                  {isAuthorizing ? "Mengotorisasi..." : googleAccessToken ? "Terotorisasi" : "Otorisasi"}
                 </button>
               </div>
 
               <div className="flex items-center justify-between bg-gray-800/50 border border-gray-700 rounded-lg p-3">
                 <div>
-                  <div className="font-medium">2) Target Folder</div>
+                  <div className="font-medium">2) Folder Tujuan</div>
                   <div className="text-gray-400 text-xs">Folder akan dibuat jika belum ada</div>
                 </div>
                 <input value={uploadFolder} onChange={(e) => setUploadFolder(e.target.value)} placeholder="contoh: produk_kursi_01" className="ml-3 w-40 bg-gray-900 border border-gray-700 rounded px-2 py-1" />
@@ -2564,7 +2409,7 @@ const Enhanced3DPhotoScanTab: React.FC<{ onSwitchToViewer: () => void }> = ({ on
 
               <div className="grid grid-cols-2 gap-3 pt-2">
                 <button onClick={() => setShowGDriveWizard(false)} className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg">
-                  Close
+                  Tutup
                 </button>
                 <button
                   onClick={async () => {
@@ -2609,16 +2454,11 @@ const Enhanced3DPhotoScanTab: React.FC<{ onSwitchToViewer: () => void }> = ({ on
           <div className="bg-gray-900/95 backdrop-blur-sm border border-gray-700 rounded-xl p-4 flex items-center space-x-4 shadow-2xl">
             <div className="flex items-center space-x-3">
               <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
-              <span className="text-white font-medium">
-                Deleted "{deletedDataset.name}"
-              </span>
+              <span className="text-white font-medium">Menghapus "{deletedDataset.name}"</span>
             </div>
             <div className="flex space-x-2">
-              <button
-                onClick={undoDeleteDataset}
-                className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors"
-              >
-                Undo
+              <button onClick={undoDeleteDataset} className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors">
+                Batalkan
               </button>
               <button
                 onClick={() => {
@@ -2627,7 +2467,7 @@ const Enhanced3DPhotoScanTab: React.FC<{ onSwitchToViewer: () => void }> = ({ on
                 }}
                 className="px-3 py-1 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm font-medium transition-colors"
               >
-                Dismiss
+                Tutup
               </button>
             </div>
           </div>
@@ -2637,8 +2477,8 @@ const Enhanced3DPhotoScanTab: React.FC<{ onSwitchToViewer: () => void }> = ({ on
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold mb-2">46-Degree Gaussian Splatting</h2>
-          <p className="text-gray-400 text-sm">Professional 3D capture with 4-level systematic approach</p>
+          <h2 className="text-2xl font-bold mb-2">Gaussian Splatting 36 Derajat</h2>
+          <p className="text-gray-400 text-sm">Pengambilan 3D profesional dengan pendekatan sistematis 4 level</p>
         </div>
 
         <div className="flex flex-wrap gap-2">
@@ -2649,12 +2489,12 @@ const Enhanced3DPhotoScanTab: React.FC<{ onSwitchToViewer: () => void }> = ({ on
             {activeView === "capture" ? (
               <>
                 <FolderIcon size={16} className="mr-2 inline" />
-                View Datasets
+                Lihat Dataset
               </>
             ) : (
               <>
                 <CameraIcon size={16} className="mr-2 inline" />
-                Back to Capture
+                Kembali ke Pengambilan
               </>
             )}
           </button>
@@ -2667,7 +2507,7 @@ const Enhanced3DPhotoScanTab: React.FC<{ onSwitchToViewer: () => void }> = ({ on
           ) : (
             <button onClick={() => setShowCloudModal(true)} className="px-4 py-2 bg-blue-600/20 text-blue-400 border border-blue-500/30 rounded-lg text-sm font-medium hover:bg-blue-600/30 transition-all">
               <CloudIcon size={16} className="mr-2 inline" />
-              Connect Cloud
+              Hubungkan Cloud
             </button>
           )}
         </div>
@@ -2687,7 +2527,7 @@ const Enhanced3DPhotoScanTab: React.FC<{ onSwitchToViewer: () => void }> = ({ on
                     <div className="flex flex-col items-center justify-center h-full text-white space-y-8 p-8 relative">
                       {/* Animated Background */}
                       <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 via-purple-600/5 to-pink-600/5 rounded-xl"></div>
-                      
+
                       {/* Enhanced Camera Icon */}
                       <div className="relative">
                         <div className="p-8 bg-gradient-to-br from-blue-600/20 to-purple-600/20 rounded-full border border-blue-500/30 backdrop-blur-sm">
@@ -2697,59 +2537,46 @@ const Enhanced3DPhotoScanTab: React.FC<{ onSwitchToViewer: () => void }> = ({ on
                         <div className="absolute inset-0 rounded-full border-2 border-blue-400/30 animate-ping"></div>
                         <div className="absolute inset-2 rounded-full border border-purple-400/20 animate-pulse"></div>
                       </div>
-                      
+
                       <div className="text-center relative z-10">
-                        <h3 className="text-2xl font-bold mb-3 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                          Ready to Capture
-                        </h3>
-                        <p className="text-gray-300 mb-6 max-w-sm">
-                          Start your professional 3D capture session with our advanced scanning system
-                        </p>
-                        
+                        <h3 className="text-2xl font-bold mb-3 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">Siap Menangkap</h3>
+                        <p className="text-gray-300 mb-6 max-w-sm">Mulai sesi pengambilan 3D profesional Anda dengan sistem pemindaian canggih kami</p>
+
                         {/* Enhanced Enable Button */}
-                        <button 
-                          onClick={enableCam} 
+                        <button
+                          onClick={enableCam}
                           className="group relative px-6 py-3 sm:px-8 sm:py-4 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-xl sm:rounded-2xl font-bold text-sm sm:text-base transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/25 active:scale-95"
                         >
                           <span className="relative z-10 flex items-center">
                             <CameraIcon size={20} className="mr-2 group-hover:animate-pulse" />
-                            Enable Camera
+                            Aktifkan Kamera
                           </span>
-                          
+
                           {/* Animated background */}
                           <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-2xl blur opacity-75 group-hover:opacity-100 transition-opacity"></div>
                         </button>
-                        
+
                         {/* Feature indicators */}
                         <div className="flex justify-center items-center gap-6 mt-6 text-xs text-gray-400">
                           <div className="flex items-center">
                             <div className="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
-                            HD Quality
+                            Kualitas HD
                           </div>
                           <div className="flex items-center">
                             <SparklesIcon size={12} className="mr-2 text-yellow-400" />
-                            AI Enhanced
+                            Ditingkatkan
                           </div>
                           <div className="flex items-center">
                             <BrainIcon size={12} className="mr-2 text-purple-400" />
-                            Auto Guide
+                            Panduan Otomatis
                           </div>
                         </div>
                       </div>
                     </div>
                   ) : (
                     <>
-                      <video 
-                        ref={videoRef} 
-                        autoPlay 
-                        playsInline 
-                        muted 
-                        className="w-full h-full object-cover" 
-                        onTouchStart={handleTouchStart}
-                        onTouchMove={handleTouchMove}
-                        onTouchEnd={handleTouchEnd}
-                      />
-                      
+                      <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover z-0" onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd} />
+
                       {/* Floating Quick Controls (when minimized) */}
                       {controlsMinimized && !fullMinimize && (
                         <div className="absolute top-2 left-2 flex space-x-2 animate-fade-in">
@@ -2761,10 +2588,13 @@ const Enhanced3DPhotoScanTab: React.FC<{ onSwitchToViewer: () => void }> = ({ on
                                 onClick={() => setCurrentLevel(level as 1 | 2 | 3 | 4)}
                                 className={`w-8 h-8 rounded-md text-xs font-bold transition-all duration-200 hover:scale-105 active:scale-95 ${
                                   currentLevel === level
-                                    ? level === 1 ? "bg-red-500/90 text-white shadow-lg shadow-red-500/25"
-                                    : level === 2 ? "bg-blue-500/90 text-white shadow-lg shadow-blue-500/25"
-                                    : level === 3 ? "bg-green-500/90 text-white shadow-lg shadow-green-500/25"
-                                    : "bg-yellow-500/90 text-white shadow-lg shadow-yellow-500/25"
+                                    ? level === 1
+                                      ? "bg-red-500/90 text-white shadow-lg shadow-red-500/25"
+                                      : level === 2
+                                      ? "bg-blue-500/90 text-white shadow-lg shadow-blue-500/25"
+                                      : level === 3
+                                      ? "bg-green-500/90 text-white shadow-lg shadow-green-500/25"
+                                      : "bg-yellow-500/90 text-white shadow-lg shadow-yellow-500/25"
                                     : "text-gray-400 hover:text-white hover:bg-gray-700/50 bg-gray-800/50"
                                 }`}
                               >
@@ -2772,7 +2602,7 @@ const Enhanced3DPhotoScanTab: React.FC<{ onSwitchToViewer: () => void }> = ({ on
                               </button>
                             ))}
                           </div>
-                          
+
                           {/* Quick angle indicator with swipe hint */}
                           <div className="bg-black/60 backdrop-blur-sm rounded-lg border border-gray-600/50 px-3 py-2 text-xs text-white font-mono relative">
                             {currentAngle}°
@@ -2810,9 +2640,7 @@ const Enhanced3DPhotoScanTab: React.FC<{ onSwitchToViewer: () => void }> = ({ on
                       )}
 
                       {/* Enhanced Interactive Controls */}
-                      <div className={`absolute top-2 right-2 sm:top-4 sm:right-4 flex flex-col space-y-2 sm:space-y-3 transition-all duration-500 ${
-                        fullMinimize ? 'opacity-0 pointer-events-none' : 'opacity-100'
-                      }`}>
+                      <div className={`absolute top-2 right-2 sm:top-4 sm:right-4 flex flex-col space-y-2 sm:space-y-3 transition-all duration-500 ${fullMinimize ? "opacity-0 pointer-events-none" : "opacity-100"}`}>
                         {/* Multi-Level Minimize Toggle */}
                         <div className="self-end flex space-x-1">
                           {/* Hide everything button */}
@@ -2825,7 +2653,7 @@ const Enhanced3DPhotoScanTab: React.FC<{ onSwitchToViewer: () => void }> = ({ on
                               <XIcon size={10} className="text-gray-400" />
                             </button>
                           )}
-                          
+
                           {/* Main minimize toggle */}
                           <button
                             onClick={() => {
@@ -2834,7 +2662,7 @@ const Enhanced3DPhotoScanTab: React.FC<{ onSwitchToViewer: () => void }> = ({ on
                                 setFullMinimize(false);
                                 setControlsMinimized(true);
                               } else if (controlsMinimized) {
-                                // From minimized → show all controls  
+                                // From minimized → show all controls
                                 setControlsMinimized(false);
                               } else {
                                 // From expanded → minimize
@@ -2842,217 +2670,215 @@ const Enhanced3DPhotoScanTab: React.FC<{ onSwitchToViewer: () => void }> = ({ on
                               }
                             }}
                             className="p-2 bg-black/60 hover:bg-black/80 backdrop-blur-xl border border-gray-600/50 rounded-lg transition-all duration-300 hover:scale-110"
-                            title={
-                              fullMinimize ? "Show controls" :
-                              controlsMinimized ? "Show all controls" : "Minimize controls"
-                            }
+                            title={fullMinimize ? "Show controls" : controlsMinimized ? "Show all controls" : "Minimize controls"}
                           >
-                            {fullMinimize ? (
-                              <EyeIcon size={14} className="text-white" />
-                            ) : (
-                              <ChevronUpIcon 
-                                size={14} 
-                                className={`text-white transition-transform duration-300 ${
-                                  controlsMinimized ? 'rotate-180' : ''
-                                }`} 
-                              />
-                            )}
+                            {fullMinimize ? <EyeIcon size={14} className="text-white" /> : <ChevronUpIcon size={14} className={`text-white transition-transform duration-300 ${controlsMinimized ? "rotate-180" : ""}`} />}
                           </button>
                         </div>
 
                         {/* Integrated Level & Position Control - Show when controls not minimized */}
                         {!controlsMinimized && (
-                        <div className="mb-2">
-                        {/* Combined Level & Position Control */}
-                        <div className="bg-gray-900/80 backdrop-blur-xl border border-gray-600/50 rounded-xl sm:rounded-2xl p-1.5 sm:p-2">
-                          {/* Header */}
                           <div className="mb-2">
-                            <div className="text-xs text-gray-400 font-medium text-center">Level & Position Control</div>
-                          </div>
-
-                          {/* Current Status Display */}
-                          <div className="flex items-center space-x-2 sm:space-x-4 mb-2 sm:mb-3">
-                            <div className="flex items-center space-x-1 sm:space-x-2">
-                              <LayersIcon size={14} className="sm:w-4 sm:h-4 text-purple-400" />
-                              <span className="text-white font-bold text-xs sm:text-sm">L{currentLevel}</span>
-                            </div>
-                            <div className="w-px h-3 sm:h-4 bg-gray-600"></div>
-                            <div className="flex items-center space-x-1 sm:space-x-2">
-                              <Target size={14} className="sm:w-4 sm:h-4 text-blue-400" />
-                              <span className="text-white font-bold text-xs sm:text-sm">{currentAngle}°</span>
-                            </div>
-                          </div>
-
-                          {/* Level Selector */}
-                          <div className="mb-2 sm:mb-3">
-                            <div className="text-xs text-gray-400 mb-1 sm:mb-2">Level Selection</div>
-                            <div className="grid grid-cols-2 gap-0.5 sm:gap-1">
-                              {[1, 2, 3, 4].map((level) => (
-                                <button
-                                  key={level}
-                                  onClick={() => setCurrentLevel(level as 1 | 2 | 3 | 4)}
-                                  className={`w-6 h-6 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl text-xs font-bold transition-all duration-300 hover:scale-110 active:scale-95 ${
-                                    currentLevel === level
-                                      ? level === 1 ? "bg-gradient-to-br from-red-500/80 to-red-600/80 text-white shadow-lg shadow-red-500/25"
-                                      : level === 2 ? "bg-gradient-to-br from-blue-500/80 to-blue-600/80 text-white shadow-lg shadow-blue-500/25"
-                                      : level === 3 ? "bg-gradient-to-br from-green-500/80 to-green-600/80 text-white shadow-lg shadow-green-500/25"
-                                      : "bg-gradient-to-br from-yellow-500/80 to-yellow-600/80 text-white shadow-lg shadow-yellow-500/25"
-                                      : "bg-gray-700/50 text-gray-400 hover:bg-gray-600/50 border border-gray-600/30"
-                                  }`}
-                                >
-                                  {level}
-                                </button>
-                              ))}
-                            </div>
-                            <div className="text-xs text-gray-400 mt-1 text-center">
-                              {currentLevel === 1 ? "Low Angle" : currentLevel === 2 ? "Eye Level" : currentLevel === 3 ? "High Angle" : "Top Down"}
-                            </div>
-                          </div>
-
-                          {/* Angle Adjustment - Always visible */}
-                          <div className="mb-2 sm:mb-3">
-                            <div className="text-xs text-gray-400 mb-1 sm:mb-2">Angle Adjustment</div>
-                            <div className="flex items-center space-x-1 sm:space-x-2">
-                              <button
-                                onClick={() => setCurrentAngle((currentAngle - 10 + 360) % 360)}
-                                className="p-0.5 sm:p-1 bg-gray-700/50 hover:bg-gray-600/50 rounded-md sm:rounded-lg transition-all hover:scale-110"
-                                title="Previous 10° position"
-                              >
-                                <ChevronDownIcon size={10} className="sm:w-3 sm:h-3 text-gray-400 rotate-90" />
-                              </button>
-                              <div className="flex-1 bg-gray-700/50 rounded-md sm:rounded-lg px-1 py-0.5 sm:px-2 sm:py-1 text-center">
-                                <span className="text-white text-xs font-mono font-bold">{currentAngle}°</span>
+                            {/* Combined Level & Position Control */}
+                            <div className="bg-gray-900/80 backdrop-blur-xl border border-gray-600/50 rounded-xl sm:rounded-2xl p-1.5 sm:p-2">
+                              {/* Header */}
+                              <div className="mb-2">
+                                <div className="text-xs text-gray-400 font-medium text-center">Kontrol Level & Posisi</div>
                               </div>
-                              <button
-                                onClick={() => setCurrentAngle((currentAngle + 10) % 360)}
-                                className="p-0.5 sm:p-1 bg-gray-700/50 hover:bg-gray-600/50 rounded-md sm:rounded-lg transition-all hover:scale-110"
-                                title="Next 10° position"
-                              >
-                                <ChevronUpIcon size={10} className="sm:w-3 sm:h-3 text-gray-400 -rotate-90" />
-                              </button>
+
+                              {/* Current Status Display */}
+                              <div className="flex items-center space-x-2 sm:space-x-4 mb-2 sm:mb-3">
+                                <div className="flex items-center space-x-1 sm:space-x-2">
+                                  <LayersIcon size={14} className="sm:w-4 sm:h-4 text-purple-400" />
+                                  <span className="text-white font-bold text-xs sm:text-sm">L{currentLevel}</span>
+                                </div>
+                                <div className="w-px h-3 sm:h-4 bg-gray-600"></div>
+                                <div className="flex items-center space-x-1 sm:space-x-2">
+                                  <Target size={14} className="sm:w-4 sm:h-4 text-blue-400" />
+                                  <span className="text-white font-bold text-xs sm:text-sm">{currentAngle}°</span>
+                                </div>
+                              </div>
+
+                              {/* Level Selector */}
+                              <div className="mb-2 sm:mb-3">
+                                <div className="text-xs text-gray-400 mb-1 sm:mb-2">Pilihan Level</div>
+                                <div className="grid grid-cols-2 gap-0.5 sm:gap-1">
+                                  {[1, 2, 3, 4].map((level) => (
+                                    <button
+                                      key={level}
+                                      onClick={() => setCurrentLevel(level as 1 | 2 | 3 | 4)}
+                                      className={`w-6 h-6 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl text-xs font-bold transition-all duration-300 hover:scale-110 active:scale-95 ${
+                                        currentLevel === level
+                                          ? level === 1
+                                            ? "bg-gradient-to-br from-red-500/80 to-red-600/80 text-white shadow-lg shadow-red-500/25"
+                                            : level === 2
+                                            ? "bg-gradient-to-br from-blue-500/80 to-blue-600/80 text-white shadow-lg shadow-blue-500/25"
+                                            : level === 3
+                                            ? "bg-gradient-to-br from-green-500/80 to-green-600/80 text-white shadow-lg shadow-green-500/25"
+                                            : "bg-gradient-to-br from-yellow-500/80 to-yellow-600/80 text-white shadow-lg shadow-yellow-500/25"
+                                          : "bg-gray-700/50 text-gray-400 hover:bg-gray-600/50 border border-gray-600/30"
+                                      }`}
+                                    >
+                                      {level}
+                                    </button>
+                                  ))}
+                                </div>
+                                <div className="text-xs text-gray-400 mt-1 text-center">{currentLevel === 1 ? "Sudut Rendah" : currentLevel === 2 ? "Level Mata" : currentLevel === 3 ? "Sudut Tinggi" : "Atas Kepala"}</div>
+                              </div>
+
+                              {/* Angle Adjustment - Always visible */}
+                              <div className="mb-2 sm:mb-3">
+                                <div className="text-xs text-gray-400 mb-1 sm:mb-2">Penyesuaian Sudut</div>
+                                <div className="flex items-center space-x-1 sm:space-x-2">
+                                  <button
+                                    onClick={() => setCurrentAngle((currentAngle - 10 + 360) % 360)}
+                                    className="p-0.5 sm:p-1 bg-gray-700/50 hover:bg-gray-600/50 rounded-md sm:rounded-lg transition-all hover:scale-110"
+                                    title="Posisi 10° sebelumnya"
+                                  >
+                                    <ChevronDownIcon size={10} className="sm:w-3 sm:h-3 text-gray-400 rotate-90" />
+                                  </button>
+                                  <div className="flex-1 bg-gray-700/50 rounded-md sm:rounded-lg px-1 py-0.5 sm:px-2 sm:py-1 text-center">
+                                    <span className="text-white text-xs font-mono font-bold">{currentAngle}°</span>
+                                  </div>
+                                  <button
+                                    onClick={() => setCurrentAngle((currentAngle + 10) % 360)}
+                                    className="p-0.5 sm:p-1 bg-gray-700/50 hover:bg-gray-600/50 rounded-md sm:rounded-lg transition-all hover:scale-110"
+                                    title="Posisi 10° selanjutnya"
+                                  >
+                                    <ChevronUpIcon size={10} className="sm:w-3 sm:h-3 text-gray-400 -rotate-90" />
+                                  </button>
+                                </div>
+                              </div>
+
+                              {/* Smart Recommendations */}
+                              <div className="flex items-center justify-between text-xs">
+                                <div className="text-gray-500">36 positions × 4 levels = 144 total</div>
+                                {nextRecommendedAngle !== currentAngle && (
+                                  <button
+                                    onClick={() => setCurrentAngle(nextRecommendedAngle)}
+                                    className="px-2 py-1 bg-green-600/80 hover:bg-green-600 text-white text-xs rounded-md transition-all hover:scale-110 flex items-center gap-1"
+                                    title="Lompat ke posisi yang dibutuhkan"
+                                  >
+                                    <Target size={10} />
+                                    {nextRecommendedAngle}°
+                                  </button>
+                                )}
+                              </div>
+
+                              {/* Level Progress indicator */}
+                              <div className="flex space-x-1">
+                                {[1, 2, 3, 4].map((level) => (
+                                  <div
+                                    key={level}
+                                    className={`h-1 flex-1 rounded-full transition-all duration-300 ${
+                                      level === currentLevel
+                                        ? level === 1
+                                          ? "bg-gradient-to-r from-red-500 to-red-400"
+                                          : level === 2
+                                          ? "bg-gradient-to-r from-blue-500 to-blue-400"
+                                          : level === 3
+                                          ? "bg-gradient-to-r from-green-500 to-green-400"
+                                          : "bg-gradient-to-r from-yellow-500 to-yellow-400"
+                                        : "bg-gray-600/50"
+                                    }`}
+                                  ></div>
+                                ))}
+                              </div>
                             </div>
                           </div>
-
-                          {/* Smart Recommendations */}
-                          <div className="flex items-center justify-between text-xs">
-                            <div className="text-gray-500">
-                              36 positions × 4 levels = 144 total
-                            </div>
-                            {nextRecommendedAngle !== currentAngle && (
-                              <button
-                                onClick={() => setCurrentAngle(nextRecommendedAngle)}
-                                className="px-2 py-1 bg-green-600/80 hover:bg-green-600 text-white text-xs rounded-md transition-all hover:scale-110 flex items-center gap-1"
-                                title="Jump to next needed position"
-                              >
-                                <Target size={10} />
-                                {nextRecommendedAngle}°
-                              </button>
-                            )}
-                          </div>
-
-                          {/* Level Progress indicator */}
-                          <div className="flex space-x-1">
-                            {[1, 2, 3, 4].map((level) => (
-                              <div
-                                key={level}
-                                className={`h-1 flex-1 rounded-full transition-all duration-300 ${
-                                  level === currentLevel 
-                                    ? level === 1 ? "bg-gradient-to-r from-red-500 to-red-400" 
-                                    : level === 2 ? "bg-gradient-to-r from-blue-500 to-blue-400"
-                                    : level === 3 ? "bg-gradient-to-r from-green-500 to-green-400"
-                                    : "bg-gradient-to-r from-yellow-500 to-yellow-400"
-                                    : "bg-gray-600/50"
-                                }`}
-                              ></div>
-                            ))}
-                          </div>
-                        </div>
-                        </div>
                         )}
 
                         {/* Collapsible Controls Container */}
-                        <div className={`transition-all duration-300 overflow-hidden ${
-                          controlsMinimized ? 'max-h-0 opacity-0' : 'max-h-96 opacity-100'
-                        }`}>
-                        
-                        {/* Torch Control */}
-                        <button
-                          onClick={() => setTorch(!torch)}
-                          aria-label="Toggle flashlight"
-                          className={`group p-2 sm:p-3 rounded-xl sm:rounded-2xl backdrop-blur-xl border transition-all duration-300 hover:scale-110 active:scale-95 ${
-                            torch 
-                              ? "bg-gradient-to-br from-yellow-500/30 to-orange-500/30 border-yellow-400/50 text-yellow-300 shadow-lg shadow-yellow-500/25" 
-                              : "bg-gray-900/60 border-gray-600/50 text-gray-300 hover:bg-gray-800/70 hover:border-gray-500"
-                          }`}
-                        >
-                          <ZapIcon size={16} className={`sm:w-[18px] sm:h-[18px] ${torch ? "animate-pulse" : "group-hover:rotate-12 transition-transform"}`} />
-                          {torch && <div className="absolute inset-0 bg-yellow-400/20 rounded-2xl animate-pulse"></div>}
-                        </button>
-                        
-                        {/* Grid Control */}
-                        <button
-                          onClick={() => setGrid(!grid)}
-                          aria-label="Toggle grid overlay"
-                          className={`group p-2 sm:p-3 rounded-xl sm:rounded-2xl backdrop-blur-xl border transition-all duration-300 hover:scale-110 active:scale-95 ${
-                            grid 
-                              ? "bg-gradient-to-br from-blue-500/30 to-cyan-500/30 border-blue-400/50 text-blue-300 shadow-lg shadow-blue-500/25" 
-                              : "bg-gray-900/60 border-gray-600/50 text-gray-300 hover:bg-gray-800/70 hover:border-gray-500"
-                          }`}
-                        >
-                          <Grid2x2Icon size={16} className="sm:w-[18px] sm:h-[18px] group-hover:rotate-12 transition-transform" />
-                          {grid && <div className="absolute inset-0 bg-blue-400/20 rounded-2xl animate-pulse"></div>}
-                        </button>
+                        <div className={`transition-all duration-300 overflow-hidden ${controlsMinimized ? "max-h-0 opacity-0" : "max-h-96 opacity-100"}`}>
+                          {/* Torch Control */}
+                          <button
+                            onClick={() => setTorch(!torch)}
+                            aria-label="Toggle flashlight"
+                            className={`group p-2 sm:p-3 rounded-xl sm:rounded-2xl backdrop-blur-xl border transition-all duration-300 hover:scale-110 active:scale-95 ${
+                              torch
+                                ? "bg-gradient-to-br from-yellow-500/30 to-orange-500/30 border-yellow-400/50 text-yellow-300 shadow-lg shadow-yellow-500/25"
+                                : "bg-gray-900/60 border-gray-600/50 text-gray-300 hover:bg-gray-800/70 hover:border-gray-500"
+                            }`}
+                          >
+                            <ZapIcon size={16} className={`sm:w-[18px] sm:h-[18px] ${torch ? "animate-pulse" : "group-hover:rotate-12 transition-transform"}`} />
+                            {torch && <div className="absolute inset-0 bg-yellow-400/20 rounded-2xl animate-pulse"></div>}
+                          </button>
+
+                          {/* Grid Control */}
+                          <button
+                            onClick={() => setGrid(!grid)}
+                            aria-label="Toggle grid overlay"
+                            className={`group p-2 sm:p-3 rounded-xl sm:rounded-2xl backdrop-blur-xl border transition-all duration-300 hover:scale-110 active:scale-95 ${
+                              grid
+                                ? "bg-gradient-to-br from-blue-500/30 to-cyan-500/30 border-blue-400/50 text-blue-300 shadow-lg shadow-blue-500/25"
+                                : "bg-gray-900/60 border-gray-600/50 text-gray-300 hover:bg-gray-800/70 hover:border-gray-500"
+                            }`}
+                          >
+                            <Grid2x2Icon size={16} className="sm:w-[18px] sm:h-[18px] group-hover:rotate-12 transition-transform" />
+                            {grid && <div className="absolute inset-0 bg-blue-400/20 rounded-2xl animate-pulse"></div>}
+                          </button>
                         </div>
-                        </div>
+                      </div>
 
                       {/* Enhanced Capture Button - Responsive positioning */}
-                      <div className={`absolute left-1/2 transform -translate-x-1/2 transition-all duration-300 ${
-                        controlsMinimized ? 'bottom-2' : 'bottom-4 sm:bottom-8'
-                      }`}>
-                        <div className="relative">
+                      <div
+                        className={`absolute left-1/2 transform -translate-x-1/2 transition-all duration-300 ${controlsMinimized ? "bottom-2" : "bottom-4 sm:bottom-8"}`}
+                        onClick={(e) => e.stopPropagation()}
+                        onMouseDown={(e) => e.stopPropagation()}
+                        onPointerDown={(e) => e.stopPropagation()}
+                      >
+                        <div className="relative z-50 pointer-events-auto" onClick={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onPointerDown={(e) => e.stopPropagation()}>
                           <button
-                            onClick={capture}
+                            type="button"
+                            onPointerDown={(e) => {
+                              e.stopPropagation();
+                              e.preventDefault();
+                            }}
+                            onMouseDown={(e) => {
+                              e.stopPropagation();
+                              e.preventDefault();
+                            }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              e.preventDefault();
+                              console.log("capture button clicked - preventing navigation");
+                              e.nativeEvent.stopImmediatePropagation();
+                              capture();
+                            }}
                             disabled={isProcessing}
                             aria-label="Capture photo"
-                            className="group relative w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-full border-4 border-white/20 hover:border-blue-400/50 disabled:opacity-50 transition-all duration-300 shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 disabled:cursor-not-allowed"
+                            className="group relative w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-full border-4 border-white/20 hover:border-blue-400/50 disabled:opacity-50 transition-all duration-300 shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 disabled:cursor-not-allowed z-50 pointer-events-auto"
                           >
                             {/* Outer ring animation */}
                             <div className="absolute inset-0 rounded-full border-2 border-blue-400/30 animate-ping opacity-75 group-hover:opacity-100"></div>
-                            
+
                             {/* Inner capture circle */}
-                            <div className={`w-10 h-10 sm:w-14 sm:h-14 rounded-full transition-all duration-200 ${
-                              isProcessing 
-                                ? "bg-yellow-500 animate-pulse" 
-                                : "bg-gradient-to-br from-red-500 to-pink-600 group-hover:from-blue-500 group-hover:to-purple-600"
-                            }`}></div>
-                            
+                            <div
+                              className={`w-10 h-10 sm:w-14 sm:h-14 rounded-full transition-all duration-200 ${
+                                isProcessing ? "bg-yellow-500 animate-pulse" : "bg-gradient-to-br from-red-500 to-pink-600 group-hover:from-blue-500 group-hover:to-purple-600"
+                              }`}
+                            ></div>
+
                             {/* Processing indicator */}
-                            {isProcessing && (
-                              <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-yellow-400 animate-spin"></div>
-                            )}
+                            {isProcessing && <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-yellow-400 animate-spin"></div>}
                           </button>
-                          
+
                           {/* Capture count indicator - Enhanced for 360° system */}
                           {captures.length > 0 && (
                             <div className="absolute -top-2 -right-2 w-8 h-8 sm:w-6 sm:h-6 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-xs font-bold text-white border-2 border-white animate-bounce">
                               {captures.length}
-                              {compactMode && (
-                                <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-white bg-black/60 rounded px-1">
-                                  L{currentLevel}
-                                </div>
-                              )}
+                              {compactMode && <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-white bg-black/60 rounded px-1">L{currentLevel}</div>}
                             </div>
                           )}
-                          
+
                           {/* Quick progress indicator for mobile */}
                           {(controlsMinimized || compactMode) && (
                             <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-black/60 backdrop-blur-sm rounded-lg px-3 py-1 text-xs text-white whitespace-nowrap">
-                              L{currentLevel}: {captures.filter(c => c.level === currentLevel).length}/36 • {currentAngle}°
+                              L{currentLevel}: {captures.filter((c) => c.level === currentLevel).length}/36 • {currentAngle}°
                             </div>
                           )}
                         </div>
                       </div>
-
                     </>
                   )}
                 </div>
@@ -3066,12 +2892,12 @@ const Enhanced3DPhotoScanTab: React.FC<{ onSwitchToViewer: () => void }> = ({ on
 
             {/* Sidebar */}
             <div className="space-y-6">
-              {/* AI Assistant */}
+              {/* Assistant */}
               <div className="bg-gray-800/50 rounded-xl p-6">
                 <div className="flex items-center justify-between mb-4">
                   <h4 className="font-medium flex items-center">
                     <BrainIcon size={20} className="mr-2 text-green-400" />
-                    AI Guidance
+                    Panduan
                   </h4>
                   <button
                     onClick={() => setAssistantEnabled(!assistantEnabled)}
@@ -3086,20 +2912,20 @@ const Enhanced3DPhotoScanTab: React.FC<{ onSwitchToViewer: () => void }> = ({ on
                     <div className="p-4 bg-blue-900/20 border border-blue-500/30 rounded-lg">
                       <p className="text-sm text-blue-300">
                         {captures.length === 0
-                          ? "Position your object in the center. Start from Level 1 at 0°."
+                          ? "Posisikan objek Anda di tengah. Mulai dari Level 1 pada 0°."
                           : captures.length < 36
-                          ? `Perfect! Move ${10}° clockwise for optimal coverage.`
-                          : "Excellent coverage! Ready for high-quality reconstruction."}
+                          ? `Sempurna! Pindah ${10}° searah jarum jam untuk cakupan optimal.`
+                          : "Cakupan sangat baik! Siap untuk rekonstruksi berkualitas tinggi."}
                       </p>
                     </div>
 
                     <div className="grid grid-cols-2 gap-3 text-sm">
                       <div className="flex items-center justify-between">
-                        <span className="text-gray-400">Lighting</span>
-                        <span className={`font-medium ${lightingQuality === "good" ? "text-green-400" : "text-yellow-400"}`}>{lightingQuality}</span>
+                        <span className="text-gray-400">Pencahayaan</span>
+                        <span className={`font-medium ${lightingQuality === "good" ? "text-green-400" : "text-yellow-400"}`}>{lightingQuality === "good" ? "Baik" : "Kurang"}</span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-gray-400">Coverage</span>
+                        <span className="text-gray-400">Cakupan</span>
                         <span className="font-medium text-purple-400">{Math.round(Math.min(100, (captures.length / 84) * 100))}%</span>
                       </div>
                     </div>
@@ -3109,9 +2935,9 @@ const Enhanced3DPhotoScanTab: React.FC<{ onSwitchToViewer: () => void }> = ({ on
 
               {/* Upload Settings Form */}
               <div className="bg-gray-800/50 rounded-xl p-4 sm:p-6 space-y-3">
-                <h4 className="font-medium">Upload Settings</h4>
+                <h4 className="font-medium">Pengaturan Upload</h4>
                 <label className="block text-sm text-gray-300 mb-1" htmlFor="upload-folder">
-                  Target Folder
+                  Folder Tujuan
                 </label>
                 <input
                   id="upload-folder"
@@ -3122,7 +2948,7 @@ const Enhanced3DPhotoScanTab: React.FC<{ onSwitchToViewer: () => void }> = ({ on
                       localStorage.setItem("upload_folder", e.target.value);
                     } catch {}
                   }}
-                  placeholder="e.g. my_project_assets"
+                  placeholder="contoh: aset_proyek_saya"
                   className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
                 />
                 {formError && <div className="text-xs text-red-300">{formError}</div>}
@@ -3136,24 +2962,24 @@ const Enhanced3DPhotoScanTab: React.FC<{ onSwitchToViewer: () => void }> = ({ on
 
               {/* Actions */}
               <div className="bg-gray-800/50 rounded-xl p-4 sm:p-6 space-y-3 sm:space-y-4">
-                <h4 className="font-medium">Quick Actions</h4>
+                <h4 className="font-medium">Aksi Cepat</h4>
                 <button
                   onClick={saveCurrentDataset}
                   disabled={captures.length === 0}
                   className="w-full px-4 py-3 sm:py-3.5 bg-blue-600/20 text-blue-400 border border-blue-500/30 rounded-lg font-medium hover:bg-blue-600/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                  aria-label="Save current dataset"
+                  aria-label="Simpan dataset saat ini"
                 >
                   <FolderIcon size={16} className="mr-2 inline" />
-                  Save Dataset ({captures.length} photos)
+                  Simpan Dataset ({captures.length} foto)
                 </button>
 
                 <button
                   onClick={() => setCaptures([])}
                   disabled={captures.length === 0}
                   className="w-full px-4 py-3 sm:py-3.5 bg-gray-600/20 text-gray-400 border border-gray-500/30 rounded-lg font-medium hover:bg-gray-600/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                  aria-label="Reset capture session"
+                  aria-label="Reset sesi pengambilan"
                 >
-                  Reset Session
+                  Reset Sesi
                 </button>
               </div>
             </div>
@@ -3164,7 +2990,7 @@ const Enhanced3DPhotoScanTab: React.FC<{ onSwitchToViewer: () => void }> = ({ on
             <div className="text-gray-400 mb-3 sm:mb-0 text-sm sm:text-base">
               {captures.length > 0 && (
                 <>
-                  {captures.length} photos captured • Quality Score: {Math.round(Math.min(100, (captures.length / 84) * 100))}%
+                  {captures.length} foto ditangkap • Skor Kualitas: {Math.round(Math.min(100, (captures.length / 84) * 100))}%
                 </>
               )}
             </div>
@@ -3178,11 +3004,11 @@ const Enhanced3DPhotoScanTab: React.FC<{ onSwitchToViewer: () => void }> = ({ on
               {isProcessing ? (
                 <>
                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                  Processing...
+                  Memproses...
                 </>
               ) : (
                 <>
-                  Create 3D Model
+                  Buat Model 3D
                   <SparklesIcon size={18} className="ml-2" />
                 </>
               )}
@@ -3195,7 +3021,7 @@ const Enhanced3DPhotoScanTab: React.FC<{ onSwitchToViewer: () => void }> = ({ on
           <div className="bg-gray-800/50 rounded-xl p-6">
             <h3 className="text-lg font-semibold flex items-center mb-4">
               <FolderIcon size={20} className="mr-2 text-purple-400" />
-              Photo Datasets
+              Dataset Foto
               <span className="ml-2 px-2 py-1 bg-purple-900/30 text-purple-400 rounded-lg text-sm">{datasets.length}</span>
             </h3>
 
@@ -3224,7 +3050,7 @@ const Enhanced3DPhotoScanTab: React.FC<{ onSwitchToViewer: () => void }> = ({ on
                   <div className="flex items-center justify-between text-sm text-gray-500 mb-3">
                     <span className="flex items-center">
                       <ImageIcon size={14} className="mr-1" />
-                      {dataset.photos.length} photos
+                      {dataset.photos.length} foto
                     </span>
                     <span className="flex items-center">
                       <CalendarIcon size={14} className="mr-1" />
@@ -3238,13 +3064,9 @@ const Enhanced3DPhotoScanTab: React.FC<{ onSwitchToViewer: () => void }> = ({ on
                       Upload
                     </button>
                     <button onClick={() => setSelectedDatasetId(dataset.id)} className="flex-1 px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded text-sm font-medium transition-all">
-                      View
+                      Lihat
                     </button>
-                    <button 
-                      onClick={() => handleDeleteDataset(dataset)} 
-                      className="px-3 py-2 bg-red-600/20 text-red-400 border border-red-500/30 rounded text-sm font-medium hover:bg-red-600/30 transition-all"
-                      title="Delete dataset"
-                    >
+                    <button onClick={() => handleDeleteDataset(dataset)} className="px-3 py-2 bg-red-600/20 text-red-400 border border-red-500/30 rounded text-sm font-medium hover:bg-red-600/30 transition-all" title="Hapus dataset">
                       <TrashIcon size={14} />
                     </button>
                   </div>
@@ -3255,8 +3077,8 @@ const Enhanced3DPhotoScanTab: React.FC<{ onSwitchToViewer: () => void }> = ({ on
             {datasets.length === 0 && (
               <div className="text-center py-12">
                 <FolderIcon size={48} className="mx-auto text-gray-400 mb-4" />
-                <h3 className="text-lg font-semibold mb-2">No Datasets Yet</h3>
-                <p className="text-gray-400">Start capturing photos to create your first dataset</p>
+                <h3 className="text-lg font-semibold mb-2">Belum Ada Dataset</h3>
+                <p className="text-gray-400">Mulai mengambil foto untuk membuat dataset pertama Anda</p>
               </div>
             )}
           </div>
@@ -3461,97 +3283,56 @@ const Viewer3D: React.FC = () => {
 
 // ========== MAIN APP COMPONENT ==========
 const ScanCapture = () => {
+  // Component lifecycle logging
+  useEffect(() => {
+    console.log("ScanCapture mounted");
+    return () => console.log("ScanCapture unmounted");
+  }, []);
+
   const [activeTab, setActiveTab] = useState("photo");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const tabs = [
-    { id: "photo", name: "46-Degree Capture", icon: <SparklesIcon size={18} className="mr-2" />, shortName: "Capture" },
+    { id: "photo", name: "36-Degree Capture", icon: <SparklesIcon size={18} className="mr-2" />, shortName: "Capture" },
     { id: "datasets", name: "Dataset Manager", icon: <DatabaseIcon size={18} className="mr-2" />, shortName: "Datasets" },
-    { id: "viewer", name: "3D Viewer", icon: <EyeIcon size={18} className="mr-2" />, shortName: "Viewer" },
     { id: "video", name: "Video Scan", icon: <VideoIcon size={18} className="mr-2" />, shortName: "Video" },
-    { id: "upload", name: "Upload Files", icon: <UploadIcon size={18} className="mr-2" />, shortName: "Upload" },
   ];
 
   return (
-    <div className="space-y-4 sm:space-y-6 px-3 py-4 sm:px-4 sm:py-5 lg:px-6 max-w-7xl mx-auto text-white bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 min-h-screen">
-      {/* Interactive Header */}
-      <div className="text-center mb-6 sm:mb-8 relative">
-        {/* Animated Background */}
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 via-purple-600/5 to-pink-600/5 rounded-3xl blur-3xl"></div>
-        
-        <div className="relative">
-          {/* Main Title with Animation */}
-          <div className="relative inline-block mb-3 sm:mb-4">
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent animate-pulse">
-              Cureva 3D Studio
-            </h1>
-            <div className="absolute -inset-2 bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-pink-600/20 rounded-2xl blur-sm opacity-50 animate-pulse"></div>
-          </div>
-          
-          <p className="text-gray-300 max-w-xs sm:max-w-md mx-auto mb-4 sm:mb-6 text-xs sm:text-sm leading-relaxed px-2 sm:px-0">
-            Professional 3D model creation powered by AI and Gaussian Splatting technology
-          </p>
-          
-          {/* Interactive Feature Badges */}
-          <div className="flex justify-center items-center gap-4 flex-wrap">
-            <div className="flex items-center bg-blue-500/10 backdrop-blur-sm border border-blue-500/20 rounded-full px-3 py-1.5 hover:bg-blue-500/20 transition-all cursor-pointer group">
-              <SparklesIcon size={14} className="mr-2 text-blue-400 group-hover:scale-110 transition-transform" />
-              <span className="text-xs font-medium text-blue-300">46-Degree System</span>
-            </div>
-            <div className="flex items-center bg-purple-500/10 backdrop-blur-sm border border-purple-500/20 rounded-full px-3 py-1.5 hover:bg-purple-500/20 transition-all cursor-pointer group">
-              <BrainIcon size={14} className="mr-2 text-purple-400 group-hover:scale-110 transition-transform" />
-              <span className="text-xs font-medium text-purple-300">AI-Enhanced</span>
-            </div>
-            <div className="flex items-center bg-green-500/10 backdrop-blur-sm border border-green-500/20 rounded-full px-3 py-1.5 hover:bg-green-500/20 transition-all cursor-pointer group">
-              <div className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></div>
-              <span className="text-xs font-medium text-green-300">Live Preview</span>
-            </div>
-          </div>
-        </div>
-      </div>
+    <MobileScanWrapper>
+      {/* Mobile-Optimized Header */}
+      <MobileScanHeader
+        title="Cureva 3D Studio"
+        subtitle="Professional 3D model creation powered by Gaussian Splatting technology"
+        badges={[
+          {
+            icon: <SparklesIcon size={14} className="text-blue-400" />,
+            text: "46-Degree System",
+            color: "blue",
+          },
+          {
+            icon: <BrainIcon size={14} className="text-purple-400" />,
+            text: "Enhanced",
+            color: "purple",
+          },
+          {
+            icon: <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>,
+            text: "Live Preview",
+            color: "green",
+          },
+        ]}
+      />
 
-      {/* Enhanced Interactive Tab Navigation */}
-      <div className="bg-gray-900/40 backdrop-blur-xl rounded-2xl border border-gray-700/50 overflow-hidden shadow-2xl">
-        <nav className="flex" role="tablist" aria-label="Capture Navigation">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex-1 px-2 sm:px-4 lg:px-6 py-3 sm:py-4 text-xs sm:text-sm font-medium flex items-center justify-center transition-all duration-300 relative group ${
-                activeTab === tab.id 
-                  ? "text-white bg-gradient-to-b from-blue-500/20 via-purple-500/20 to-pink-500/20 shadow-lg" 
-                  : "text-gray-400 hover:text-white hover:bg-gray-800/30"
-              }`}
-              role="tab"
-              aria-selected={activeTab === tab.id}
-              aria-controls={`panel-${tab.id}`}
-            >
-              {/* Icon with hover animations */}
-              <div className={`mr-2 transition-transform duration-200 ${
-                activeTab === tab.id ? 'scale-110' : 'group-hover:scale-105'
-              }`}>
-                {tab.icon}
-              </div>
-              
-              {/* Text - responsive */}
-              <span className="hidden md:inline">{tab.name}</span>
-              <span className="md:hidden text-xs">{tab.shortName}</span>
-              
-              {/* Active indicator with animation */}
-              {activeTab === tab.id && (
-                <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-t-full">
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-t-full animate-pulse opacity-75"></div>
-                </div>
-              )}
-              
-              {/* Hover glow effect */}
-              <div className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-pink-500/5"></div>
-            </button>
-          ))}
-        </nav>
+      {/* Mobile-Optimized Tab Navigation */}
+      <MobileScanTabs
+        tabs={tabs}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+      />
 
-        {/* Tab Content */}
-        <div className="p-3 sm:p-5 lg:p-8">
+      {/* Tab Content */}
+      <MobileScanContent>
+        <div className="max-w-7xl mx-auto">
           {activeTab === "photo" && <Enhanced3DPhotoScanTab onSwitchToViewer={() => setActiveTab("viewer")} />}
           {activeTab === "datasets" && <DatasetManagerTab />}
           {activeTab === "viewer" && <Viewer3D />}
@@ -3570,8 +3351,8 @@ const ScanCapture = () => {
             </div>
           )}
         </div>
-      </div>
-    </div>
+      </MobileScanContent>
+    </MobileScanWrapper>
   );
 };
 
@@ -3586,36 +3367,36 @@ const DatasetDetailsModal: React.FC<{
 }> = ({ dataset, onClose, onEdit, onDelete }) => {
   console.log("DatasetDetailsModal rendered with dataset:", dataset);
   console.log("Dataset photos:", dataset.photos.length);
-  
-  const [selectedPhoto, setSelectedPhoto] = useState<Capture | null>(null);
-  const [viewMode, setViewMode] = useState<'grid' | 'metadata'>('grid');
 
-  const levelStats = [1, 2, 3, 4].map(level => ({
+  const [selectedPhoto, setSelectedPhoto] = useState<Capture | null>(null);
+  const [viewMode, setViewMode] = useState<"grid" | "metadata">("grid");
+
+  const levelStats = [1, 2, 3, 4].map((level) => ({
     level,
-    photos: dataset.photos.filter(p => p.level === level),
-    count: dataset.photos.filter(p => p.level === level).length
+    photos: dataset.photos.filter((p) => p.level === level),
+    count: dataset.photos.filter((p) => p.level === level).length,
   }));
 
   const angleStats = Array.from({ length: 36 }, (_, i) => {
     const angle = i * 10;
     return {
       angle,
-      photos: dataset.photos.filter(p => p.angle === angle),
-      count: dataset.photos.filter(p => p.angle === angle).length
+      photos: dataset.photos.filter((p) => p.angle === angle),
+      count: dataset.photos.filter((p) => p.angle === angle).length,
     };
   });
 
   const getImageMetadata = (photo: Capture) => {
     const img = new Image();
     img.src = photo.dataUrl;
-    
+
     return {
-      size: Math.round(photo.dataUrl.length * 0.75 / 1024), // Approximate size in KB
-      format: photo.dataUrl.split(';')[0].split(':')[1],
+      size: Math.round((photo.dataUrl.length * 0.75) / 1024), // Approximate size in KB
+      format: photo.dataUrl.split(";")[0].split(":")[1],
       timestamp: new Date(photo.timestamp).toISOString(),
       level: photo.level,
       angle: photo.angle,
-      caption: photo.caption
+      caption: photo.caption,
     };
   };
 
@@ -3633,26 +3414,15 @@ const DatasetDetailsModal: React.FC<{
               <span>Created {new Date(dataset.createdAt).toLocaleDateString()}</span>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-2">
-            <button
-              onClick={() => onEdit(dataset)}
-              className="p-2 text-gray-400 hover:text-green-400 transition-colors"
-              title="Edit Dataset"
-            >
+            <button onClick={() => onEdit(dataset)} className="p-2 text-gray-400 hover:text-green-400 transition-colors" title="Edit Dataset">
               <EditIcon size={18} />
             </button>
-            <button
-              onClick={() => onDelete(dataset.id)}
-              className="p-2 text-gray-400 hover:text-red-400 transition-colors"
-              title="Delete Dataset"
-            >
+            <button onClick={() => onDelete(dataset.id)} className="p-2 text-gray-400 hover:text-red-400 transition-colors" title="Delete Dataset">
               <TrashIcon size={18} />
             </button>
-            <button
-              onClick={onClose}
-              className="p-2 text-gray-400 hover:text-white transition-colors"
-            >
+            <button onClick={onClose} className="p-2 text-gray-400 hover:text-white transition-colors">
               <XIcon size={18} />
             </button>
           </div>
@@ -3660,24 +3430,13 @@ const DatasetDetailsModal: React.FC<{
 
         {/* View Mode Tabs */}
         <div className="flex border-b border-gray-700 px-6">
-          <button
-            onClick={() => setViewMode('grid')}
-            className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
-              viewMode === 'grid' 
-                ? 'text-blue-400 border-blue-400' 
-                : 'text-gray-400 border-transparent hover:text-white'
-            }`}
-          >
+          <button onClick={() => setViewMode("grid")} className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${viewMode === "grid" ? "text-blue-400 border-blue-400" : "text-gray-400 border-transparent hover:text-white"}`}>
             <GridIcon size={16} className="mr-2 inline" />
             Photo Grid
           </button>
           <button
-            onClick={() => setViewMode('metadata')}
-            className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
-              viewMode === 'metadata' 
-                ? 'text-blue-400 border-blue-400' 
-                : 'text-gray-400 border-transparent hover:text-white'
-            }`}
+            onClick={() => setViewMode("metadata")}
+            className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${viewMode === "metadata" ? "text-blue-400 border-blue-400" : "text-gray-400 border-transparent hover:text-white"}`}
           >
             <BarChart3Icon size={16} className="mr-2 inline" />
             Metadata & Stats
@@ -3686,22 +3445,21 @@ const DatasetDetailsModal: React.FC<{
 
         {/* Content */}
         <div className="flex-1 overflow-auto p-6">
-          {viewMode === 'grid' ? (
+          {viewMode === "grid" ? (
             <div className="space-y-6">
               {/* Level Sections */}
               {levelStats.map(({ level, photos, count }) => (
                 <div key={level} className="space-y-3">
                   <div className="flex items-center gap-3">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
-                      level === 1 ? 'bg-red-500/20 text-red-400' :
-                      level === 2 ? 'bg-blue-500/20 text-blue-400' :
-                      level === 3 ? 'bg-green-500/20 text-green-400' :
-                      'bg-yellow-500/20 text-yellow-400'
-                    }`}>
+                    <div
+                      className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
+                        level === 1 ? "bg-red-500/20 text-red-400" : level === 2 ? "bg-blue-500/20 text-blue-400" : level === 3 ? "bg-green-500/20 text-green-400" : "bg-yellow-500/20 text-yellow-400"
+                      }`}
+                    >
                       {level}
                     </div>
                     <h3 className="text-lg font-semibold text-white">
-                      Level {level} - {level === 1 ? 'Low Angle' : level === 2 ? 'Eye Level' : level === 3 ? 'High Angle' : 'Overhead'}
+                      Level {level} - {level === 1 ? "Low Angle" : level === 2 ? "Eye Level" : level === 3 ? "High Angle" : "Overhead"}
                     </h3>
                     <span className="text-gray-400">({count} photos)</span>
                   </div>
@@ -3714,23 +3472,15 @@ const DatasetDetailsModal: React.FC<{
                           className="relative aspect-square bg-gray-700 rounded-lg overflow-hidden cursor-pointer hover:ring-2 hover:ring-blue-400 transition-all"
                           onClick={() => setSelectedPhoto(photo)}
                         >
-                          <img
-                            src={photo.dataUrl}
-                            alt={`Level ${photo.level} at ${photo.angle}°`}
-                            className="w-full h-full object-cover"
-                          />
+                          <img src={photo.dataUrl} alt={`Level ${photo.level} at ${photo.angle}°`} className="w-full h-full object-cover" />
                           <div className="absolute inset-0 flex items-end p-1 pointer-events-none">
-                            <span className="text-xs bg-black/70 text-white px-1 rounded">
-                              {photo.angle}°
-                            </span>
+                            <span className="text-xs bg-black/70 text-white px-1 rounded">{photo.angle}°</span>
                           </div>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <div className="text-center py-8 text-gray-500 bg-gray-800/30 rounded-lg">
-                      No photos captured for this level
-                    </div>
+                    <div className="text-center py-8 text-gray-500 bg-gray-800/30 rounded-lg">No photos captured for this level</div>
                   )}
                 </div>
               ))}
@@ -3743,18 +3493,15 @@ const DatasetDetailsModal: React.FC<{
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                   {levelStats.map(({ level, count }) => (
                     <div key={level} className="text-center">
-                      <div className={`w-12 h-12 mx-auto rounded-full flex items-center justify-center text-lg font-bold mb-2 ${
-                        level === 1 ? 'bg-red-500/20 text-red-400' :
-                        level === 2 ? 'bg-blue-500/20 text-blue-400' :
-                        level === 3 ? 'bg-green-500/20 text-green-400' :
-                        'bg-yellow-500/20 text-yellow-400'
-                      }`}>
+                      <div
+                        className={`w-12 h-12 mx-auto rounded-full flex items-center justify-center text-lg font-bold mb-2 ${
+                          level === 1 ? "bg-red-500/20 text-red-400" : level === 2 ? "bg-blue-500/20 text-blue-400" : level === 3 ? "bg-green-500/20 text-green-400" : "bg-yellow-500/20 text-yellow-400"
+                        }`}
+                      >
                         {level}
                       </div>
                       <div className="text-white font-semibold">{count}/36</div>
-                      <div className="text-xs text-gray-400">
-                        {Math.round((count/36)*100)}%
-                      </div>
+                      <div className="text-xs text-gray-400">{Math.round((count / 36) * 100)}%</div>
                     </div>
                   ))}
                 </div>
@@ -3768,12 +3515,15 @@ const DatasetDetailsModal: React.FC<{
                     <div
                       key={angle}
                       className={`aspect-square rounded flex items-center justify-center text-xs font-mono ${
-                        count > 0 
-                          ? count === 4 ? 'bg-green-500/30 text-green-300' 
-                          : count === 3 ? 'bg-yellow-500/30 text-yellow-300'
-                          : count >= 2 ? 'bg-orange-500/30 text-orange-300'
-                          : 'bg-blue-500/30 text-blue-300'
-                          : 'bg-gray-700/30 text-gray-500'
+                        count > 0
+                          ? count === 4
+                            ? "bg-green-500/30 text-green-300"
+                            : count === 3
+                            ? "bg-yellow-500/30 text-yellow-300"
+                            : count >= 2
+                            ? "bg-orange-500/30 text-orange-300"
+                            : "bg-blue-500/30 text-blue-300"
+                          : "bg-gray-700/30 text-gray-500"
                       }`}
                       title={`${angle}°: ${count} photos`}
                     >
@@ -3826,12 +3576,7 @@ const DatasetDetailsModal: React.FC<{
                         return (
                           <tr key={`${photo.level}-${photo.angle}-${photo.timestamp}`} className="border-b border-gray-800">
                             <td className="py-2">
-                              <img 
-                                src={photo.dataUrl} 
-                                alt="" 
-                                className="w-8 h-8 rounded object-cover cursor-pointer hover:scale-150 transition-transform"
-                                onClick={() => setSelectedPhoto(photo)}
-                              />
+                              <img src={photo.dataUrl} alt="" className="w-8 h-8 rounded object-cover cursor-pointer hover:scale-150 transition-transform" onClick={() => setSelectedPhoto(photo)} />
                             </td>
                             <td className="py-2 text-white">L{metadata.level}</td>
                             <td className="py-2 text-white">{metadata.angle}°</td>
@@ -3843,11 +3588,7 @@ const DatasetDetailsModal: React.FC<{
                       })}
                     </tbody>
                   </table>
-                  {dataset.photos.length > 20 && (
-                    <div className="text-center py-4 text-gray-400">
-                      Showing 20 of {dataset.photos.length} photos
-                    </div>
-                  )}
+                  {dataset.photos.length > 20 && <div className="text-center py-4 text-gray-400">Showing 20 of {dataset.photos.length} photos</div>}
                 </div>
               </div>
             </div>
@@ -3855,12 +3596,7 @@ const DatasetDetailsModal: React.FC<{
         </div>
 
         {/* Photo Detail Modal */}
-        {selectedPhoto && (
-          <PhotoDetailModal 
-            photo={selectedPhoto} 
-            onClose={() => setSelectedPhoto(null)} 
-          />
-        )}
+        {selectedPhoto && <PhotoDetailModal photo={selectedPhoto} onClose={() => setSelectedPhoto(null)} />}
       </div>
     </div>
   );
@@ -3871,7 +3607,7 @@ const PhotoDetailModal: React.FC<{
   photo: Capture;
   onClose: () => void;
 }> = ({ photo, onClose }) => {
-  const getImageDimensions = (dataUrl: string): Promise<{width: number, height: number}> => {
+  const getImageDimensions = (dataUrl: string): Promise<{ width: number; height: number }> => {
     return new Promise((resolve) => {
       const img = new Image();
       img.onload = () => resolve({ width: img.width, height: img.height });
@@ -3879,22 +3615,22 @@ const PhotoDetailModal: React.FC<{
     });
   };
 
-  const [imageDimensions, setImageDimensions] = useState<{width: number, height: number} | null>(null);
-  
+  const [imageDimensions, setImageDimensions] = useState<{ width: number; height: number } | null>(null);
+
   React.useEffect(() => {
     getImageDimensions(photo.dataUrl).then(setImageDimensions);
   }, [photo.dataUrl]);
 
   const metadata = {
-    size: Math.round(photo.dataUrl.length * 0.75 / 1024), // Approximate size in KB
-    format: photo.dataUrl.split(';')[0].split(':')[1],
+    size: Math.round((photo.dataUrl.length * 0.75) / 1024), // Approximate size in KB
+    format: photo.dataUrl.split(";")[0].split(":")[1],
     timestamp: new Date(photo.timestamp).toISOString(),
     level: photo.level,
     angle: photo.angle,
     caption: photo.caption,
     dimensions: imageDimensions,
-    compressionRatio: imageDimensions ? Math.round((photo.dataUrl.length * 0.75) / (imageDimensions.width * imageDimensions.height * 3) * 100) / 100 : 0,
-    qualityScore: photo.dataUrl.length > 50000 ? 'High' : photo.dataUrl.length > 25000 ? 'Medium' : 'Low'
+    compressionRatio: imageDimensions ? Math.round(((photo.dataUrl.length * 0.75) / (imageDimensions.width * imageDimensions.height * 3)) * 100) / 100 : 0,
+    qualityScore: photo.dataUrl.length > 50000 ? "High" : photo.dataUrl.length > 25000 ? "Medium" : "Low",
   };
 
   return (
@@ -3902,23 +3638,16 @@ const PhotoDetailModal: React.FC<{
       <div className="bg-gray-900 rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
         <div className="flex items-center justify-between p-4 border-b border-gray-700">
           <h3 className="text-lg font-semibold text-white">Photo Details</h3>
-          <button
-            onClick={onClose}
-            className="p-2 text-gray-400 hover:text-white transition-colors"
-          >
+          <button onClick={onClose} className="p-2 text-gray-400 hover:text-white transition-colors">
             <XIcon size={18} />
           </button>
         </div>
-        
+
         <div className="flex-1 overflow-auto p-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Image */}
             <div className="space-y-4">
-              <img 
-                src={photo.dataUrl} 
-                alt={metadata.caption}
-                className="w-full rounded-lg"
-              />
+              <img src={photo.dataUrl} alt={metadata.caption} className="w-full rounded-lg" />
             </div>
 
             {/* Metadata */}
@@ -3928,11 +3657,9 @@ const PhotoDetailModal: React.FC<{
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span className="text-gray-400">Level:</span>
-                    <span className="text-white">L{metadata.level} - {
-                      metadata.level === 1 ? 'Low Angle' :
-                      metadata.level === 2 ? 'Eye Level' :
-                      metadata.level === 3 ? 'High Angle' : 'Overhead'
-                    }</span>
+                    <span className="text-white">
+                      L{metadata.level} - {metadata.level === 1 ? "Low Angle" : metadata.level === 2 ? "Eye Level" : metadata.level === 3 ? "High Angle" : "Overhead"}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-400">Angle:</span>
@@ -3964,7 +3691,9 @@ const PhotoDetailModal: React.FC<{
                   {metadata.dimensions && (
                     <div className="flex justify-between">
                       <span className="text-gray-400">Dimensions:</span>
-                      <span className="text-white">{metadata.dimensions.width} × {metadata.dimensions.height}px</span>
+                      <span className="text-white">
+                        {metadata.dimensions.width} × {metadata.dimensions.height}px
+                      </span>
                     </div>
                   )}
                   {metadata.dimensions && (
@@ -3975,10 +3704,7 @@ const PhotoDetailModal: React.FC<{
                   )}
                   <div className="flex justify-between">
                     <span className="text-gray-400">Quality Score:</span>
-                    <span className={`${
-                      metadata.qualityScore === 'High' ? 'text-green-400' :
-                      metadata.qualityScore === 'Medium' ? 'text-yellow-400' : 'text-red-400'
-                    }`}>{metadata.qualityScore}</span>
+                    <span className={`${metadata.qualityScore === "High" ? "text-green-400" : metadata.qualityScore === "Medium" ? "text-yellow-400" : "text-red-400"}`}>{metadata.qualityScore}</span>
                   </div>
                   {metadata.compressionRatio > 0 && (
                     <div className="flex justify-between">
@@ -4011,12 +3737,12 @@ const PhotoDetailModal: React.FC<{
 // Create Dataset Modal
 const CreateDatasetModal: React.FC<{
   onClose: () => void;
-  onCreate: (dataset: Omit<Dataset, 'id' | 'createdAt'>) => void;
+  onCreate: (dataset: Omit<Dataset, "id" | "createdAt">) => void;
 }> = ({ onClose, onCreate }) => {
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
   const [tags, setTags] = useState<string[]>([]);
-  const [tagInput, setTagInput] = useState('');
+  const [tagInput, setTagInput] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -4033,17 +3759,17 @@ const CreateDatasetModal: React.FC<{
           { level: 1, captured: 0 },
           { level: 2, captured: 0 },
           { level: 3, captured: 0 },
-          { level: 4, captured: 0 }
+          { level: 4, captured: 0 },
         ],
-        angles: []
-      }
+        angles: [],
+      },
     });
   };
 
   const addTag = (tag: string) => {
     if (tag && !tags.includes(tag)) {
       setTags([...tags, tag]);
-      setTagInput('');
+      setTagInput("");
     }
   };
 
@@ -4059,9 +3785,7 @@ const CreateDatasetModal: React.FC<{
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-400 mb-2">
-              Dataset Name *
-            </label>
+            <label className="block text-sm font-medium text-gray-400 mb-2">Dataset Name *</label>
             <input
               type="text"
               value={name}
@@ -4073,9 +3797,7 @@ const CreateDatasetModal: React.FC<{
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-400 mb-2">
-              Description
-            </label>
+            <label className="block text-sm font-medium text-gray-400 mb-2">Description</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -4086,38 +3808,25 @@ const CreateDatasetModal: React.FC<{
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-400 mb-2">
-              Tags
-            </label>
+            <label className="block text-sm font-medium text-gray-400 mb-2">Tags</label>
             <div className="flex gap-2 mb-2">
               <input
                 type="text"
                 value={tagInput}
                 onChange={(e) => setTagInput(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag(tagInput.trim()))}
+                onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addTag(tagInput.trim()))}
                 placeholder="Add tags..."
                 className="flex-1 px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white"
               />
-              <button
-                type="button"
-                onClick={() => addTag(tagInput.trim())}
-                className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-white"
-              >
+              <button type="button" onClick={() => addTag(tagInput.trim())} className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-white">
                 Add
               </button>
             </div>
             <div className="flex flex-wrap gap-2">
               {tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="px-2 py-1 bg-blue-500/20 text-blue-400 rounded text-sm flex items-center gap-1"
-                >
+                <span key={tag} className="px-2 py-1 bg-blue-500/20 text-blue-400 rounded text-sm flex items-center gap-1">
                   {tag}
-                  <button
-                    type="button"
-                    onClick={() => setTags(tags.filter(t => t !== tag))}
-                    className="hover:text-white"
-                  >
+                  <button type="button" onClick={() => setTags(tags.filter((t) => t !== tag))} className="hover:text-white">
                     <XIcon size={12} />
                   </button>
                 </span>
@@ -4126,17 +3835,10 @@ const CreateDatasetModal: React.FC<{
           </div>
 
           <div className="flex gap-3 pt-4">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-white transition-colors"
-            >
+            <button type="button" onClick={onClose} className="flex-1 px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-white transition-colors">
               Cancel
             </button>
-            <button
-              type="submit"
-              className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white transition-colors"
-            >
+            <button type="submit" className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white transition-colors">
               Create
             </button>
           </div>
@@ -4155,7 +3857,7 @@ const EditDatasetModal: React.FC<{
   const [name, setName] = useState(dataset.name);
   const [description, setDescription] = useState(dataset.description);
   const [tags, setTags] = useState<string[]>(dataset.tags);
-  const [tagInput, setTagInput] = useState('');
+  const [tagInput, setTagInput] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -4165,14 +3867,14 @@ const EditDatasetModal: React.FC<{
       ...dataset,
       name: name.trim(),
       description: description.trim(),
-      tags
+      tags,
     });
   };
 
   const addTag = (tag: string) => {
     if (tag && !tags.includes(tag)) {
       setTags([...tags, tag]);
-      setTagInput('');
+      setTagInput("");
     }
   };
 
@@ -4188,9 +3890,7 @@ const EditDatasetModal: React.FC<{
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-400 mb-2">
-              Dataset Name *
-            </label>
+            <label className="block text-sm font-medium text-gray-400 mb-2">Dataset Name *</label>
             <input
               type="text"
               value={name}
@@ -4201,9 +3901,7 @@ const EditDatasetModal: React.FC<{
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-400 mb-2">
-              Description
-            </label>
+            <label className="block text-sm font-medium text-gray-400 mb-2">Description</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -4213,38 +3911,25 @@ const EditDatasetModal: React.FC<{
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-400 mb-2">
-              Tags
-            </label>
+            <label className="block text-sm font-medium text-gray-400 mb-2">Tags</label>
             <div className="flex gap-2 mb-2">
               <input
                 type="text"
                 value={tagInput}
                 onChange={(e) => setTagInput(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag(tagInput.trim()))}
+                onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addTag(tagInput.trim()))}
                 placeholder="Add tags..."
                 className="flex-1 px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white"
               />
-              <button
-                type="button"
-                onClick={() => addTag(tagInput.trim())}
-                className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-white"
-              >
+              <button type="button" onClick={() => addTag(tagInput.trim())} className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-white">
                 Add
               </button>
             </div>
             <div className="flex flex-wrap gap-2">
               {tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="px-2 py-1 bg-blue-500/20 text-blue-400 rounded text-sm flex items-center gap-1"
-                >
+                <span key={tag} className="px-2 py-1 bg-blue-500/20 text-blue-400 rounded text-sm flex items-center gap-1">
                   {tag}
-                  <button
-                    type="button"
-                    onClick={() => setTags(tags.filter(t => t !== tag))}
-                    className="hover:text-white"
-                  >
+                  <button type="button" onClick={() => setTags(tags.filter((t) => t !== tag))} className="hover:text-white">
                     <XIcon size={12} />
                   </button>
                 </span>
@@ -4253,17 +3938,10 @@ const EditDatasetModal: React.FC<{
           </div>
 
           <div className="flex gap-3 pt-4">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-white transition-colors"
-            >
+            <button type="button" onClick={onClose} className="flex-1 px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-white transition-colors">
               Cancel
             </button>
-            <button
-              type="submit"
-              className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white transition-colors"
-            >
+            <button type="submit" className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white transition-colors">
               Update
             </button>
           </div>

@@ -24,7 +24,7 @@ export const FirebaseConnectionModal: React.FC<FirebaseConnectionModalProps> = (
       onConnected();
       onClose();
     } catch (err) {
-      setError("Failed to connect to Firebase. Please try again.");
+      setError("Gagal terhubung ke Firebase. Silakan coba lagi.");
       console.error("Firebase connection error:", err);
     } finally {
       setIsConnecting(false);
@@ -39,8 +39,8 @@ export const FirebaseConnectionModal: React.FC<FirebaseConnectionModalProps> = (
         <div className="flex items-center justify-center mb-6">
           <DatabaseIcon size={40} className="text-blue-400" />
         </div>
-        <h3 className="text-xl font-semibold text-center mb-2">Connect to Firebase</h3>
-        <p className="text-gray-300 text-center text-sm mb-6">Sign in with your Google account to enable real-time sync with Firebase</p>
+        <h3 className="text-xl font-semibold text-center mb-2">Hubungkan ke Firebase</h3>
+        <p className="text-gray-300 text-center text-sm mb-6">Masuk dengan akun Google Anda untuk mengaktifkan sinkronisasi real-time dengan Firebase</p>
 
         {error && (
           <div className="bg-red-900/30 border border-red-500/30 rounded-lg p-3 mb-4">
@@ -59,18 +59,18 @@ export const FirebaseConnectionModal: React.FC<FirebaseConnectionModalProps> = (
                 <div className="animate-spin mr-2">
                   <CloudIcon size={18} />
                 </div>
-                Connecting...
+                Menghubungkan...
               </>
             ) : (
               <>
                 <KeyIcon size={18} className="mr-2" />
-                Connect with Google
+                Hubungkan dengan Google
               </>
             )}
           </button>
 
           <button onClick={onClose} className="w-full px-4 py-3 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors">
-            Cancel
+            Batal
           </button>
         </div>
       </div>

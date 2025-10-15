@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gaussian Splat Viewer</title>
+  <style>
+    body {
+      background-color: #1a1a1a;
+      height: 100vh;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      color: #ffffff;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 0 20px;
+    }
+
+    .panel {
+      background: #2a2a2a;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
+      border: 1px solid #3a3a3a;
+    }
+
+    .panel-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 16px;
+      color: #60a5fa;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    .button {
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s;
+    }
+
+    .button:hover {
+      background: #2563eb;
+    }
+
+    .button:disabled {
+      background: #4b5563;
+      cursor: not-allowed;
+    }
+
+    .input-file {
+      display: none;
+    }
+
+    .file-label {
+      display: inline-block;
+      background: #3b82f6;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .file-label:hover {
+      background: #2563eb;
+    }
+
+    .file-name {
+      color: #9ca3af;
+      margin-left: 10px;
+      font-size: 14px;
+    }
+
+    .text-input {
+      background: #1a1a1a;
+      border: 1px solid #4b5563;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 14px;
+      width: 100px;
+    }
+
+    .form-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .form-label {
+      min-width: 140px;
+      font-size: 14px;
+      color: #d1d5db;
+    }
+
+    .status-text {
+      color: #60a5fa;
+      font-size: 14px;
+      margin-top: 12px;
+    }
+
+    .error-text {
+      color: #ef4444;
+      font-size: 14px;
+      margin-top: 12px;
+    }
+
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid #4b5563;
+      border-top-color: #60a5fa;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    ul {
+      margin: 8px 0;
+      padding-left: 20px;
+    }
+
+    li {
+      margin-bottom: 6px;
+      color: #d1d5db;
+      font-size: 14px;
+    }
+  </style>
+  <script type="importmap">
+    {
+        "imports": {
+            "three": "/node_modules/three/build/three.module.js",
+            "gaussian-splats-3d": "/node_modules/@mkkellogg/gaussian-splats-3d/build/gaussian-splats-3d.module.js"
+        }
+    }
+  </script>
+  <script type="module">
+    import * as GaussianSplats3D from 'gaussian-splats-3d';
+    import * as THREE from 'three';
+
+    // View File
+    window.viewFile = function() {
+      const fileInput = document.getElementById("viewFile");
+      const file = fileInput.files[0];
+
+      if (!file) {
+        setViewError("Please choose a file to view");
+        return;
+      }
+
+      const fileReader = new FileReader();
+      fileReader.onload = function() {
+        try {
+          document.body.style.backgroundColor = "#000000";
+          document.getElementById("content").style.display = "none";
+
+          const viewer = new GaussianSplats3D.Viewer({
+            cameraUp: [0, 1, 0],
+            initialCameraPosition: [0, 1, 0],
+            initialCameraLookAt: [1, 0, 0]
+          });
+
+          const format = GaussianSplats3D.LoaderUtils.sceneFormatFromPath(file.name);
+          let splatBuffer;
+
+          if (format === GaussianSplats3D.SceneFormat.Ply) {
+            splatBuffer = GaussianSplats3D.PlyLoader.loadFromFileData(fileReader.result);
+          } else if (format === GaussianSplats3D.SceneFormat.Splat) {
+            splatBuffer = GaussianSplats3D.SplatLoader.loadFromFileData(fileReader.result);
+          } else {
+            splatBuffer = GaussianSplats3D.KSplatLoader.loadFromFileData(fileReader.result);
+          }
+
+          splatBuffer.then((buffer) => {
+            viewer.addSplatBuffers([buffer]).then(() => {
+              viewer.start();
+            });
+          });
+        } catch (e) {
+          console.error(e);
+          setViewError("Could not view file");
+        }
+      };
+
+      setViewStatus("Loading file...");
+      fileReader.readAsArrayBuffer(file);
+    };
+
+    // Convert File
+    window.convertFile = function() {
+      const fileInput = document.getElementById("convertFile");
+      const file = fileInput.files[0];
+
+      if (!file) {
+        setConvertError("Please choose a file to convert");
+        return;
+      }
+
+      const fileReader = new FileReader();
+      fileReader.onload = function() {
+        try {
+          setConvertStatus("Converting...");
+
+          const format = GaussianSplats3D.LoaderUtils.sceneFormatFromPath(file.name);
+          let splatBuffer;
+
+          if (format === GaussianSplats3D.SceneFormat.Ply) {
+            splatBuffer = GaussianSplats3D.PlyLoader.loadFromFileData(fileReader.result, 1, 1);
+          } else if (format === GaussianSplats3D.SceneFormat.Splat) {
+            splatBuffer = GaussianSplats3D.SplatLoader.loadFromFileData(fileReader.result, 1, 1);
+          } else {
+            setConvertError("File already in .ksplat format");
+            return;
+          }
+
+          splatBuffer.then((buffer) => {
+            GaussianSplats3D.KSplatLoader.downloadFile(buffer, 'converted.ksplat');
+            setConvertStatus("✓ Conversion complete!");
+          });
+        } catch (e) {
+          console.error(e);
+          setConvertError("Could not convert file");
+        }
+      };
+
+      setConvertStatus("Loading file...");
+      fileReader.readAsArrayBuffer(file);
+    };
+
+    function setViewStatus(msg) {
+      document.getElementById("viewStatus").innerHTML = msg;
+      document.getElementById("viewError").innerHTML = "";
+    }
+
+    function setViewError(msg) {
+      document.getElementById("viewError").innerHTML = msg;
+      document.getElementById("viewStatus").innerHTML = "";
+    }
+
+    function setConvertStatus(msg) {
+      document.getElementById("convertStatus").innerHTML = msg;
+      document.getElementById("convertError").innerHTML = "";
+    }
+
+    function setConvertError(msg) {
+      document.getElementById("convertError").innerHTML = msg;
+      document.getElementById("convertStatus").innerHTML = "";
+    }
+
+    window.onFileChange = function(input, labelId) {
+      const label = document.getElementById(labelId);
+      const fileName = input.files[0]?.name || "(No file chosen)";
+      label.innerHTML = fileName;
+    };
+  </script>
+</head>
+<body>
+  <div id="content" class="container">
+    <div class="grid">
+      <!-- View Panel -->
+      <div class="panel">
+        <div class="panel-title">📁 View Gaussian Splat</div>
+
+        <div style="margin-bottom: 16px;">
+          <label for="viewFile" class="file-label">Choose File</label>
+          <input type="file" id="viewFile" class="input-file" accept=".ply,.splat,.ksplat" onchange="onFileChange(this, 'viewFileName')">
+          <span id="viewFileName" class="file-name">(No file chosen)</span>
+        </div>
+
+        <button class="button" onclick="viewFile()">View</button>
+
+        <div class="status-text" id="viewStatus"></div>
+        <div class="error-text" id="viewError"></div>
+      </div>
+
+      <!-- Convert Panel -->
+      <div class="panel">
+        <div class="panel-title">🔄 Convert to .ksplat</div>
+
+        <div style="margin-bottom: 16px;">
+          <label for="convertFile" class="file-label">Choose File</label>
+          <input type="file" id="convertFile" class="input-file" accept=".ply,.splat" onchange="onFileChange(this, 'convertFileName')">
+          <span id="convertFileName" class="file-name">(No file chosen)</span>
+        </div>
+
+        <button class="button" onclick="convertFile()">Convert</button>
+
+        <div class="status-text" id="convertStatus"></div>
+        <div class="error-text" id="convertError"></div>
+      </div>
+
+      <!-- Mouse Controls -->
+      <div class="panel">
+        <div class="panel-title">🖱️ Mouse Controls</div>
+        <ul>
+          <li>Left click + drag: Rotate</li>
+          <li>Right click + drag: Pan</li>
+          <li>Scroll wheel: Zoom</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

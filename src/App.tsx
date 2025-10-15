@@ -1,39 +1,60 @@
-import React, { useEffect, useState } from 'react';
-import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from './lib/firebase';
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from 'react-router-dom';
-import Sidebar   from './components/navigation/Sidebar';
-import TopBar    from './components/navigation/TopBar';
-import BottomNavigation from './components/navigation/BottomNavigation'; // ➕
-import Dashboard from './pages/Dashboard';
-import ScanCapture from './pages/ScanCapture';
-import Viewer3D  from './pages/Viewer3D';
-import ProjectManager from './pages/ProjectManager';
-import SemanticLayers from './pages/SemanticLayers';
-import ExportHub   from './pages/ExportHub';
-import AdminPanel  from './pages/AdminPanel';
-import Login  from './pages/auth/Login';
-import Register from './pages/auth/Register';
+import React, { useEffect, useState } from "react";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "./lib/firebase";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import Sidebar from "./components/navigation/Sidebar";
+import TopBar from "./components/navigation/TopBar";
+import BottomNavigation from "./components/navigation/BottomNavigation"; // ➕
+import Dashboard from "./pages/Dashboard";
+import ScanCapture from "./pages/ScanCapture";
+import DroneCamera from "./pages/DroneCamera";
+import TestGaussianViewer from "./pages/TestGaussianViewer";
+import Easy3DViewerDemo from "./pages/Easy3DViewerDemo";
+import GaussianDemo from "./pages/GaussianDemo";
+import BlenderGaussianDemo from "./pages/BlenderGaussianDemo";
+import VLMDemo from "./pages/VLMDemo";
+import Login from "./pages/auth/Login";
+import Register from "./pages/auth/Register";
 
 export function App() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const handleLogin = () => setIsAuthenticated(true);
+
+  const handleLogin = (userData: any) => {
+    console.log("handleLogin called with:", userData);
+    setIsAuthenticated(true);
+  };
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (user) => {
+      console.log("Auth state changed:", user ? "logged in" : "logged out");
+      if (user) {
+        // Save user data when Firebase auth state changes
+        const userData = {
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName || user.email?.split("@")[0] || "User",
+          photoURL: user.photoURL,
+          provider: user.providerData?.[0]?.providerId || "password",
+          role: "Admin",
+          loginTime: new Date().toISOString(),
+        };
+        localStorage.setItem("cureva-user", JSON.stringify(userData));
+      }
       setIsAuthenticated(!!user);
     });
     return () => unsub();
   }, []);
 
   if (isAuthenticated === null) {
-    return null;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-black text-white">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <p className="text-gray-400">Loading...</p>
+        </div>
+      </div>
+    );
   }
 
   if (!isAuthenticated) {
@@ -52,22 +73,47 @@ export function App() {
 
   return (
     <Router>
-      {/* Desktop Layout */}
-      <div className="hidden md:flex h-screen bg-gradient-to-br from-gray-900 to-black text-white">
-        <Sidebar collapsed={sidebarCollapsed} />
-        <div className="flex flex-col flex-1 overflow-hidden">
-          <TopBar
-            onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)}
-            sidebarCollapsed={sidebarCollapsed}
-          />
-          <MainContent />
-        </div>
-      </div>
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-black text-white overflow-x-hidden">
+        {/* Responsive Layout Container */}
+        <div className="relative flex h-screen md:h-full">
+          {/* Desktop Sidebar - hidden on mobile */}
+          <div className="hidden md:block">
+            <Sidebar collapsed={sidebarCollapsed} />
+          </div>
 
-      {/* Mobile Layout */}
-      <div className="md:hidden relative min-h-screen bg-gradient-to-br from-gray-900 to-black text-white">
-        <MainContent />
-        <BottomNavigation />
+          {/* Main Content Area */}
+          <div className="flex flex-col flex-1 w-full h-screen md:h-full overflow-hidden">
+            {/* Desktop Top Bar - hidden on mobile */}
+            <div className="hidden md:block">
+              <TopBar onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)} sidebarCollapsed={sidebarCollapsed} />
+            </div>
+
+            {/* Mobile Top Bar - visible only on mobile */}
+            <div className="md:hidden sticky top-0 z-30 bg-gradient-to-r from-gray-900/95 to-gray-800/95 backdrop-blur-lg border-b border-gray-800 px-4 py-3 flex items-center justify-between shadow-lg">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center shadow-lg">
+                  <span className="text-white font-bold text-sm">C</span>
+                </div>
+                <div>
+                  <h1 className="text-sm font-bold text-white">Cureva</h1>
+                  <p className="text-xs text-gray-400">3D Vision Platform</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                <span className="text-xs text-gray-400">Online</span>
+              </div>
+            </div>
+
+            {/* Shared Content Area */}
+            <MainContent />
+
+            {/* Mobile Bottom Navigation - hidden on desktop */}
+            <div className="md:hidden sticky bottom-0 z-30">
+              <BottomNavigation />
+            </div>
+          </div>
+        </div>
       </div>
     </Router>
   );
@@ -75,17 +121,33 @@ export function App() {
 
 /* Komponen agar tidak duplicate */
 const MainContent = () => (
-  <main className="flex-1 overflow-y-auto p-4 bg-black/30 backdrop-blur-sm">
+  <main className="flex-1 overflow-y-auto px-3 py-4 md:p-6 bg-black/30 backdrop-blur-sm safe-bottom">
     <Routes>
       <Route path="/" element={<Dashboard />} />
-      <Route path="/scan" element={<ScanCapture />} />
-      <Route path="/viewer" element={<Viewer3D />} />
-      <Route path="/projects" element={<ProjectManager />} />
-      <Route path="/semantic" element={<SemanticLayers />} />
-      <Route path="/export" element={<ExportHub />} />
-      <Route path="/admin" element={<AdminPanel />} />
+      <Route
+        path="/scan"
+        element={
+          <React.Suspense
+            fallback={
+              <div className="flex items-center justify-center h-full">
+                <div className="text-center">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+                  <p className="text-gray-400">Loading Scanner...</p>
+                </div>
+              </div>
+            }
+          >
+            <ScanCapture key="scan-capture" />
+          </React.Suspense>
+        }
+      />
+      <Route path="/gaussian" element={<GaussianDemo />} />
+      <Route path="/blender-gaussian" element={<BlenderGaussianDemo />} />
+      <Route path="/drone" element={<DroneCamera />} />
+      <Route path="/test-gaussian" element={<TestGaussianViewer />} />
+      <Route path="/easy-viewer" element={<Easy3DViewerDemo />} />
+      <Route path="/vlm-demo" element={<VLMDemo />} />
       <Route path="*" element={<Navigate to="/" replace />} />
-      <Route path="/viewer" element={<Viewer3D />} />
     </Routes>
   </main>
 );

@@ -1,0 +1,25 @@
+# DJI Tello ROS2 Controller Dependencies
+# Install with: pip install -r requirements.txt
+
+# Core drone control library
+djitellopy>=2.4.0
+
+# Computer vision and image processing
+opencv-python>=4.8.0.74
+opencv-contrib-python>=4.8.0.74
+
+# Image processing and GUI
+Pillow>=10.0.0
+numpy>=1.24.0
+
+# GUI framework (tkinter comes with Python)
+# tkinter is included with most Python installations
+
+# Optional: for advanced features
+# matplotlib>=3.7.0  # For plotting and data visualization
+# pygame>=2.5.0      # For game controller support
+
+# Development and testing
+# pytest>=7.4.0
+# black>=23.0.0
+# flake8>=6.0.0

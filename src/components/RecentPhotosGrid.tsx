@@ -9,7 +9,7 @@ interface RecentPhotosGridProps {
 export const RecentPhotosGrid: React.FC<RecentPhotosGridProps> = ({ captures, onDelete }) => {
   return (
     <div className="bg-gray-800/50 rounded-xl p-4">
-      <h3 className="text-sm font-medium mb-3">Recent Photos</h3>
+      <h3 className="text-sm font-medium mb-3">Foto Terbaru</h3>
       <div className="grid grid-cols-4 gap-2 max-h-[300px] overflow-y-auto">
         {captures.map((capture, index) => (
           <div key={capture.timestamp} className="relative group">

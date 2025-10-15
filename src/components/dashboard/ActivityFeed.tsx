@@ -4,42 +4,42 @@ const ActivityFeed: React.FC = () => {
   const activities = [{
     id: 1,
     type: 'scan_complete',
-    user: 'You',
-    action: 'completed scanning',
-    object: 'Borobudur Relief',
-    time: '2 hours ago',
+    user: 'Anda',
+    action: 'menyelesaikan pemindaian',
+    object: 'Relief Borobudur',
+    time: '2 jam yang lalu',
     icon: <CameraIcon size={14} className="text-green-400" />
   }, {
     id: 2,
     type: 'model_processed',
-    user: 'System',
-    action: 'finished processing',
-    object: 'Wayang Kulit Model',
-    time: 'Yesterday',
+    user: 'Sistem',
+    action: 'menyelesaikan pemrosesan',
+    object: 'Model Wayang Kulit',
+    time: 'Kemarin',
     icon: <CheckCircleIcon size={14} className="text-blue-400" />
   }, {
     id: 3,
     type: 'user_comment',
     user: 'Sarah',
-    action: 'added a comment on',
-    object: 'Keris Artifact',
-    time: '2 days ago',
+    action: 'menambahkan komentar pada',
+    object: 'Artefak Keris',
+    time: '2 hari yang lalu',
     icon: <MessageCircleIcon size={14} className="text-purple-400" />
   }, {
     id: 4,
     type: 'model_shared',
-    user: 'You',
-    action: 'shared',
-    object: 'Temple Gate Model',
-    time: '3 days ago',
+    user: 'Anda',
+    action: 'membagikan',
+    object: 'Model Gerbang Candi',
+    time: '3 hari yang lalu',
     icon: <ShareIcon size={14} className="text-yellow-400" />
   }, {
     id: 5,
     type: 'tag_added',
     user: 'Admin',
-    action: 'added tags to',
-    object: 'Pottery Collection',
-    time: '5 days ago',
+    action: 'menambahkan tag ke',
+    object: 'Koleksi Tembikar',
+    time: '5 hari yang lalu',
     icon: <TagIcon size={14} className="text-pink-400" />
   }];
   const getActivityColor = (type: string) => {

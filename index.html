@@ -1,12 +1,34 @@
 <!doctype html>
-<html lang="en">
+<html lang="id">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React + TS</title>
+
+    <!-- Mobile-First Viewport -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover" />
+
+    <!-- PWA & Mobile Optimization -->
+    <meta name="theme-color" content="#1F2937" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Cureva" />
+
+    <!-- SEO & Description -->
+    <meta name="description" content="Cureva - Platform 3D Vision dengan AI untuk analisis gambar, Gaussian Splatting, dan model 3D" />
+    <meta name="keywords" content="3D, Gaussian Splatting, AI Vision, VLM, Image Analysis" />
+    <meta name="author" content="Cureva Team" />
+
+    <!-- Prevent zooming on input focus (iOS) -->
+    <meta name="format-detection" content="telephone=no" />
+
+    <!-- Preload fonts for better performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <title>Cureva - 3D Vision Platform</title>
   </head>
-  <body>
+  <body class="bg-gray-900 text-white antialiased">
     <div id="root"></div>
     <script type="module" src="/src/index.tsx"></script>
   </body>

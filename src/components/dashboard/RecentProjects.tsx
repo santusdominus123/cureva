@@ -3,26 +3,26 @@ import { CameraIcon, EyeIcon, EditIcon, MoreHorizontalIcon, PlayIcon, CheckCircl
 const RecentProjects: React.FC = () => {
   const projects = [{
     id: 1,
-    name: 'Borobudur Temple Relief',
-    type: '3D Scan',
-    status: 'Processing',
-    lastUpdated: '2 hours ago',
+    name: 'Relief Candi Borobudur',
+    type: 'Pemindaian 3D',
+    status: 'Memproses',
+    lastUpdated: '2 jam yang lalu',
     thumbnail: 'https://images.unsplash.com/photo-1605792657660-596af9009e82?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
     progress: 75
   }, {
     id: 2,
-    name: 'Wayang Kulit Collection',
-    type: 'Multi-angle Photo',
-    status: 'Completed',
-    lastUpdated: 'Yesterday',
+    name: 'Koleksi Wayang Kulit',
+    type: 'Foto Multi-sudut',
+    status: 'Selesai',
+    lastUpdated: 'Kemarin',
     thumbnail: 'https://images.unsplash.com/photo-1582560475093-ba66accbc424?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
     progress: 100
   }, {
     id: 3,
-    name: 'Keris Artifact',
-    type: 'Video Scan',
-    status: 'Completed',
-    lastUpdated: '3 days ago',
+    name: 'Artefak Keris',
+    type: 'Pemindaian Video',
+    status: 'Selesai',
+    lastUpdated: '3 hari yang lalu',
     thumbnail: 'https://images.unsplash.com/photo-1589187832032-3c560480f548?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
     progress: 100
   }];
@@ -36,7 +36,7 @@ const RecentProjects: React.FC = () => {
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
               {/* Status Icon */}
               <div className="absolute bottom-2 left-2">
-                {project.status === 'Processing' ? (
+                {project.status === 'Memproses' ? (
                   <div className="w-5 h-5 bg-yellow-500/20 rounded-full flex items-center justify-center">
                     <ClockIcon size={12} className="text-yellow-400" />
                   </div>
@@ -54,7 +54,7 @@ const RecentProjects: React.FC = () => {
                 <div className="flex-1">
                   <h3 className="font-semibold text-white text-sm leading-tight">{project.name}</h3>
                   <div className="flex items-center mt-1">
-                    {project.type === '3D Scan' ? (
+                    {project.type === 'Pemindaian 3D' ? (
                       <PlayIcon size={12} className="text-gray-400 mr-1" />
                     ) : (
                       <CameraIcon size={12} className="text-gray-400 mr-1" />
@@ -78,8 +78,8 @@ const RecentProjects: React.FC = () => {
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
                   <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                    project.status === 'Processing' 
-                      ? 'bg-yellow-500/20 text-yellow-400' 
+                    project.status === 'Memproses'
+                      ? 'bg-yellow-500/20 text-yellow-400'
                       : 'bg-green-500/20 text-green-400'
                   }`}>
                     {project.status}
@@ -89,12 +89,12 @@ const RecentProjects: React.FC = () => {
                 
                 {/* Progress Bar */}
                 <div className="w-full bg-gray-700/50 rounded-full h-1.5">
-                  <div 
+                  <div
                     className={`h-1.5 rounded-full transition-all duration-500 ${
-                      project.status === 'Processing' 
-                        ? 'bg-gradient-to-r from-yellow-500 to-orange-500' 
+                      project.status === 'Memproses'
+                        ? 'bg-gradient-to-r from-yellow-500 to-orange-500'
                         : 'bg-gradient-to-r from-green-500 to-emerald-500'
-                    }`} 
+                    }`}
                     style={{ width: `${project.progress}%` }}
                   ></div>
                 </div>

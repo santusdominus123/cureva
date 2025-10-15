@@ -1,0 +1,93 @@
+GOOGLE DRIVE INTEGRATION SETUP
+================================
+
+This server automatically watches a Google Drive folder for new dataset files.
+When a file is uploaded to the folder, it will be automatically downloaded and processed.
+
+SETUP STEPS:
+
+1. Create Google Cloud Project
+   - Go to: https://console.cloud.google.com/
+   - Create a new project or use existing one
+
+2. Enable Google Drive API
+   - Go to: APIs & Services > Library
+   - Search "Google Drive API"
+   - Click Enable
+
+3. Create Service Account
+   - Go to: APIs & Services > Credentials
+   - Click "Create Credentials" > "Service Account"
+   - Name: "dataset-processor" (or any name)
+   - Role: None needed for basic access
+   - Click Done
+
+4. Create Service Account Key
+   - Click on the service account you created
+   - Go to "Keys" tab
+   - Click "Add Key" > "Create New Key"
+   - Choose JSON format
+   - Download the JSON file
+   - Rename it to "credentials.json"
+   - Place it in the server-side/ folder
+
+5. Share Google Drive Folder
+   - Create a folder in Google Drive for datasets
+   - Right-click the folder > Share
+   - Add the service account email (found in credentials.json as "client_email")
+   - Give "Viewer" permission (read-only)
+   - Copy the Folder ID from the URL:
+     https://drive.google.com/drive/folders/FOLDER_ID_HERE
+
+6. Configure the Server
+   - Option A: Use API endpoint
+     POST http://localhost:5000/api/gdrive/config
+     Body: {"folder_id": "YOUR_FOLDER_ID"}
+
+   - Option B: Edit app.py
+     Set: app.config['GDRIVE_WATCH_FOLDER_ID'] = 'YOUR_FOLDER_ID'
+
+7. Install Dependencies
+   cd server-side
+   pip install -r requirements.txt
+
+8. Run the Server
+   python app.py
+
+USAGE:
+
+- Upload files to the shared Google Drive folder
+- Server checks every 30 seconds (configurable)
+- New files are automatically downloaded and processed
+- WebSocket notifications sent to connected clients
+- PLY files generated and available for download
+
+API ENDPOINTS:
+
+GET  /api/gdrive/status          - Check Google Drive integration status
+POST /api/gdrive/config          - Set folder ID to watch
+POST /api/gdrive/trigger-check   - Manually trigger folder check
+
+WEBSOCKET EVENTS:
+
+'gdrive_notification' - Emitted when:
+  - New file detected
+  - File downloading
+  - Download complete
+  - Processing started
+  - Error occurred
+
+SUPPORTED FILE TYPES:
+.zip, .rar, .tar, .gz, .7z, .jpg, .png, .jpeg
+
+TROUBLESHOOTING:
+
+- If server says "credentials file not found":
+  Make sure credentials.json is in server-side/ folder
+
+- If no files are detected:
+  Check folder ID is correct
+  Verify service account has access to folder
+  Try manual trigger: POST /api/gdrive/trigger-check
+
+- Check server logs for detailed error messages

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Show Redirect URI - Cureva</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        .info-box {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .uri-display {
+            background: #2d3748;
+            color: #48bb78;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            word-break: break-all;
+            position: relative;
+        }
+        .copy-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        .copy-btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .copy-btn:active {
+            transform: translateY(0);
+        }
+        .success {
+            background: #48bb78;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            margin-top: 10px;
+            display: none;
+            animation: slideIn 0.3s;
+        }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .instructions {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            color: #856404;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .instructions ol {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+        .instructions li {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        .link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .link:hover {
+            text-decoration: underline;
+        }
+        .section {
+            margin: 30px 0;
+        }
+        .section-title {
+            color: #2d3748;
+            font-size: 20px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        .uri-list {
+            list-style: none;
+            margin: 15px 0;
+        }
+        .uri-list li {
+            background: #f8f9fa;
+            padding: 12px 15px;
+            margin: 8px 0;
+            border-radius: 6px;
+            border-left: 3px solid #667eea;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Google OAuth Redirect URI Helper</h1>
+        <p class="subtitle">Untuk fix error: redirect_uri_mismatch</p>
+
+        <div class="info-box">
+            <strong>⚡ Current URL:</strong>
+            <div id="currentUrl" style="margin-top: 10px; color: #667eea; font-weight: bold;"></div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">📋 Redirect URIs yang Harus Didaftarkan:</div>
+
+            <div class="uri-display" id="mainUri">
+                <div id="redirectUri"></div>
+            </div>
+            <button class="copy-btn" onclick="copyUri('redirectUri')">📋 Copy Main URI</button>
+            <div id="success1" class="success">✅ Copied to clipboard!</div>
+
+            <p style="margin: 20px 0; color: #666;">
+                <strong>JUGA tambahkan variations berikut:</strong>
+            </p>
+
+            <ul class="uri-list" id="allUris"></ul>
+
+            <button class="copy-btn" onclick="copyAllUris()">📋 Copy All URIs</button>
+            <div id="success2" class="success">✅ All URIs copied to clipboard!</div>
+        </div>
+
+        <div class="instructions">
+            <strong>📖 Cara Menambahkan ke Google Cloud Console:</strong>
+            <ol>
+                <li>Buka <a href="https://console.cloud.google.com/apis/credentials" target="_blank" class="link">Google Cloud Console - Credentials</a></li>
+                <li>Pilih project Anda</li>
+                <li>Click OAuth Client ID Anda</li>
+                <li>Di <strong>"Authorized JavaScript origins"</strong>, pastikan ada origin (tanpa path)</li>
+                <li>Di <strong>"Authorized redirect URIs"</strong>, click <strong>"+ ADD URI"</strong></li>
+                <li>Paste semua URIs di atas (satu per satu)</li>
+                <li>Click <strong>"SAVE"</strong></li>
+                <li>Tunggu 5-10 menit untuk propagation</li>
+                <li>Restart dev server dan try again!</li>
+            </ol>
+        </div>
+
+        <div class="info-box">
+            <strong>💡 Tips:</strong>
+            <ul style="margin-top: 10px; margin-left: 20px;">
+                <li>URI harus <strong>exact match</strong> (including trailing slash)</li>
+                <li>Tambahkan semua variations untuk avoid future errors</li>
+                <li>Changes butuh 5-10 menit untuk aktif</li>
+                <li>Clear browser cache setelah update</li>
+            </ul>
+        </div>
+
+        <p style="text-align: center; margin-top: 30px; color: #666;">
+            Need more help? Check
+            <a href="./FIX_REDIRECT_URI_MISMATCH.md" class="link">FIX_REDIRECT_URI_MISMATCH.md</a>
+        </p>
+    </div>
+
+    <script>
+        // Get current URL info
+        const protocol = window.location.protocol; // http: or https:
+        const host = window.location.host; // localhost:5173
+        const origin = window.location.origin; // http://localhost:5173
+        const pathname = '/drone-camera'; // The path for drone camera page
+
+        // Display current URL
+        document.getElementById('currentUrl').textContent = window.location.href;
+
+        // Main redirect URI
+        const mainRedirectUri = origin + pathname;
+        document.getElementById('redirectUri').textContent = mainRedirectUri;
+
+        // All variations to add
+        const allUris = [
+            origin + pathname,           // http://localhost:5173/drone-camera
+            origin + pathname + '/',     // http://localhost:5173/drone-camera/
+            origin,                       // http://localhost:5173
+            origin + '/',                 // http://localhost:5173/
+        ];
+
+        // Remove duplicates
+        const uniqueUris = [...new Set(allUris)];
+
+        // Display all URIs
+        const uriList = document.getElementById('allUris');
+        uniqueUris.forEach(uri => {
+            const li = document.createElement('li');
+            li.textContent = uri;
+            uriList.appendChild(li);
+        });
+
+        // Copy single URI
+        function copyUri(elementId) {
+            const text = document.getElementById(elementId).textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                const successEl = document.getElementById('success1');
+                successEl.style.display = 'block';
+                setTimeout(() => {
+                    successEl.style.display = 'none';
+                }, 3000);
+            });
+        }
+
+        // Copy all URIs
+        function copyAllUris() {
+            const text = uniqueUris.join('\n');
+            navigator.clipboard.writeText(text).then(() => {
+                const successEl = document.getElementById('success2');
+                successEl.style.display = 'block';
+                setTimeout(() => {
+                    successEl.style.display = 'none';
+                }, 3000);
+            });
+        }
+
+        // Auto-log for debugging
+        console.log('=== REDIRECT URI INFO ===');
+        console.log('Current URL:', window.location.href);
+        console.log('Origin:', origin);
+        console.log('Main Redirect URI:', mainRedirectUri);
+        console.log('All URIs to add:');
+        uniqueUris.forEach(uri => console.log('  -', uri));
+        console.log('========================');
+    </script>
+</body>
+</html>
