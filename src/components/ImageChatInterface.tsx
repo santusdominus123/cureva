@@ -151,15 +151,15 @@ export const ImageChatInterface: React.FC<ImageChatInterfaceProps> = ({
   }
 
   return (
-    <div className="flex flex-col h-full bg-white rounded-lg shadow-lg overflow-hidden">
+    <div className="flex flex-col h-full bg-gray-900 rounded-lg shadow-lg overflow-hidden">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 flex items-center justify-between">
+      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-3 md:p-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <MessageSquare className="w-6 h-6" />
           <div>
-            <h3 className="font-semibold">Chat dengan Gambar</h3>
+            <h3 className="font-semibold">Obrolan dengan Gambar</h3>
             <p className="text-xs opacity-90">
-              {sessionStarted ? `Provider: ${currentProvider.toUpperCase()}` : 'Belum dimulai'}
+              {sessionStarted ? `Penyedia: ${currentProvider.toUpperCase()}` : 'Belum dimulai'}
             </p>
           </div>
         </div>
@@ -167,7 +167,7 @@ export const ImageChatInterface: React.FC<ImageChatInterfaceProps> = ({
           <button
             onClick={() => setShowSettings(!showSettings)}
             className="p-2 hover:bg-white/20 rounded-lg transition-colors"
-            title="Settings"
+            title="Pengaturan"
           >
             <Settings className="w-5 h-5" />
           </button>
@@ -175,7 +175,7 @@ export const ImageChatInterface: React.FC<ImageChatInterfaceProps> = ({
             <button
               onClick={handleClearChat}
               className="p-2 hover:bg-white/20 rounded-lg transition-colors"
-              title="Clear Chat"
+              title="Hapus Obrolan"
             >
               <Trash2 className="w-5 h-5" />
             </button>
@@ -185,8 +185,8 @@ export const ImageChatInterface: React.FC<ImageChatInterfaceProps> = ({
 
       {/* Settings Panel */}
       {showSettings && (
-        <div className="bg-gray-50 border-b p-3">
-          <p className="text-sm font-medium text-gray-700 mb-2">Pilih Provider:</p>
+        <div className="bg-gray-800 border-b border-gray-700 p-3">
+          <p className="text-sm font-medium text-gray-200 mb-2">Pilih Provider:</p>
           <div className="flex gap-2">
             {availableProviders.map((provider) => (
               <button
@@ -195,7 +195,7 @@ export const ImageChatInterface: React.FC<ImageChatInterfaceProps> = ({
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                   currentProvider === provider
                     ? 'bg-blue-600 text-white'
-                    : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                    : 'bg-gray-700 text-gray-200 border border-gray-600 hover:bg-gray-600'
                 }`}
               >
                 {provider === 'gemini' ? 'Gemini (Gratis)' : 'GPT-4 Vision (Berbayar)'}
@@ -206,81 +206,120 @@ export const ImageChatInterface: React.FC<ImageChatInterfaceProps> = ({
         </div>
       )}
 
-      {/* Image Preview */}
-      {previewUrl && (
-        <div className="p-3 bg-gray-50 border-b">
-          <img
-            src={previewUrl}
-            alt="Preview"
-            className="h-32 w-full object-cover rounded-lg"
-          />
-        </div>
-      )}
-
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
+      <div className="flex-1 overflow-y-auto p-3 md:p-4 space-y-3 md:space-y-4 bg-gray-900">
         {!sessionStarted ? (
-          <div className="text-center py-8">
-            <ImageIcon className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500 mb-4">
-              {imageFile
-                ? 'Klik "Mulai Chat" untuk bertanya tentang gambar'
-                : 'Upload gambar untuk memulai chat'}
-            </p>
-            {imageFile && (
-              <button
-                onClick={handleStartSession}
-                disabled={isLoading}
-                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="w-5 h-5 animate-spin inline mr-2" />
-                    Memulai...
-                  </>
-                ) : (
-                  'Mulai Chat'
-                )}
-              </button>
+          <div className="flex flex-col items-center justify-center h-full space-y-4 px-4">
+            {/* Image Preview - Compact */}
+            {previewUrl && (
+              <div className="relative w-full max-w-sm">
+                <img
+                  src={previewUrl}
+                  alt="Preview"
+                  className="w-full h-48 object-cover rounded-xl border-2 border-blue-500 shadow-lg"
+                />
+                <div className="absolute top-2 right-2 bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-medium">
+                  Pratinjau
+                </div>
+              </div>
             )}
-          </div>
-        ) : messages.length === 0 ? (
-          <div className="text-center py-8">
-            <MessageSquare className="w-16 h-16 text-blue-300 mx-auto mb-4" />
-            <p className="text-gray-600 font-medium mb-2">Chat Siap!</p>
-            <p className="text-sm text-gray-500">
-              Tanyakan apapun tentang gambar ini. Contoh:
-            </p>
-            <div className="mt-3 space-y-2 text-sm text-left max-w-md mx-auto">
-              <div className="bg-white p-2 rounded border">
-                • "Apa yang terlihat di gambar ini?"
-              </div>
-              <div className="bg-white p-2 rounded border">
-                • "Ada kerusakan apa saja?"
-              </div>
-              <div className="bg-white p-2 rounded border">
-                • "Berikan rekomendasi tindakan"
-              </div>
+
+            {/* Start Button - Prominent */}
+            <div className="text-center space-y-3">
+              {imageFile ? (
+                <>
+                  <MessageSquare className="w-12 h-12 text-blue-400 mx-auto" />
+                  <p className="text-gray-200 font-medium text-lg">Gambar siap dianalisis!</p>
+                  <p className="text-gray-400 text-sm">Mulai obrolan untuk bertanya tentang gambar ini</p>
+                  <button
+                    onClick={handleStartSession}
+                    disabled={isLoading}
+                    className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-3 rounded-xl hover:from-blue-700 hover:to-purple-700 disabled:from-gray-600 disabled:to-gray-600 disabled:cursor-not-allowed transition-all shadow-lg font-medium text-base flex items-center gap-2 mx-auto"
+                  >
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                        Memulai Obrolan...
+                      </>
+                    ) : (
+                      <>
+                        <MessageSquare className="w-5 h-5" />
+                        Mulai Obrolan
+                      </>
+                    )}
+                  </button>
+                </>
+              ) : (
+                <>
+                  <ImageIcon className="w-16 h-16 text-gray-600 mx-auto" />
+                  <p className="text-gray-400">Unggah gambar terlebih dahulu untuk memulai obrolan</p>
+                </>
+              )}
             </div>
           </div>
         ) : (
           <>
+            {/* Image Preview Sticky - Shows during chat */}
+            {previewUrl && (
+              <div className="sticky top-0 z-10 bg-gray-800 border border-gray-700 rounded-lg p-2 mb-3 flex items-center gap-3">
+                <img
+                  src={previewUrl}
+                  alt="Context"
+                  className="w-12 h-12 object-cover rounded-md flex-shrink-0"
+                />
+                <div className="flex-1 min-w-0">
+                  <p className="text-gray-200 text-xs font-medium">Gambar Konteks</p>
+                  <p className="text-gray-500 text-xs truncate">Tanyakan apa saja tentang gambar ini</p>
+                </div>
+              </div>
+            )}
+
+            {/* Welcome message if no messages yet */}
+            {messages.length === 0 && (
+              <div className="text-center py-6">
+                <MessageSquare className="w-12 h-12 text-blue-400 mx-auto mb-3" />
+                <p className="text-gray-200 font-medium mb-2">Obrolan Aktif!</p>
+                <p className="text-xs text-gray-400 mb-3">Contoh pertanyaan:</p>
+                <div className="space-y-2 text-xs text-left max-w-xs mx-auto">
+                  <button
+                    onClick={() => setInputMessage("Apa yang terlihat di gambar ini?")}
+                    className="w-full bg-gray-800 text-gray-300 p-2 rounded-lg border border-gray-700 hover:bg-gray-700 hover:text-white transition-colors text-left"
+                  >
+                    💬 "Apa yang terlihat di gambar?"
+                  </button>
+                  <button
+                    onClick={() => setInputMessage("Ada kerusakan apa saja?")}
+                    className="w-full bg-gray-800 text-gray-300 p-2 rounded-lg border border-gray-700 hover:bg-gray-700 hover:text-white transition-colors text-left"
+                  >
+                    🔍 "Ada kerusakan apa saja?"
+                  </button>
+                  <button
+                    onClick={() => setInputMessage("Berikan rekomendasi tindakan")}
+                    className="w-full bg-gray-800 text-gray-300 p-2 rounded-lg border border-gray-700 hover:bg-gray-700 hover:text-white transition-colors text-left"
+                  >
+                    💡 "Berikan rekomendasi"
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Messages */}
             {messages.map((msg, idx) => (
               <div
                 key={idx}
                 className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 <div
-                  className={`max-w-[80%] rounded-lg p-3 ${
+                  className={`max-w-[85%] md:max-w-[80%] rounded-xl p-3 shadow-md ${
                     msg.role === 'user'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-white text-gray-800 border border-gray-200'
+                      ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white'
+                      : 'bg-gray-800 text-gray-100 border border-gray-700'
                   }`}
                 >
                   <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
                   <p
-                    className={`text-xs mt-1 ${
-                      msg.role === 'user' ? 'text-blue-100' : 'text-gray-400'
+                    className={`text-xs mt-1.5 ${
+                      msg.role === 'user' ? 'text-blue-100' : 'text-gray-500'
                     }`}
                   >
                     {new Date(msg.timestamp).toLocaleTimeString('id-ID', {
@@ -293,8 +332,8 @@ export const ImageChatInterface: React.FC<ImageChatInterfaceProps> = ({
             ))}
             {isLoading && (
               <div className="flex justify-start">
-                <div className="bg-white border border-gray-200 rounded-lg p-3">
-                  <Loader2 className="w-5 h-5 animate-spin text-blue-600" />
+                <div className="bg-gray-800 border border-gray-700 rounded-xl p-3 shadow-md">
+                  <Loader2 className="w-5 h-5 animate-spin text-blue-400" />
                 </div>
               </div>
             )}
@@ -305,7 +344,7 @@ export const ImageChatInterface: React.FC<ImageChatInterfaceProps> = ({
 
       {/* Input Area */}
       {sessionStarted && (
-        <div className="p-4 bg-white border-t">
+        <div className="p-3 md:p-4 bg-gray-800 border-t border-gray-700">
           <div className="flex gap-2">
             <input
               type="text"
@@ -314,12 +353,12 @@ export const ImageChatInterface: React.FC<ImageChatInterfaceProps> = ({
               onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
               placeholder="Tanyakan sesuatu tentang gambar..."
               disabled={isLoading}
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+              className="flex-1 px-4 py-3 bg-gray-700 text-white placeholder-gray-400 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-600 disabled:text-gray-400"
             />
             <button
               onClick={handleSendMessage}
               disabled={!inputMessage.trim() || isLoading}
-              className="bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+              className="bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors flex items-center justify-center min-w-[48px]"
             >
               <Send className="w-5 h-5" />
             </button>

@@ -4,7 +4,6 @@ import { NavLink } from "react-router-dom";
 import { HomeIcon, CameraIcon, ChevronLeftIcon, ChevronRightIcon, LogOutIcon, UserIcon, BoxIcon, PlaneIcon, Sparkles, Brain } from "lucide-react";
 import { auth } from "../../lib/firebase";
 import { signOut } from "firebase/auth";
-import logoImg from "../../assets/cureva_logo.jpg";
 
 interface SidebarProps {
   collapsed: boolean;
@@ -79,10 +78,16 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggleCollapse }) => {
       path: "/scan",
     },
     {
+      name: "VLM AI Analyzer",
+      icon: <Brain size={20} />,
+      path: "/vlm-demo",
+      badge: "AI",
+    },
+    {
       name: "Gaussian Splats",
       icon: <Sparkles size={20} />,
       path: "/gaussian",
-      badge: "Baru",
+      badge: "3D",
     },
     {
       name: "Kamera Drone",
@@ -98,7 +103,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggleCollapse }) => {
         {!collapsed && (
           <div className="flex items-center gap-2">
             <img
-              src={logoImg}
+              src="/src/assets/cureva_logo.jpg"
               alt="Cureva Logo"
               className="h-8 w-8 rounded-full object-cover border border-gray-700"
             />
@@ -107,7 +112,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggleCollapse }) => {
         )}
         {collapsed && (
           <img
-            src={logoImg}
+            src="/src/assets/cureva_logo.jpg"
             alt="Cureva Logo"
             className="h-8 w-8 rounded-full object-cover border border-gray-700"
           />

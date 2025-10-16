@@ -12,7 +12,12 @@
       "Bash(cat:*)",
       "Bash(git checkout:*)",
       "Bash(pip uninstall:*)",
-      "Bash(pip install:*)"
+      "Bash(pip install:*)",
+      "Bash(timeout:*)",
+      "Bash(pkill:*)",
+      "Bash(killall:*)",
+      "Bash(npm run dev:*)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []
