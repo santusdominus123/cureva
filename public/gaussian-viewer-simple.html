@@ -166,8 +166,11 @@
     });
 
     // Fungsi untuk capture screenshot dari canvas
-    function captureScreenshot() {
+    async function captureScreenshot() {
       try {
+        // Tunggu sebentar untuk memastikan frame selesai render
+        await new Promise(resolve => setTimeout(resolve, 100));
+
         // Cari canvas element yang di-render oleh viewer
         const canvas = document.querySelector('canvas');
         if (!canvas) {
@@ -175,14 +178,46 @@
           return;
         }
 
-        // Convert canvas ke data URL (base64 image)
-        const dataUrl = canvas.toDataURL('image/png');
+        console.log('Canvas found:', canvas.width, 'x', canvas.height);
 
-        // Kirim hasil screenshot ke parent window (React component)
-        window.parent.postMessage({
-          type: 'SCREENSHOT_RESULT',
-          dataUrl: dataUrl
-        }, '*');
+        // Untuk WebGL canvas, kita harus capture langsung tanpa intermediate canvas
+        // karena WebGL context bisa di-clear setelah draw
+        let dataUrl;
+
+        try {
+          // Try direct capture first
+          dataUrl = canvas.toDataURL('image/png', 1.0);
+          console.log('Direct screenshot captured, size:', dataUrl.length, 'bytes');
+        } catch (e) {
+          console.warn('Direct capture failed, trying with temp canvas:', e);
+
+          // Fallback: Buat canvas baru dengan white background
+          const tempCanvas = document.createElement('canvas');
+          tempCanvas.width = canvas.width;
+          tempCanvas.height = canvas.height;
+          const ctx = tempCanvas.getContext('2d', { willReadFrequently: true });
+
+          if (ctx) {
+            // Fill dengan white background
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+
+            // Draw original canvas di atas white background
+            ctx.drawImage(canvas, 0, 0);
+
+            // Convert ke data URL
+            dataUrl = tempCanvas.toDataURL('image/png', 0.95);
+            console.log('Temp canvas screenshot captured, size:', dataUrl.length, 'bytes');
+          }
+        }
+
+        if (dataUrl) {
+          // Kirim hasil screenshot ke parent window (React component)
+          window.parent.postMessage({
+            type: 'SCREENSHOT_RESULT',
+            dataUrl: dataUrl
+          }, '*');
+        }
       } catch (error) {
         console.error('Failed to capture screenshot:', error);
       }
@@ -207,7 +242,10 @@
           const viewer = new GaussianSplats3D.Viewer({
             cameraUp: [0, 1, 0],
             initialCameraPosition: [0, 1, 0],
-            initialCameraLookAt: [1, 0, 0]
+            initialCameraLookAt: [1, 0, 0],
+            // Enable screenshot capture untuk WebGL canvas
+            webXRMode: GaussianSplats3D.WebXRMode.None,
+            renderMode: GaussianSplats3D.RenderMode.Always
           });
 
           // Store viewer globally untuk screenshot
