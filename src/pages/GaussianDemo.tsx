@@ -28,6 +28,7 @@ const GaussianDemo: React.FC = () => {
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [uploadedImage, setUploadedImage] = useState<File | null>(null);
   const [showVLM, setShowVLM] = useState(false);
+  const [isAutoDetecting, setIsAutoDetecting] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -71,6 +72,16 @@ const GaussianDemo: React.FC = () => {
   const autoAnalyzeScreenshot = useCallback(async (imageDataUrl: string) => {
     try {
       console.log('🔍 Starting auto-analysis with screenshot...');
+      setIsAutoDetecting(true);
+
+      // Tambahkan pesan "detecting..." di chat
+      const detectingMessage: ChatMessage = {
+        role: 'assistant',
+        content: '🔍 Mendeteksi objek 3D...',
+        timestamp: new Date()
+      };
+      setChatMessages(prev => [...prev, detectingMessage]);
+
       const { vlmServiceEnhanced } = await import('../services/vlmServiceEnhanced');
 
       // Check if service is available
@@ -82,6 +93,7 @@ const GaussianDemo: React.FC = () => {
           timestamp: new Date()
         };
         setChatMessages(prev => [...prev, errorMessage]);
+        setIsAutoDetecting(false);
         return;
       }
 
@@ -97,11 +109,16 @@ const GaussianDemo: React.FC = () => {
 
       const aiMessage: ChatMessage = {
         role: 'assistant',
-        content: `✅ Objek 3D berhasil di-load!\n\n${responseText}\n\nSilakan tanya saya lebih lanjut tentang objek ini!`,
+        content: `✅ Objek 3D terdeteksi!\n\n${responseText}\n\nSilakan tanya saya lebih lanjut tentang objek ini!`,
         timestamp: new Date()
       };
 
-      setChatMessages(prev => [...prev, aiMessage]);
+      // Replace detecting message dengan hasil
+      setChatMessages(prev => {
+        const filtered = prev.filter(msg => msg.content !== '🔍 Mendeteksi objek 3D...');
+        return [...filtered, aiMessage];
+      });
+      setIsAutoDetecting(false);
     } catch (error) {
       console.error('❌ Auto analysis error:', error);
       const errorMessage: ChatMessage = {
@@ -109,7 +126,12 @@ const GaussianDemo: React.FC = () => {
         content: '❌ Gagal menganalisis objek 3D. Error: ' + (error as Error).message,
         timestamp: new Date()
       };
-      setChatMessages(prev => [...prev, errorMessage]);
+      // Replace detecting message dengan error
+      setChatMessages(prev => {
+        const filtered = prev.filter(msg => msg.content !== '🔍 Mendeteksi objek 3D...');
+        return [...filtered, errorMessage];
+      });
+      setIsAutoDetecting(false);
     }
   }, []);
 
@@ -122,10 +144,12 @@ const GaussianDemo: React.FC = () => {
         console.log('📸 Screenshot received, length:', event.data.dataUrl?.substring(0, 50));
         setCapturedImage(event.data.dataUrl);
         setUploadedImage(null);
-        setShowVLM(true);
 
-        // Auto-analyze screenshot untuk chat assistant
-        console.log('🚀 Triggering auto-analyze...');
+        // JANGAN tampilkan VLM panel saat auto-detect
+        // setShowVLM(true); // Commented out untuk invisible detection
+
+        // Auto-analyze screenshot untuk chat assistant (background, invisible)
+        console.log('🚀 Triggering auto-analyze (invisible mode)...');
         autoAnalyzeScreenshot(event.data.dataUrl);
       } else if (event.data.type === 'FILE_LOADED') {
         console.log('📁 File loaded:', event.data.metadata);
