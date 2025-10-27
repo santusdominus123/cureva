@@ -1,24 +1,12 @@
 {
   "permissions": {
     "allow": [
-      "Bash(python:*)",
-      "WebFetch(domain:github.com)",
-      "WebFetch(domain:raw.githubusercontent.com)",
-      "WebFetch(domain:api.github.com)",
-      "WebSearch",
-      "Bash(npm install:*)",
-      "Bash(mkdir:*)",
-      "Bash(move:*)",
-      "Bash(cat:*)",
-      "Bash(git checkout:*)",
-      "Bash(pip uninstall:*)",
-      "Bash(pip install:*)",
-      "Bash(timeout:*)",
-      "Bash(pkill:*)",
-      "Bash(killall:*)",
-      "Bash(npm run dev:*)",
-      "Bash(git add:*)",
-      "Bash(git commit -m \"$(cat <<''EOF''\nfeat: Advanced Gaussian Splats 3D Studio with full AI integration\n\nMajor Features:\n✨ Multi-panel professional layout (3D Viewer, AI Chat, VLM Analysis, File Metadata)\n🤖 Auto-detect objek 3D dengan AI Chat Assistant yang intelligent\n📊 Auto-populate metadata saat file 3D di-load\n📸 Auto-capture screenshot dan trigger VLM analysis\n💬 Conversational Q&A dengan context dari screenshot 3D\n🔍 VLM Analysis dengan references, accuracy, dan similar images\n📱 Responsive design (desktop grid + mobile tabs)\n\nTechnical Implementation:\n- chatWithImage() method untuk conversational AI dengan image context\n- Auto-send metadata dari iframe ke React via postMessage\n- Auto-screenshot setelah 2 detik render + auto initial analysis\n- Chat history untuk context-aware conversation\n- useCallback hook untuk proper React optimization\n- Error handling dan loading states lengkap\n\nWorkflow Automation:\n1. User upload file 3D (.ply/.splat/.ksplat)\n2. ✅ AUTO: Metadata terisi (filename, size, format, vertices)\n3. ✅ AUTO: Screenshot di-capture setelah 2 detik\n4. ✅ AUTO: VLM Analysis panel mulai analisis\n5. ✅ AUTO: Chat Assistant deteksi objek dan kirim deskripsi\n6. User bisa tanya apapun tentang objek via chat\n\nUI/UX:\n- Dark theme dengan glassmorphism effects\n- Live status indicators dan badges\n- Smooth transitions dan animations\n- Professional control buttons (Refresh, Maximize, Settings)\n- Mobile-friendly dengan 4 tab navigation\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
+      "Bash(git push:*)",
+      "Bash(if [ -f .env ])",
+      "Bash(then grep -E \"VITE_GEMINI_API_KEY|GEMINI\" .env)",
+      "Bash(else echo \".env file not found\")",
+      "Bash(fi)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []

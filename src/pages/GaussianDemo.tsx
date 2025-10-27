@@ -70,14 +70,30 @@ const GaussianDemo: React.FC = () => {
   // Auto analyze screenshot ketika pertama kali captured
   const autoAnalyzeScreenshot = useCallback(async (imageDataUrl: string) => {
     try {
+      console.log('🔍 Starting auto-analysis with screenshot...');
       const { vlmServiceEnhanced } = await import('../services/vlmServiceEnhanced');
 
-      // Quick initial analysis
+      // Check if service is available
+      if (!vlmServiceEnhanced.isAvailable()) {
+        console.error('❌ VLM service not available - missing API key');
+        const errorMessage: ChatMessage = {
+          role: 'assistant',
+          content: '⚠️ VLM service belum dikonfigurasi. Silakan tambahkan VITE_GEMINI_API_KEY di file .env',
+          timestamp: new Date()
+        };
+        setChatMessages(prev => [...prev, errorMessage]);
+        return;
+      }
+
+      // Quick initial analysis dengan prompt yang lebih spesifik
+      console.log('📸 Analyzing 3D object screenshot...');
       const responseText = await vlmServiceEnhanced.chatWithImage(
         imageDataUrl,
-        'Apa objek yang terlihat pada gambar 3D ini? Berikan deskripsi singkat dan padat.',
+        'Identifikasi objek 3D pada gambar ini. Jelaskan dengan detail: 1) Jenis objek apa ini? 2) Bentuk dan karakteristik utama? 3) Material atau tekstur yang terlihat? Jawab dalam Bahasa Indonesia dengan ringkas.',
         []
       );
+
+      console.log('✅ Analysis complete:', responseText);
 
       const aiMessage: ChatMessage = {
         role: 'assistant',
@@ -87,21 +103,32 @@ const GaussianDemo: React.FC = () => {
 
       setChatMessages(prev => [...prev, aiMessage]);
     } catch (error) {
-      console.error('Auto analysis error:', error);
+      console.error('❌ Auto analysis error:', error);
+      const errorMessage: ChatMessage = {
+        role: 'assistant',
+        content: '❌ Gagal menganalisis objek 3D. Error: ' + (error as Error).message,
+        timestamp: new Date()
+      };
+      setChatMessages(prev => [...prev, errorMessage]);
     }
   }, []);
 
   // Listen untuk screenshot result dan file loaded dari iframe
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
+      console.log('📨 Received message from iframe:', event.data.type);
+
       if (event.data.type === 'SCREENSHOT_RESULT') {
+        console.log('📸 Screenshot received, length:', event.data.dataUrl?.substring(0, 50));
         setCapturedImage(event.data.dataUrl);
         setUploadedImage(null);
         setShowVLM(true);
 
         // Auto-analyze screenshot untuk chat assistant
+        console.log('🚀 Triggering auto-analyze...');
         autoAnalyzeScreenshot(event.data.dataUrl);
       } else if (event.data.type === 'FILE_LOADED') {
+        console.log('📁 File loaded:', event.data.metadata);
         // Auto-populate metadata ketika file di-load
         const metadata: FileMetadata = {
           name: event.data.metadata.name,
