@@ -276,15 +276,15 @@
     <div class="grid">
       <!-- View Panel -->
       <div class="panel">
-        <div class="panel-title">📁 View Gaussian Splat</div>
+        <div class="panel-title">📁 Lihat Gaussian Splat</div>
 
         <div style="margin-bottom: 16px;">
-          <label for="viewFile" class="file-label">Choose File</label>
+          <label for="viewFile" class="file-label">Pilih File</label>
           <input type="file" id="viewFile" class="input-file" accept=".ply,.splat,.ksplat" onchange="onFileChange(this, 'viewFileName')">
-          <span id="viewFileName" class="file-name">(No file chosen)</span>
+          <span id="viewFileName" class="file-name">(Belum ada file dipilih)</span>
         </div>
 
-        <button class="button" onclick="viewFile()">View</button>
+        <button class="button" onclick="viewFile()">Lihat</button>
 
         <div class="status-text" id="viewStatus"></div>
         <div class="error-text" id="viewError"></div>
@@ -292,15 +292,15 @@
 
       <!-- Convert Panel -->
       <div class="panel">
-        <div class="panel-title">🔄 Convert to .ksplat</div>
+        <div class="panel-title">🔄 Konversi ke .ksplat</div>
 
         <div style="margin-bottom: 16px;">
-          <label for="convertFile" class="file-label">Choose File</label>
+          <label for="convertFile" class="file-label">Pilih File</label>
           <input type="file" id="convertFile" class="input-file" accept=".ply,.splat" onchange="onFileChange(this, 'convertFileName')">
-          <span id="convertFileName" class="file-name">(No file chosen)</span>
+          <span id="convertFileName" class="file-name">(Belum ada file dipilih)</span>
         </div>
 
-        <button class="button" onclick="convertFile()">Convert</button>
+        <button class="button" onclick="convertFile()">Konversi</button>
 
         <div class="status-text" id="convertStatus"></div>
         <div class="error-text" id="convertError"></div>
@@ -308,11 +308,11 @@
 
       <!-- Mouse Controls -->
       <div class="panel">
-        <div class="panel-title">🖱️ Mouse Controls</div>
+        <div class="panel-title">🖱️ Kontrol Mouse</div>
         <ul>
-          <li>Left click + drag: Rotate</li>
-          <li>Right click + drag: Pan</li>
-          <li>Scroll wheel: Zoom</li>
+          <li>Klik kiri + seret: Rotasi</li>
+          <li>Klik kanan + seret: Geser</li>
+          <li>Scroll roda: Zoom</li>
         </ul>
       </div>
     </div>

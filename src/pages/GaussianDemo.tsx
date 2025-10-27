@@ -31,12 +31,12 @@ const GaussianDemo: React.FC = () => {
           {isMobile ? (
             <>
               <Smartphone size={16} className="text-blue-400" />
-              <span>Mobile View</span>
+              <span>Tampilan Mobile</span>
             </>
           ) : (
             <>
               <Monitor size={16} className="text-green-400" />
-              <span>Desktop View</span>
+              <span>Tampilan Desktop</span>
             </>
           )}
         </div>
@@ -92,17 +92,17 @@ const GaussianDemo: React.FC = () => {
         <div className="border-t border-gray-800 px-3 md:px-6 py-2 md:py-3 bg-gray-900/70">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 text-xs md:text-sm text-gray-400">
             <div className="flex-1">
-              <strong className="text-gray-300">Controls:</strong>{' '}
+              <strong className="text-gray-300">Kontrol:</strong>{' '}
               {isMobile ? (
-                <span>Touch: Rotate • Pinch: Zoom • 2-Finger: Pan</span>
+                <span>Sentuh: Rotasi • Cubit: Zoom • 2-Jari: Geser</span>
               ) : (
-                <span>Left Click+Drag: Rotate | Right Click+Drag: Pan | Scroll: Zoom</span>
+                <span>Klik Kiri+Seret: Rotasi | Klik Kanan+Seret: Geser | Scroll: Zoom</span>
               )}
             </div>
             <div className="text-gray-500 flex items-center gap-2">
               <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
               <span className="hidden md:inline">Gaussian Splat</span>
-              <span className="text-emerald-400 font-medium">Live</span>
+              <span className="text-emerald-400 font-medium">Langsung</span>
             </div>
           </div>
         </div>

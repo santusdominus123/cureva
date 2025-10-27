@@ -79,7 +79,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggleCollapse }) => {
       path: "/scan",
     },
     {
-      name: "Gaussian Splats",
+      name: "Splat Gaussian",
       icon: <Sparkles size={20} />,
       path: "/gaussian",
       badge: "Baru",

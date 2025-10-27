@@ -3293,31 +3293,31 @@ const ScanCapture = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const tabs = [
-    { id: "photo", name: "36-Degree Capture", icon: <SparklesIcon size={18} className="mr-2" />, shortName: "Capture" },
-    { id: "datasets", name: "Dataset Manager", icon: <DatabaseIcon size={18} className="mr-2" />, shortName: "Datasets" },
-    { id: "video", name: "Video Scan", icon: <VideoIcon size={18} className="mr-2" />, shortName: "Video" },
+    { id: "photo", name: "Tangkapan 36-Derajat", icon: <SparklesIcon size={18} className="mr-2" />, shortName: "Tangkap" },
+    { id: "datasets", name: "Pengelola Dataset", icon: <DatabaseIcon size={18} className="mr-2" />, shortName: "Dataset" },
+    { id: "video", name: "Pindai Video", icon: <VideoIcon size={18} className="mr-2" />, shortName: "Video" },
   ];
 
   return (
     <MobileScanWrapper>
       {/* Mobile-Optimized Header */}
       <MobileScanHeader
-        title="Cureva 3D Studio"
-        subtitle="Professional 3D model creation powered by Gaussian Splatting technology"
+        title="Cureva Studio 3D"
+        subtitle="Pembuatan model 3D profesional dengan teknologi Gaussian Splatting"
         badges={[
           {
             icon: <SparklesIcon size={14} className="text-blue-400" />,
-            text: "46-Degree System",
+            text: "Sistem 46-Derajat",
             color: "blue",
           },
           {
             icon: <BrainIcon size={14} className="text-purple-400" />,
-            text: "Enhanced",
+            text: "Ditingkatkan",
             color: "purple",
           },
           {
             icon: <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>,
-            text: "Live Preview",
+            text: "Pratinjau Langsung",
             color: "green",
           },
         ]}
@@ -3339,15 +3339,15 @@ const ScanCapture = () => {
           {activeTab === "video" && (
             <div className="text-center py-12">
               <VideoIcon size={48} className="mx-auto text-gray-400 mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Video Scan</h3>
-              <p className="text-gray-400">Coming soon - Video-based 3D scanning with real-time reconstruction</p>
+              <h3 className="text-xl font-semibold mb-2">Pindai Video</h3>
+              <p className="text-gray-400">Segera hadir - Pemindaian 3D berbasis video dengan rekonstruksi real-time</p>
             </div>
           )}
           {activeTab === "upload" && (
             <div className="text-center py-12">
               <UploadIcon size={48} className="mx-auto text-gray-400 mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Upload Files</h3>
-              <p className="text-gray-400 max-w-prose mx-auto">Upload images or existing 3D models for processing and viewing</p>
+              <h3 className="text-xl font-semibold mb-2">Unggah File</h3>
+              <p className="text-gray-400 max-w-prose mx-auto">Unggah gambar atau model 3D yang ada untuk diproses dan ditampilkan</p>
             </div>
           )}
         </div>

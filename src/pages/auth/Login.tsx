@@ -11,6 +11,7 @@ import {
   FolderIcon,
   ShareIcon,
 } from 'lucide-react';
+import logoImg from '../../assets/cureva_logo.jpg';
 
 interface LoginProps {
   onLogin: (user: any) => void; // Updated to pass user data
@@ -151,7 +152,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
         {/* Logo */}
         <div className="pt-8 flex flex-col items-center">
           <img
-            src="/src/assets/cureva_logo.jpg"
+            src={logoImg}
             alt="Cureva Logo"
             className="h-24 w-24 rounded-full object-cover border-4 border-white/20 shadow-2xl mb-4"
           />
@@ -217,7 +218,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
         {/* Logo */}
         <div className="text-center">
           <img
-            src="/src/assets/cureva_logo.jpg"
+            src={logoImg}
             alt="Cureva Logo"
             className="mx-auto h-20 w-20 rounded-full object-cover border-2 border-white/20"
           />

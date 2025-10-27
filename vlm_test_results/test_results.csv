@@ -1,0 +1,193 @@
+success,result,raw_text,processing_time,confidence,word_count,char_count,has_json,error,filename,test_type,image_path
+True,"{'object_type': 'Candi', 'object_name': 'Candi Tikus', 'period': 'Era Majapahit', 'estimated_age': 'sekitar 600 tahun', 'condition': 'Sedang', 'damage_level': 'Medium', 'damage_details': ['Erosi pada permukaan batu bata', 'Pertumbuhan lumut dan vegetasi pada struktur', 'Retakan pada beberapa bagian candi', 'Beberapa batu bata hilang atau rusak', 'Perubahan warna batu bata akibat paparan air dan cuaca'], 'visible_damage_percentage': '30%', 'historical_value': 'Candi Tikus merupakan situs arkeologi penting yang memberikan wawasan tentang arsitektur dan kebudayaan pada masa Kerajaan Majapahit. Diduga digunakan sebagai tempat pemandian raja dan keluarga kerajaan, atau sebagai tempat penampungan air suci untuk upacara keagamaan.', 'cultural_significance': 'Candi Tikus adalah representasi penting dari warisan budaya Majapahit. Struktur dan desainnya mencerminkan pengaruh Hindu-Buddha pada masa itu. Sebagai salah satu peninggalan sejarah, Candi Tikus memiliki nilai edukasi dan pariwisata yang signifikan.', 'recommendations': ['Pembersihan lumut dan vegetasi secara berkala dengan metode yang tidak merusak batu bata', 'Konsolidasi batu bata yang retak dan rapuh', 'Penggantian batu bata yang hilang atau rusak dengan bahan yang sesuai', 'Pembuatan sistem drainase yang lebih baik untuk mengurangi genangan air', 'Penelitian lebih lanjut mengenai fungsi dan sejarah Candi Tikus', 'Pemberian informasi kepada pengunjung tentang sejarah dan signifikansi candi', 'Pembatasan akses pengunjung ke area yang rentan kerusakan'], 'preservation_priority': 'High', 'confidence_level': '90%'}","```json
+{
+    ""object_type"": ""Candi"",
+    ""object_name"": ""Candi Tikus"",
+    ""period"": ""Era Majapahit"",
+    ""estimated_age"": ""sekitar 600 tahun"",
+    ""condition"": ""Sedang"",
+    ""damage_level"": ""Medium"",
+    ""damage_details"": [
+        ""Erosi pada permukaan batu bata"",
+        ""Pertumbuhan lumut dan vegetasi pada struktur"",
+        ""Retakan pada beberapa bagian candi"",
+        ""Beberapa batu bata hilang atau rusak"",
+        ""Perubahan warna batu bata akibat paparan air dan cuaca""
+    ],
+    ""visible_damage_percentage"": ""30%"",
+    ""historical_value"": ""Candi Tikus merupakan situs arkeologi penting yang memberikan wawasan tentang arsitektur dan kebudayaan pada masa Kerajaan Majapahit. Diduga digunakan sebagai tempat pemandian raja dan keluarga kerajaan, atau sebagai tempat penampungan air suci untuk upacara keagamaan."",
+    ""cultural_significance"": ""Candi Tikus adalah representasi penting dari warisan budaya Majapahit. Struktur dan desainnya mencerminkan pengaruh Hindu-Buddha pada masa itu. Sebagai salah satu peninggalan sejarah, Candi Tikus memiliki nilai edukasi dan pariwisata yang signifikan."",
+    ""recommendations"": [
+        ""Pembersihan lumut dan vegetasi secara berkala dengan metode yang tidak merusak batu bata"",
+        ""Konsolidasi batu bata yang retak dan rapuh"",
+        ""Penggantian batu bata yang hilang atau rusak dengan bahan yang sesuai"",
+        ""Pembuatan sistem drainase yang lebih baik untuk mengurangi genangan air"",
+        ""Penelitian lebih lanjut mengenai fungsi dan sejarah Candi Tikus"",
+        ""Pemberian informasi kepada pengunjung tentang sejarah dan signifikansi candi"",
+        ""Pembatasan akses pengunjung ke area yang rentan kerusakan""
+    ],
+    ""preservation_priority"": ""High"",
+    ""confidence_level"": ""90%""
+}
+```",6.183574438095093,90.0,199,1763,True,,candi tikus.jpg,artifact,C:\Users\hengh\Desktop\testing dataset acuracy\candi tikus.jpg
+True,"{'object_type': 'Arca/Patung', 'object_name': 'Makara', 'period': 'Kemungkinan Periode Jawa Kuno (Abad ke-8 hingga ke-15 Masehi)', 'estimated_age': '600-1300 tahun', 'condition': 'Sedang', 'damage_level': 'Medium', 'damage_details': ['Erosi permukaan akibat paparan cuaca', 'Retakan kecil pada batu', 'Beberapa bagian detail ornamen aus', 'Hilangnya sebagian kecil ornamen (misalnya ujung ornamen)', 'Perubahan warna akibat lumut atau kotoran yang menempel', 'Potensi kerusakan struktural kecil karena pergeseran atau pergerakan tanah.'], 'visible_damage_percentage': '20%', 'historical_value': 'Makara adalah makhluk mitologis yang umum ditemukan pada gerbang masuk candi-candi di Asia Selatan dan Tenggara. Arca ini melambangkan peralihan dari dunia luar ke dunia suci di dalam candi.  Kehadirannya memberikan informasi penting tentang kepercayaan dan arsitektur pada masanya.', 'cultural_significance': 'Makara memiliki makna simbolis yang mendalam dalam budaya Hindu dan Budha.  Representasinya sebagai makhluk air menunjukkan hubungan dengan kesuburan dan kehidupan. Keahlian seni pahatnya mencerminkan kemampuan dan kepekaan estetik masyarakat Jawa Kuno.', 'recommendations': ['Pembersihan permukaan arca secara hati-hati untuk menghilangkan lumut dan kotoran menggunakan metode yang tidak merusak batu.', 'Aplikasi konsolidan untuk memperkuat batu dan mencegah erosi lebih lanjut.', 'Pemetaan retakan untuk memantau perkembangan kerusakan.', 'Pemasangan sistem drainase yang memadai di sekitar area arca untuk mencegah kelembaban berlebihan.', 'Dokumentasi fotografis secara berkala untuk merekam kondisi arca dari waktu ke waktu.', 'Pembuatan pagar pelindung untuk membatasi akses pengunjung dan mencegah kerusakan akibat sentuhan atau vandalisme.', 'Penelitian lebih lanjut untuk mengidentifikasi asal usul dan konteks sejarah arca dengan lebih akurat.'], 'preservation_priority': 'Medium', 'confidence_level': '85%'}","```json
+{
+    ""object_type"": ""Arca/Patung"",
+    ""object_name"": ""Makara"",
+    ""period"": ""Kemungkinan Periode Jawa Kuno (Abad ke-8 hingga ke-15 Masehi)"",
+    ""estimated_age"": ""600-1300 tahun"",
+    ""condition"": ""Sedang"",
+    ""damage_level"": ""Medium"",
+    ""damage_details"": [
+        ""Erosi permukaan akibat paparan cuaca"",
+        ""Retakan kecil pada batu"",
+        ""Beberapa bagian detail ornamen aus"",
+        ""Hilangnya sebagian kecil ornamen (misalnya ujung ornamen)"",
+        ""Perubahan warna akibat lumut atau kotoran yang menempel"",
+        ""Potensi kerusakan struktural kecil karena pergeseran atau pergerakan tanah.""
+    ],
+    ""visible_damage_percentage"": ""20%"",
+    ""historical_value"": ""Makara adalah makhluk mitologis yang umum ditemukan pada gerbang masuk candi-candi di Asia Selatan dan Tenggara. Arca ini melambangkan peralihan dari dunia luar ke dunia suci di dalam candi.  Kehadirannya memberikan informasi penting tentang kepercayaan dan arsitektur pada masanya."",
+    ""cultural_significance"": ""Makara memiliki makna simbolis yang mendalam dalam budaya Hindu dan Budha.  Representasinya sebagai makhluk air menunjukkan hubungan dengan kesuburan dan kehidupan. Keahlian seni pahatnya mencerminkan kemampuan dan kepekaan estetik masyarakat Jawa Kuno."",
+    ""recommendations"": [
+        ""Pembersihan permukaan arca secara hati-hati untuk menghilangkan lumut dan kotoran menggunakan metode yang tidak merusak batu."",
+        ""Aplikasi konsolidan untuk memperkuat batu dan mencegah erosi lebih lanjut."",
+        ""Pemetaan retakan untuk memantau perkembangan kerusakan."",
+        ""Pemasangan sistem drainase yang memadai di sekitar area arca untuk mencegah kelembaban berlebihan."",
+        ""Dokumentasi fotografis secara berkala untuk merekam kondisi arca dari waktu ke waktu."",
+        ""Pembuatan pagar pelindung untuk membatasi akses pengunjung dan mencegah kerusakan akibat sentuhan atau vandalisme."",
+        ""Penelitian lebih lanjut untuk mengidentifikasi asal usul dan konteks sejarah arca dengan lebih akurat.""
+    ],
+    ""preservation_priority"": ""Medium"",
+    ""confidence_level"": ""85%""
+}
+```",5.648145437240601,85.0,233,2108,True,,kala makara (2).jpg,artifact,C:\Users\hengh\Desktop\testing dataset acuracy\kala makara (2).jpg
+True,"{'object_type': 'Relief Candi', 'object_name': 'Kala Makara (Kemungkinan Merupakan bagian dari Candi)', 'period': 'Kemungkinan Abad ke-9 Masehi, Periode Mataram Kuno (Hindu)', 'estimated_age': 'sekitar 1100-1200 tahun', 'condition': 'Sedang', 'damage_level': 'Medium', 'damage_details': ['Erosi permukaan batu karena faktor lingkungan (hujan, angin, perubahan suhu)', 'Retakan halus pada beberapa bagian relief, terutama di sekitar area detail ukiran', 'Beberapa bagian detail ukiran aus atau hilang, terutama pada bagian hidung, gigi, dan ornamen rambut Kala', 'Perubahan warna batu karena lumut dan jamur', 'Adanya noda dan kotoran yang menempel pada permukaan batu'], 'visible_damage_percentage': '20-30%', 'historical_value': 'Representasi seni arsitektur candi Hindu dari periode Mataram Kuno. Relief Kala dan Makara sering digunakan sebagai elemen dekoratif di atas pintu masuk candi, dipercaya sebagai penjaga gerbang dan simbol penolak bala.', 'cultural_significance': 'Menunjukkan kekayaan tradisi seni ukir batu pada masa lalu. Merefleksikan kepercayaan dan kosmologi Hindu pada periode tersebut. Menjadi bagian penting dari warisan budaya Indonesia.', 'recommendations': ['Pembersihan permukaan batu secara berkala dengan metode yang tepat untuk menghilangkan lumut, jamur, dan kotoran. Hindari penggunaan bahan kimia keras yang dapat merusak batu.', 'Konsolidasi batu untuk memperkuat struktur batu yang mulai rapuh dan mencegah erosi lebih lanjut.', 'Perbaikan retakan dengan bahan yang kompatibel dengan batu asli.', 'Dokumentasi fotografi dan pemetaan detail kerusakan secara berkala untuk memantau perkembangan kerusakan.', 'Pemberian pelindung (contoh: atap sederhana) untuk mengurangi paparan langsung terhadap cuaca ekstrim (hujan asam, sinar UV berlebihan).', 'Penelitian lebih lanjut mengenai asal-usul dan konteks sejarah relief ini.'], 'preservation_priority': 'High', 'confidence_level': '85%'}","Berikut adalah analisis mendalam mengenai objek bersejarah dalam gambar, disajikan dalam format JSON yang diminta:
+
+```json
+{
+    ""object_type"": ""Relief Candi"",
+    ""object_name"": ""Kala Makara (Kemungkinan Merupakan bagian dari Candi)"",
+    ""period"": ""Kemungkinan Abad ke-9 Masehi, Periode Mataram Kuno (Hindu)"",
+    ""estimated_age"": ""sekitar 1100-1200 tahun"",
+    ""condition"": ""Sedang"",
+    ""damage_level"": ""Medium"",
+    ""damage_details"": [
+        ""Erosi permukaan batu karena faktor lingkungan (hujan, angin, perubahan suhu)"",
+        ""Retakan halus pada beberapa bagian relief, terutama di sekitar area detail ukiran"",
+        ""Beberapa bagian detail ukiran aus atau hilang, terutama pada bagian hidung, gigi, dan ornamen rambut Kala"",
+        ""Perubahan warna batu karena lumut dan jamur"",
+        ""Adanya noda dan kotoran yang menempel pada permukaan batu""
+    ],
+    ""visible_damage_percentage"": ""20-30%"",
+    ""historical_value"": ""Representasi seni arsitektur candi Hindu dari periode Mataram Kuno. Relief Kala dan Makara sering digunakan sebagai elemen dekoratif di atas pintu masuk candi, dipercaya sebagai penjaga gerbang dan simbol penolak bala."",
+    ""cultural_significance"": ""Menunjukkan kekayaan tradisi seni ukir batu pada masa lalu. Merefleksikan kepercayaan dan kosmologi Hindu pada periode tersebut. Menjadi bagian penting dari warisan budaya Indonesia."",
+    ""recommendations"": [
+        ""Pembersihan permukaan batu secara berkala dengan metode yang tepat untuk menghilangkan lumut, jamur, dan kotoran. Hindari penggunaan bahan kimia keras yang dapat merusak batu."",
+        ""Konsolidasi batu untuk memperkuat struktur batu yang mulai rapuh dan mencegah erosi lebih lanjut."",
+        ""Perbaikan retakan dengan bahan yang kompatibel dengan batu asli."",
+        ""Dokumentasi fotografi dan pemetaan detail kerusakan secara berkala untuk memantau perkembangan kerusakan."",
+        ""Pemberian pelindung (contoh: atap sederhana) untuk mengurangi paparan langsung terhadap cuaca ekstrim (hujan asam, sinar UV berlebihan)."",
+        ""Penelitian lebih lanjut mengenai asal-usul dan konteks sejarah relief ini.""
+    ],
+    ""preservation_priority"": ""High"",
+    ""confidence_level"": ""85%""
+}
+```
+
+**Penjelasan Tambahan:**
+
+*   **object\_type**: Diidentifikasi sebagai ""Relief Candi"" karena tampak seperti bagian dekoratif di atas pintu masuk. Kala dan Makara adalah motif umum pada arsitektur candi Hindu dan Buddha di Jawa.
+*   **object\_name**: ""Kala Makara"" adalah dugaan karena motif Kala (wajah raksasa) dan Makara (makhluk mitologis mirip naga) sangat umum.
+*   **period**: Berdasarkan gaya seni dan penggunaan material, diasumsikan berasal dari periode Mataram Kuno (Abad ke-9 Masehi).
+*   **condition**: Penilaian ""Sedang"" karena ada beberapa kerusakan, tetapi relief secara keseluruhan masih utuh dan dapat dikenali.
+*   **damage\_level**: Penilaian ""Medium"" sesuai dengan persentase kerusakan yang terlihat dan jenis kerusakan yang ada.
+*   **damage\_details**: Daftar rinci jenis kerusakan yang teramati, termasuk erosi, retakan, aus, dan perubahan warna.
+*   **historical\_value**: Penjelasan mengapa objek ini penting secara historis, dikaitkan dengan seni candi, kepercayaan agama, dan peran penjaga.
+*   **cultural\_significance**: Penjelasan nilai budaya, termasuk tradisi seni ukir batu dan kosmologi Hindu.
+*   **recommendations**: Daftar tindakan yang disarankan untuk melestarikan dan mengkonservasi relief, termasuk pembersihan, konsolidasi, perbaikan retakan, dan dokumentasi.
+*   **preservation\_priority**: ""High"" karena objek memiliki nilai historis dan budaya yang signifikan dan menghadapi risiko kerusakan lebih lanjut.
+*   **confidence\_level**: Penilaian ""85%"" karena identifikasi dan analisis didasarkan pada bukti visual dan pengetahuan umum tentang seni dan arsitektur candi di Jawa. Identifikasi lebih lanjut (misalnya melalui analisis material atau perbandingan dengan relief lain yang lebih terdokumentasi) dapat meningkatkan tingkat kepercayaan.
+
+Semoga analisis ini membantu!
+",8.837841510772705,85.0,482,4019,True,,kala makara.jpg,artifact,C:\Users\hengh\Desktop\testing dataset acuracy\kala makara.jpg
+True,"{'object_type': 'Relief', 'object_name': 'Tidak diketahui (kemungkinan bagian dari Kala Makara atau Dwarapala)', 'period': 'Kemungkinan periode Jawa Tengah (abad ke-8 hingga ke-10 Masehi)', 'estimated_age': 'Sekitar 1100-1300 tahun', 'condition': 'Sedang', 'damage_level': 'Medium', 'damage_details': ['Erosi permukaan karena pelapukan alami', 'Retakan pada beberapa bagian relief dan batu di sekitarnya', 'Kehilangan detail halus pada ukiran', 'Lubang besar pada bagian kepala (mungkin kerusakan atau bagian yang hilang)', 'Pertumbuhan lumut dan tanaman kecil di beberapa area', 'Pecahan kecil pada bagian tangan'], 'visible_damage_percentage': '25%', 'historical_value': 'Relief ini memberikan wawasan tentang seni pahat dan kepercayaan agama pada periode Jawa Tengah. Kehadiran Kala Makara atau Dwarapala umum ditemukan sebagai penjaga pintu masuk candi atau area suci, mencerminkan kepercayaan animisme dan Hindu-Buddha yang berkembang pada masa itu.', 'cultural_significance': 'Relief ini merupakan bagian dari warisan budaya Indonesia yang penting. Kehadirannya menunjukkan keterampilan dan keahlian seniman pada masa lalu, serta nilai-nilai budaya yang diwariskan dari generasi ke generasi.', 'recommendations': ['Pembersihan permukaan relief secara hati-hati untuk menghilangkan lumut dan kotoran tanpa merusak batu', 'Konsolidasi retakan dan bagian yang rapuh dengan bahan yang sesuai dan kompatibel dengan batu asli', 'Pencegahan pertumbuhan lumut dan tanaman dengan aplikasi biocida yang aman dan terkontrol', 'Pemantauan kondisi relief secara berkala untuk mendeteksi kerusakan lebih lanjut', 'Pembuatan dokumentasi foto dan pemetaan detail kerusakan untuk keperluan referensi dan konservasi di masa depan', 'Jika memungkinkan, penelitian lebih lanjut untuk mengidentifikasi konteks asli relief ini dan makna simboliknya'], 'preservation_priority': 'Medium', 'confidence_level': '85%'}","Berikut adalah analisis objek bersejarah dalam gambar, diformat dalam JSON:
+
+```json
+{
+    ""object_type"": ""Relief"",
+    ""object_name"": ""Tidak diketahui (kemungkinan bagian dari Kala Makara atau Dwarapala)"",
+    ""period"": ""Kemungkinan periode Jawa Tengah (abad ke-8 hingga ke-10 Masehi)"",
+    ""estimated_age"": ""Sekitar 1100-1300 tahun"",
+    ""condition"": ""Sedang"",
+    ""damage_level"": ""Medium"",
+    ""damage_details"": [
+        ""Erosi permukaan karena pelapukan alami"",
+        ""Retakan pada beberapa bagian relief dan batu di sekitarnya"",
+        ""Kehilangan detail halus pada ukiran"",
+        ""Lubang besar pada bagian kepala (mungkin kerusakan atau bagian yang hilang)"",
+        ""Pertumbuhan lumut dan tanaman kecil di beberapa area"",
+        ""Pecahan kecil pada bagian tangan""
+    ],
+    ""visible_damage_percentage"": ""25%"",
+    ""historical_value"": ""Relief ini memberikan wawasan tentang seni pahat dan kepercayaan agama pada periode Jawa Tengah. Kehadiran Kala Makara atau Dwarapala umum ditemukan sebagai penjaga pintu masuk candi atau area suci, mencerminkan kepercayaan animisme dan Hindu-Buddha yang berkembang pada masa itu."",
+    ""cultural_significance"": ""Relief ini merupakan bagian dari warisan budaya Indonesia yang penting. Kehadirannya menunjukkan keterampilan dan keahlian seniman pada masa lalu, serta nilai-nilai budaya yang diwariskan dari generasi ke generasi."",
+    ""recommendations"": [
+        ""Pembersihan permukaan relief secara hati-hati untuk menghilangkan lumut dan kotoran tanpa merusak batu"",
+        ""Konsolidasi retakan dan bagian yang rapuh dengan bahan yang sesuai dan kompatibel dengan batu asli"",
+        ""Pencegahan pertumbuhan lumut dan tanaman dengan aplikasi biocida yang aman dan terkontrol"",
+        ""Pemantauan kondisi relief secara berkala untuk mendeteksi kerusakan lebih lanjut"",
+        ""Pembuatan dokumentasi foto dan pemetaan detail kerusakan untuk keperluan referensi dan konservasi di masa depan"",
+        ""Jika memungkinkan, penelitian lebih lanjut untuk mengidentifikasi konteks asli relief ini dan makna simboliknya""
+    ],
+    ""preservation_priority"": ""Medium"",
+    ""confidence_level"": ""85%""
+}
+```
+
+**Penjelasan tambahan:**
+
+*   **object\_type:** Berdasarkan gambar, objek tersebut adalah relief pada dinding batu.
+*   **object\_name:** Sulit untuk menentukan nama spesifiknya tanpa informasi lebih lanjut tentang lokasinya. Namun, melihat bentuknya bisa diasosiasikan dengan Kala Makara (motif penjaga) atau Dwarapala.
+*   **period:** Periode Jawa Tengah diperkirakan karena gaya seni pahat dan penggunaan batu andesit.
+*   **condition:** Kondisinya dinilai ""sedang"" karena ada beberapa kerusakan yang terlihat, tetapi struktur utamanya masih utuh.
+*   **damage\_details:** Detail kerusakan mencakup erosi, retakan, kehilangan detail, lubang pada kepala, pertumbuhan lumut, dan pecahan.
+*   **visible\_damage\_percentage:** Perkiraan persentase area yang terkena dampak kerusakan.
+*   **historical\_value:** Relief ini penting karena memberikan informasi tentang seni, agama, dan budaya masyarakat Jawa Tengah kuno.
+*   **cultural\_significance:** Relief adalah bagian dari warisan budaya Indonesia yang harus dilestarikan.
+*   **recommendations:** Rekomendasi konservasi mencakup pembersihan, konsolidasi, pencegahan pertumbuhan lumut, pemantauan, dan dokumentasi.
+*   **preservation\_priority:** Prioritas pelestarian dinilai ""sedang"" karena kerusakannya tidak mengancam keberadaan relief secara keseluruhan, tetapi tindakan konservasi diperlukan untuk mencegah kerusakan lebih lanjut.
+*   **confidence\_level:** Tingkat kepercayaan dalam analisis ini adalah 85%, dengan mempertimbangkan bahwa penilaian didasarkan pada gambar saja tanpa informasi kontekstual tambahan.
+
+Semoga analisis ini bermanfaat!
+",8.730130672454834,85.0,430,3757,True,,lingga yoni candi suku.jpg,artifact,C:\Users\hengh\Desktop\testing dataset acuracy\lingga yoni candi suku.jpg
+True,"{'object_type': 'Patung', 'object_name': 'Kemungkinan Moai (Perlu konfirmasi ahli)', 'period': 'Kemungkinan Periode Rapa Nui (Perlu konfirmasi ahli)', 'estimated_age': 'Kemungkinan ratusan tahun (Perlu konfirmasi ahli)', 'condition': 'Sedang', 'damage_level': 'Medium', 'damage_details': ['Erosi permukaan yang signifikan akibat cuaca dan paparan lingkungan', 'Pertumbuhan lumut dan vegetasi mikro di permukaan batu', 'Retakan halus terlihat di beberapa bagian patung', 'Kemungkinan ada abrasi di bagian bawah karena kontak dengan tanah', 'Detail pahatan wajah mulai kabur akibat erosi'], 'visible_damage_percentage': '30%', 'historical_value': 'Jika terkonfirmasi sebagai Moai atau artefak serupa, memiliki nilai historis yang tinggi terkait dengan peradaban Rapa Nui atau peradaban serupa yang membuat patung batu raksasa.', 'cultural_significance': 'Signifikansi budaya yang tinggi, mewakili keyakinan spiritual dan sosial dari masyarakat yang membuatnya. Berpotensi menjadi simbol identitas dan warisan budaya.', 'recommendations': ['Identifikasi dan verifikasi ahli untuk menentukan jenis dan asal usul pasti artefak.', 'Pembersihan permukaan dengan metode yang lembut untuk menghilangkan lumut dan vegetasi mikro tanpa merusak batu.', 'Aplikasi bahan konsolidasi untuk memperkuat batu dan mencegah erosi lebih lanjut (setelah konsultasi dengan ahli konservasi).', 'Pembuatan drainase yang baik di sekitar patung untuk mengurangi kelembaban dan kontak dengan tanah.', 'Pemasangan papan informasi untuk memberikan edukasi kepada pengunjung tentang artefak dan pentingnya pelestarian.', 'Pemantauan rutin kondisi fisik patung untuk mendeteksi perubahan dan kerusakan baru.'], 'preservation_priority': 'High', 'confidence_level': '85%'}","```json
+{
+    ""object_type"": ""Patung"",
+    ""object_name"": ""Kemungkinan Moai (Perlu konfirmasi ahli)"",
+    ""period"": ""Kemungkinan Periode Rapa Nui (Perlu konfirmasi ahli)"",
+    ""estimated_age"": ""Kemungkinan ratusan tahun (Perlu konfirmasi ahli)"",
+    ""condition"": ""Sedang"",
+    ""damage_level"": ""Medium"",
+    ""damage_details"": [
+        ""Erosi permukaan yang signifikan akibat cuaca dan paparan lingkungan"",
+        ""Pertumbuhan lumut dan vegetasi mikro di permukaan batu"",
+        ""Retakan halus terlihat di beberapa bagian patung"",
+        ""Kemungkinan ada abrasi di bagian bawah karena kontak dengan tanah"",
+        ""Detail pahatan wajah mulai kabur akibat erosi""
+    ],
+    ""visible_damage_percentage"": ""30%"",
+    ""historical_value"": ""Jika terkonfirmasi sebagai Moai atau artefak serupa, memiliki nilai historis yang tinggi terkait dengan peradaban Rapa Nui atau peradaban serupa yang membuat patung batu raksasa."",
+    ""cultural_significance"": ""Signifikansi budaya yang tinggi, mewakili keyakinan spiritual dan sosial dari masyarakat yang membuatnya. Berpotensi menjadi simbol identitas dan warisan budaya."",
+    ""recommendations"": [
+        ""Identifikasi dan verifikasi ahli untuk menentukan jenis dan asal usul pasti artefak."",
+        ""Pembersihan permukaan dengan metode yang lembut untuk menghilangkan lumut dan vegetasi mikro tanpa merusak batu."",
+        ""Aplikasi bahan konsolidasi untuk memperkuat batu dan mencegah erosi lebih lanjut (setelah konsultasi dengan ahli konservasi)."",
+        ""Pembuatan drainase yang baik di sekitar patung untuk mengurangi kelembaban dan kontak dengan tanah."",
+        ""Pemasangan papan informasi untuk memberikan edukasi kepada pengunjung tentang artefak dan pentingnya pelestarian."",
+        ""Pemantauan rutin kondisi fisik patung untuk mendeteksi perubahan dan kerusakan baru.""
+    ],
+    ""preservation_priority"": ""High"",
+    ""confidence_level"": ""85%""
+}
+```",5.925404787063599,85.0,212,1904,True,,patung palindo.jpg,artifact,C:\Users\hengh\Desktop\testing dataset acuracy\patung palindo.jpg

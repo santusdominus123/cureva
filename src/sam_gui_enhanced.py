@@ -278,15 +278,9 @@ class SAMGuiLauncher:
         return True
 
     def launch_sam(self):
-        print("Launch button clicked!")
-        print(f"Images path: {self.images_path.get()}")
-        print(f"Checkpoint path: {self.checkpoint_path.get()}")
-
         if not self.validate_inputs():
-            print("Validation failed")
             return
 
-        print("Validation passed, starting SAM...")
         self.status_var.set("Loading SAM model... Please wait...")
         self.launch_btn.config(state=tk.DISABLED, bg='#cccccc')
         self.root.update()
@@ -294,21 +288,16 @@ class SAMGuiLauncher:
         # Run SAM GUI in a separate thread to avoid blocking
         def run_sam():
             try:
-                print("Thread started")
                 imgs = list_images(self.images_path.get())
-                print(f"Found {len(imgs)} images")
-
                 if not imgs:
-                    print("No images found")
                     self.root.after(0, lambda: messagebox.showerror("Error", "No images found in the specified path"))
                     self.root.after(0, lambda: self.launch_btn.config(state=tk.NORMAL, bg='#4CAF50'))
                     self.root.after(0, lambda: self.status_var.set("Ready to launch"))
                     return
 
-                print("Hiding launcher window")
+                # Hide the launcher window
                 self.root.withdraw()
 
-                print("Initializing SAM GUI...")
                 # Launch SAM GUI
                 app = SAMGui(
                     img_paths=imgs,
@@ -318,28 +307,21 @@ class SAMGuiLauncher:
                     max_display_size=self.max_display.get()
                 )
 
-                print("Starting SAM GUI loop")
                 app.loop()
 
                 # Show launcher again after SAM GUI closes
-                print("SAM GUI closed, showing launcher")
                 self.root.deiconify()
                 self.status_var.set("Ready to launch")
                 self.launch_btn.config(state=tk.NORMAL, bg='#4CAF50')
 
             except Exception as e:
-                print(f"ERROR: {str(e)}")
-                import traceback
-                traceback.print_exc()
                 self.root.deiconify()
-                self.root.after(0, lambda: messagebox.showerror("Error", f"Failed to launch SAM GUI:\n{str(e)}\n\nCheck console for details"))
+                self.root.after(0, lambda: messagebox.showerror("Error", f"Failed to launch SAM GUI:\n{str(e)}"))
                 self.launch_btn.config(state=tk.NORMAL, bg='#4CAF50')
                 self.status_var.set("Error occurred")
 
-        print("Creating thread")
         thread = threading.Thread(target=run_sam, daemon=True)
         thread.start()
-        print("Thread started")
 
     def run(self):
         self.root.mainloop()

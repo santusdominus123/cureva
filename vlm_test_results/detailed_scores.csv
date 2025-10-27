@@ -1,0 +1,6 @@
+correctness,completeness,relevance,detail,language,overall_score,precision,recall,f1_score,filename,test_type
+9.0,8,8.0,10.0,8.0,8.65,90.0,81.0,85.26315789473684,candi tikus.jpg,artifact
+8.5,10,8.5,10.0,8.0,9.075,85.0,76.5,80.52631578947368,kala makara (2).jpg,artifact
+8.5,10,8.5,10.0,8.0,9.075,85.0,76.5,80.52631578947368,kala makara.jpg,artifact
+8.5,10,9.5,10.0,8.0,9.275,85.0,76.5,80.52631578947368,lingga yoni candi suku.jpg,artifact
+8.5,10,8.5,10.0,8.0,9.075,85.0,76.5,80.52631578947368,patung palindo.jpg,artifact

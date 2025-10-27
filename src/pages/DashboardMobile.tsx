@@ -14,6 +14,7 @@ import {
   Eye,
   Plus,
   Sparkles,
+  ArrowLeft,
   LogOut,
   User,
   Settings,
@@ -160,17 +161,26 @@ const DashboardMobile: React.FC = () => {
       {/* Hero Section dengan Greeting */}
       <div className="px-4 pt-6 pb-8 bg-gradient-to-br from-blue-600/20 to-purple-600/20 backdrop-blur-xl border-b border-gray-800/50">
         <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-xl font-bold text-white mb-1">
-              Selamat Datang! 👋
-            </h1>
-            <p className="text-xs text-gray-400 flex items-center gap-2">
-              <Clock className="w-3 h-3" />
-              {currentTime.toLocaleTimeString('id-ID', {
-                hour: '2-digit',
-                minute: '2-digit'
-              })}
-            </p>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleLogout}
+              className="w-10 h-10 bg-gradient-to-br from-red-500/20 to-pink-500/20 backdrop-blur rounded-xl flex items-center justify-center active:scale-95 transition-transform border border-red-500/30 hover:border-red-400/50"
+              title="Kembali ke Login"
+            >
+              <ArrowLeft className="w-5 h-5 text-red-400" />
+            </button>
+            <div>
+              <h1 className="text-xl font-bold text-white mb-1">
+                Selamat Datang! 👋
+              </h1>
+              <p className="text-xs text-gray-400 flex items-center gap-2">
+                <Clock className="w-3 h-3" />
+                {currentTime.toLocaleTimeString('id-ID', {
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })}
+              </p>
+            </div>
           </div>
           <div className="flex gap-2 relative">
             <button className="w-10 h-10 bg-gray-800/80 backdrop-blur rounded-xl flex items-center justify-center active:scale-95 transition-transform">

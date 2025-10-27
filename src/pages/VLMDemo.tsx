@@ -331,6 +331,7 @@ export const VLMDemo: React.FC = () => {
                     analysisType={analysisType}
                     onAnalysisComplete={handleAnalysisComplete}
                     autoAnalyze={false}
+                    withReferences={true}
                   />
                 ) : (
                   <div className="h-[500px] sm:h-[600px]">
