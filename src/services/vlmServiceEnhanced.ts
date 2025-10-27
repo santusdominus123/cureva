@@ -97,6 +97,66 @@ class VLMServiceEnhanced {
   }
 
   /**
+   * Chat with VLM about an image - for conversational Q&A
+   */
+  async chatWithImage(
+    imageFile: File | string,
+    userQuestion: string,
+    conversationHistory?: Array<{ role: string; content: string }>
+  ): Promise<string> {
+    if (!this.model) {
+      throw new Error('VLM service not initialized');
+    }
+
+    try {
+      // Convert image to base64
+      let imageBase64: string;
+      let mimeType = 'image/jpeg';
+
+      if (typeof imageFile === 'string') {
+        // Data URL dari screenshot
+        imageBase64 = imageFile.split(',')[1];
+        mimeType = imageFile.split(';')[0].split(':')[1];
+      } else {
+        // File object
+        imageBase64 = await this.fileToBase64(imageFile);
+        mimeType = imageFile.type;
+      }
+
+      // Build conversation context
+      let contextPrompt = '';
+      if (conversationHistory && conversationHistory.length > 0) {
+        contextPrompt = '\n\nPrevious conversation:\n';
+        conversationHistory.slice(-4).forEach(msg => {
+          contextPrompt += `${msg.role === 'user' ? 'User' : 'Assistant'}: ${msg.content}\n`;
+        });
+      }
+
+      const prompt = `You are an expert AI assistant specialized in analyzing 3D reconstructed objects, historical artifacts, and cultural heritage items.
+
+${contextPrompt}
+
+Current question from user: ${userQuestion}
+
+Please provide a clear, informative, and conversational answer in Indonesian language. If the question is about the object in the image, analyze it carefully and provide detailed insights.`;
+
+      const imagePart = {
+        inlineData: {
+          data: imageBase64,
+          mimeType: mimeType,
+        },
+      };
+
+      const result = await this.model.generateContent([prompt, imagePart]);
+      const response = await result.response;
+      return response.text();
+    } catch (error) {
+      console.error('Chat with image error:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Search for references using multiple methods
    */
   private async searchReferences(query: string, numResults: number = 5): Promise<Reference[]> {

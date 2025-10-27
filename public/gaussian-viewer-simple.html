@@ -155,6 +155,39 @@
     import * as GaussianSplats3D from 'gaussian-splats-3d';
     import * as THREE from 'three';
 
+    // Store viewer reference globally for screenshot
+    let currentViewer = null;
+
+    // Listen untuk pesan dari parent (React component)
+    window.addEventListener('message', (event) => {
+      if (event.data.type === 'CAPTURE_SCREENSHOT') {
+        captureScreenshot();
+      }
+    });
+
+    // Fungsi untuk capture screenshot dari canvas
+    function captureScreenshot() {
+      try {
+        // Cari canvas element yang di-render oleh viewer
+        const canvas = document.querySelector('canvas');
+        if (!canvas) {
+          console.error('Canvas not found');
+          return;
+        }
+
+        // Convert canvas ke data URL (base64 image)
+        const dataUrl = canvas.toDataURL('image/png');
+
+        // Kirim hasil screenshot ke parent window (React component)
+        window.parent.postMessage({
+          type: 'SCREENSHOT_RESULT',
+          dataUrl: dataUrl
+        }, '*');
+      } catch (error) {
+        console.error('Failed to capture screenshot:', error);
+      }
+    }
+
     // View File
     window.viewFile = function() {
       const fileInput = document.getElementById("viewFile");
@@ -177,6 +210,9 @@
             initialCameraLookAt: [1, 0, 0]
           });
 
+          // Store viewer globally untuk screenshot
+          currentViewer = viewer;
+
           const format = GaussianSplats3D.LoaderUtils.sceneFormatFromPath(file.name);
           let splatBuffer;
 
@@ -191,6 +227,25 @@
           splatBuffer.then((buffer) => {
             viewer.addSplatBuffers([buffer]).then(() => {
               viewer.start();
+
+              // Kirim metadata file ke parent window (React)
+              const metadata = {
+                name: file.name,
+                size: file.size,
+                format: file.name.split('.').pop(),
+                vertices: buffer.vertexCount || 0,
+                uploaded: new Date().toISOString()
+              };
+
+              window.parent.postMessage({
+                type: 'FILE_LOADED',
+                metadata: metadata
+              }, '*');
+
+              // Auto-capture screenshot setelah 2 detik (beri waktu render)
+              setTimeout(() => {
+                captureScreenshot();
+              }, 2000);
             });
           });
         } catch (e) {
