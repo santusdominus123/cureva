@@ -242,10 +242,10 @@
                 metadata: metadata
               }, '*');
 
-              // Auto-capture screenshot setelah 2 detik (beri waktu render)
+              // Auto-capture screenshot setelah 3 detik (beri waktu render penuh)
               setTimeout(() => {
                 captureScreenshot();
-              }, 2000);
+              }, 3000);
             });
           });
         } catch (e) {
