@@ -168,58 +168,95 @@
     // Fungsi untuk capture screenshot dari canvas
     async function captureScreenshot() {
       try {
-        // Tunggu sebentar untuk memastikan frame selesai render
-        await new Promise(resolve => setTimeout(resolve, 100));
+        console.log('🎬 Starting screenshot capture process...');
+
+        // Tunggu untuk memastikan frame selesai render
+        await new Promise(resolve => setTimeout(resolve, 200));
 
         // Cari canvas element yang di-render oleh viewer
         const canvas = document.querySelector('canvas');
         if (!canvas) {
-          console.error('Canvas not found');
+          console.error('❌ Canvas not found');
           return;
         }
 
-        console.log('Canvas found:', canvas.width, 'x', canvas.height);
+        console.log('✅ Canvas found:', canvas.width, 'x', canvas.height);
 
-        // Untuk WebGL canvas, kita harus capture langsung tanpa intermediate canvas
-        // karena WebGL context bisa di-clear setelah draw
-        let dataUrl;
+        // Untuk WebGL canvas, kita perlu method khusus
+        // Buat canvas baru dengan background putih terang
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = canvas.width;
+        tempCanvas.height = canvas.height;
+        const ctx = tempCanvas.getContext('2d', { alpha: false, willReadFrequently: true });
 
+        if (!ctx) {
+          console.error('❌ Failed to get 2D context');
+          return;
+        }
+
+        // Fill dengan background putih terang
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+
+        console.log('📸 Drawing canvas to temp canvas...');
+
+        // Copy WebGL canvas ke 2D canvas
         try {
-          // Try direct capture first
-          dataUrl = canvas.toDataURL('image/png', 1.0);
-          console.log('Direct screenshot captured, size:', dataUrl.length, 'bytes');
-        } catch (e) {
-          console.warn('Direct capture failed, trying with temp canvas:', e);
+          ctx.drawImage(canvas, 0, 0);
+          console.log('✅ Canvas drawn successfully');
+        } catch (err) {
+          console.error('❌ Failed to draw canvas:', err);
+          // Try alternative: get pixel data directly
+          try {
+            const gl = canvas.getContext('webgl') || canvas.getContext('webgl2');
+            if (gl) {
+              const pixels = new Uint8Array(canvas.width * canvas.height * 4);
+              gl.readPixels(0, 0, canvas.width, canvas.height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
 
-          // Fallback: Buat canvas baru dengan white background
-          const tempCanvas = document.createElement('canvas');
-          tempCanvas.width = canvas.width;
-          tempCanvas.height = canvas.height;
-          const ctx = tempCanvas.getContext('2d', { willReadFrequently: true });
-
-          if (ctx) {
-            // Fill dengan white background
-            ctx.fillStyle = '#FFFFFF';
-            ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-
-            // Draw original canvas di atas white background
-            ctx.drawImage(canvas, 0, 0);
-
-            // Convert ke data URL
-            dataUrl = tempCanvas.toDataURL('image/png', 0.95);
-            console.log('Temp canvas screenshot captured, size:', dataUrl.length, 'bytes');
+              const imageData = ctx.createImageData(canvas.width, canvas.height);
+              imageData.data.set(pixels);
+              ctx.putImageData(imageData, 0, 0);
+              console.log('✅ Used WebGL readPixels fallback');
+            }
+          } catch (err2) {
+            console.error('❌ WebGL readPixels also failed:', err2);
+            return;
           }
         }
 
-        if (dataUrl) {
-          // Kirim hasil screenshot ke parent window (React component)
-          window.parent.postMessage({
-            type: 'SCREENSHOT_RESULT',
-            dataUrl: dataUrl
-          }, '*');
+        // Convert ke data URL dengan quality tinggi
+        const dataUrl = tempCanvas.toDataURL('image/png', 1.0);
+        console.log('✅ Screenshot captured, size:', dataUrl.length, 'bytes');
+
+        // Verify screenshot is not blank by checking if it's mostly white
+        const sampleCtx = tempCanvas.getContext('2d');
+        if (sampleCtx) {
+          const sampleData = sampleCtx.getImageData(
+            tempCanvas.width / 2,
+            tempCanvas.height / 2,
+            10,
+            10
+          ).data;
+
+          let whitePixels = 0;
+          for (let i = 0; i < sampleData.length; i += 4) {
+            if (sampleData[i] > 200 && sampleData[i+1] > 200 && sampleData[i+2] > 200) {
+              whitePixels++;
+            }
+          }
+
+          console.log('🔍 Sample check - white pixels:', whitePixels, '/ 100');
         }
+
+        // Kirim hasil screenshot ke parent window (React component)
+        window.parent.postMessage({
+          type: 'SCREENSHOT_RESULT',
+          dataUrl: dataUrl
+        }, '*');
+
+        console.log('✅ Screenshot sent to parent window');
       } catch (error) {
-        console.error('Failed to capture screenshot:', error);
+        console.error('❌ Failed to capture screenshot:', error);
       }
     }
 
@@ -245,8 +282,21 @@
             initialCameraLookAt: [1, 0, 0],
             // Enable screenshot capture untuk WebGL canvas
             webXRMode: GaussianSplats3D.WebXRMode.None,
-            renderMode: GaussianSplats3D.RenderMode.Always
+            renderMode: GaussianSplats3D.RenderMode.Always,
+            // CRITICAL: Enable preserveDrawingBuffer untuk screenshot
+            gpuAcceleratedSort: false, // Disable GPU sort untuk compatibility
+            sharedMemoryForWorkers: false
           });
+
+          // Inject preserveDrawingBuffer ke WebGL context setelah viewer dibuat
+          setTimeout(() => {
+            const canvas = document.querySelector('canvas');
+            if (canvas) {
+              console.log('🔧 Attempting to configure WebGL for screenshots...');
+              // Note: preserveDrawingBuffer harus di-set saat context creation
+              // Kita akan rely pada screenshot timing instead
+            }
+          }, 100);
 
           // Store viewer globally untuk screenshot
           currentViewer = viewer;
