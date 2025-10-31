@@ -142,6 +142,52 @@
       color: #d1d5db;
       font-size: 14px;
     }
+
+    /* Screenshot Button - Simple, no gradient */
+    #screenshotBtn {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+      transition: all 0.3s ease;
+      z-index: 1000;
+      display: none;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    #screenshotBtn:hover {
+      background: #2563eb;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(59, 130, 246, 0.5);
+    }
+
+    #screenshotBtn:active {
+      transform: translateY(0);
+    }
+
+    #screenshotBtn.visible {
+      display: block;
+    }
+
+    #screenshotBtn.capturing {
+      animation: pulse 0.6s ease-in-out;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.05);
+      }
+    }
   </style>
   <script type="importmap">
     {
@@ -165,99 +211,94 @@
       }
     });
 
-    // Fungsi untuk capture screenshot dari canvas
-    async function captureScreenshot() {
+    // Screenshot capture menggunakan canvas.toDataURL() langsung
+    async function captureScreenshotImmediate() {
       try {
-        console.log('🎬 Starting screenshot capture process...');
-
-        // Tunggu untuk memastikan frame selesai render
-        await new Promise(resolve => setTimeout(resolve, 200));
-
-        // Cari canvas element yang di-render oleh viewer
         const canvas = document.querySelector('canvas');
         if (!canvas) {
           console.error('❌ Canvas not found');
-          return;
+          return false;
         }
 
-        console.log('✅ Canvas found:', canvas.width, 'x', canvas.height);
+        console.log('📸 Attempting to capture screenshot...');
 
-        // Untuk WebGL canvas, kita perlu method khusus
-        // Buat canvas baru dengan background putih terang
+        // Method 1: Direct toDataURL (simplest)
+        try {
+          const dataUrl = canvas.toDataURL('image/png', 1.0);
+
+          // Verify bukan blank image
+          if (dataUrl && dataUrl.length > 1000) {
+            console.log('✅ Screenshot captured with toDataURL, size:', dataUrl.length, 'bytes');
+
+            // Send to parent
+            window.parent.postMessage({
+              type: 'SCREENSHOT_RESULT',
+              dataUrl: dataUrl
+            }, '*');
+
+            return true;
+          }
+        } catch (e) {
+          console.warn('⚠️ toDataURL failed, trying alternative method...', e);
+        }
+
+        // Method 2: Copy to temp canvas first
         const tempCanvas = document.createElement('canvas');
         tempCanvas.width = canvas.width;
         tempCanvas.height = canvas.height;
-        const ctx = tempCanvas.getContext('2d', { alpha: false, willReadFrequently: true });
+        const ctx = tempCanvas.getContext('2d');
 
         if (!ctx) {
           console.error('❌ Failed to get 2D context');
-          return;
+          return false;
         }
 
-        // Fill dengan background putih terang
-        ctx.fillStyle = '#FFFFFF';
-        ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-
-        console.log('📸 Drawing canvas to temp canvas...');
-
-        // Copy WebGL canvas ke 2D canvas
-        try {
-          ctx.drawImage(canvas, 0, 0);
-          console.log('✅ Canvas drawn successfully');
-        } catch (err) {
-          console.error('❌ Failed to draw canvas:', err);
-          // Try alternative: get pixel data directly
-          try {
-            const gl = canvas.getContext('webgl') || canvas.getContext('webgl2');
-            if (gl) {
-              const pixels = new Uint8Array(canvas.width * canvas.height * 4);
-              gl.readPixels(0, 0, canvas.width, canvas.height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
-
-              const imageData = ctx.createImageData(canvas.width, canvas.height);
-              imageData.data.set(pixels);
-              ctx.putImageData(imageData, 0, 0);
-              console.log('✅ Used WebGL readPixels fallback');
-            }
-          } catch (err2) {
-            console.error('❌ WebGL readPixels also failed:', err2);
-            return;
-          }
-        }
-
-        // Convert ke data URL dengan quality tinggi
+        // Draw WebGL canvas ke 2D canvas
+        ctx.drawImage(canvas, 0, 0);
         const dataUrl = tempCanvas.toDataURL('image/png', 1.0);
-        console.log('✅ Screenshot captured, size:', dataUrl.length, 'bytes');
 
-        // Verify screenshot is not blank by checking if it's mostly white
-        const sampleCtx = tempCanvas.getContext('2d');
-        if (sampleCtx) {
-          const sampleData = sampleCtx.getImageData(
-            tempCanvas.width / 2,
-            tempCanvas.height / 2,
-            10,
-            10
-          ).data;
+        if (dataUrl && dataUrl.length > 1000) {
+          console.log('✅ Screenshot captured with drawImage, size:', dataUrl.length, 'bytes');
 
-          let whitePixels = 0;
-          for (let i = 0; i < sampleData.length; i += 4) {
-            if (sampleData[i] > 200 && sampleData[i+1] > 200 && sampleData[i+2] > 200) {
-              whitePixels++;
-            }
-          }
+          // Send to parent
+          window.parent.postMessage({
+            type: 'SCREENSHOT_RESULT',
+            dataUrl: dataUrl
+          }, '*');
 
-          console.log('🔍 Sample check - white pixels:', whitePixels, '/ 100');
+          return true;
         }
 
-        // Kirim hasil screenshot ke parent window (React component)
-        window.parent.postMessage({
-          type: 'SCREENSHOT_RESULT',
-          dataUrl: dataUrl
-        }, '*');
-
-        console.log('✅ Screenshot sent to parent window');
+        console.warn('⚠️ Screenshot appears to be empty');
+        return false;
       } catch (error) {
-        console.error('❌ Failed to capture screenshot:', error);
+        console.error('❌ Screenshot error:', error);
+        return false;
       }
+    }
+
+    // Manual screenshot triggered by button
+    window.manualScreenshot = async function() {
+      const btn = document.getElementById('screenshotBtn');
+      if (btn) {
+        btn.classList.add('capturing');
+        setTimeout(() => btn.classList.remove('capturing'), 600);
+      }
+
+      console.log('📸 Manual screenshot requested');
+
+      // Wait untuk next frame untuk ensure render selesai
+      requestAnimationFrame(async () => {
+        const success = await captureScreenshotImmediate();
+        if (!success) {
+          console.error('❌ Manual screenshot failed');
+        }
+      });
+    };
+
+    // Legacy function untuk backward compatibility
+    async function captureScreenshot() {
+      return captureScreenshotImmediate();
     }
 
     // View File
@@ -280,25 +321,13 @@
             cameraUp: [0, 1, 0],
             initialCameraPosition: [0, 1, 0],
             initialCameraLookAt: [1, 0, 0],
-            // Enable screenshot capture untuk WebGL canvas
             webXRMode: GaussianSplats3D.WebXRMode.None,
             renderMode: GaussianSplats3D.RenderMode.Always,
-            // CRITICAL: Enable preserveDrawingBuffer untuk screenshot
-            gpuAcceleratedSort: false, // Disable GPU sort untuk compatibility
+            gpuAcceleratedSort: false,
             sharedMemoryForWorkers: false
           });
 
-          // Inject preserveDrawingBuffer ke WebGL context setelah viewer dibuat
-          setTimeout(() => {
-            const canvas = document.querySelector('canvas');
-            if (canvas) {
-              console.log('🔧 Attempting to configure WebGL for screenshots...');
-              // Note: preserveDrawingBuffer harus di-set saat context creation
-              // Kita akan rely pada screenshot timing instead
-            }
-          }, 100);
-
-          // Store viewer globally untuk screenshot
+          // Store viewer globally
           currentViewer = viewer;
 
           const format = GaussianSplats3D.LoaderUtils.sceneFormatFromPath(file.name);
@@ -330,10 +359,13 @@
                 metadata: metadata
               }, '*');
 
-              // Auto-capture screenshot setelah 3 detik (beri waktu render penuh)
-              setTimeout(() => {
-                captureScreenshot();
-              }, 3000);
+              // Show screenshot button setelah file loaded
+              const screenshotBtn = document.getElementById('screenshotBtn');
+              if (screenshotBtn) {
+                screenshotBtn.classList.add('visible');
+              }
+
+              console.log('✅ 3D model loaded. Use "Ambil Gambar" button to capture screenshot.');
             });
           });
         } catch (e) {
@@ -460,5 +492,10 @@
       </div>
     </div>
   </div>
+
+  <!-- Screenshot Button (floating) -->
+  <button id="screenshotBtn" onclick="manualScreenshot()" title="Ambil screenshot untuk analisis AI">
+    Ambil Gambar
+  </button>
 </body>
 </html>

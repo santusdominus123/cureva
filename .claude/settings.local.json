@@ -6,7 +6,18 @@
       "Bash(then grep -E \"VITE_GEMINI_API_KEY|GEMINI\" .env)",
       "Bash(else echo \".env file not found\")",
       "Bash(fi)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(rm:*)",
+      "Bash(mv:*)",
+      "Bash(mkdir:*)",
+      "Bash(rmdir:*)",
+      "Bash(tree:*)",
+      "Bash(find:*)",
+      "Bash(findstr:*)",
+      "Bash(dir /s /b)",
+      "Bash(cat:*)",
+      "Bash(tasklist)",
+      "Bash(npm run dev:*)"
     ],
     "deny": [],
     "ask": []

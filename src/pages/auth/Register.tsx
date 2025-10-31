@@ -30,8 +30,20 @@ const Register: React.FC<RegisterProps> = ({ onLogin }) => {
     onLogin(userData);
   };
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4">
-      <div className="max-w-md w-full space-y-8 bg-gray-900/70 backdrop-blur-md p-8 rounded-2xl border border-gray-800 shadow-xl">
+    <div className="relative min-h-screen flex flex-col items-center justify-center p-4 overflow-hidden">
+      {/* Background Image - Same as Onboarding & Login */}
+      <div
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: `url('/src/introbg/1.jpg')`,
+        }}
+      >
+        {/* Dark Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-purple-950/70 to-black/80" />
+      </div>
+
+      {/* Content Container */}
+      <div className="relative z-10 max-w-md w-full space-y-8 bg-white/5 backdrop-blur-2xl p-8 rounded-2xl border border-white/10 shadow-xl">
         <div className="text-center">
           <img
             src="/src/assets/cureva_logo.jpg"
@@ -166,6 +178,25 @@ const Register: React.FC<RegisterProps> = ({ onLogin }) => {
               Masuk
             </Link>
           </p>
+        </div>
+
+        {/* Partnership Logos */}
+        <div className="mt-8 pt-6 border-t border-white/10">
+          <p className="text-center text-xs text-gray-400 mb-4">Didukung oleh:</p>
+          <div className="flex justify-center items-center gap-6 flex-wrap">
+            <img
+              src="/src/introbg/udayana logo.png"
+              alt="Universitas Udayana"
+              className="h-14 w-auto object-contain drop-shadow-lg hover:scale-105 transition-transform duration-300"
+              onError={(e) => { e.currentTarget.style.display = 'none'; }}
+            />
+            <img
+              src="/src/introbg/Logo Diktisaintek Berdampak_Horizontal Logo.png"
+              alt="Dikti Saintek Berdampak"
+              className="h-10 w-auto object-contain drop-shadow-lg hover:scale-105 transition-transform duration-300"
+              onError={(e) => { e.currentTarget.style.display = 'none'; }}
+            />
+          </div>
         </div>
       </div>
     </div>

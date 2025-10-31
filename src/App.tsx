@@ -4,17 +4,18 @@ import { auth } from "./lib/firebase";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Sidebar from "./components/navigation/Sidebar";
 import TopBar from "./components/navigation/TopBar";
-import BottomNavigation from "./components/navigation/BottomNavigation"; // ➕
-import Dashboard from "./pages/Dashboard";
-import ScanCapture from "./pages/ScanCapture";
-import DroneCamera from "./pages/DroneCamera";
-import TestGaussianViewer from "./pages/TestGaussianViewer";
-import Easy3DViewerDemo from "./pages/Easy3DViewerDemo";
-import GaussianDemo from "./pages/GaussianDemo";
-import BlenderGaussianDemo from "./pages/BlenderGaussianDemo";
-import VLMDemo from "./pages/VLMDemo";
+import BottomNavigation from "./components/navigation/BottomNavigation";
+import Dashboard from "./pages/dashboard/Dashboard";
+import ScanCapture from "./pages/tools/ScanCapture";
+import DroneCamera from "./pages/tools/DroneCamera";
+import TestGaussianViewer from "./pages/demos/TestGaussianViewer";
+import Easy3DViewerDemo from "./pages/demos/Easy3DViewerDemo";
+import GaussianDemo from "./pages/demos/GaussianDemo";
+import BlenderGaussianDemo from "./pages/demos/BlenderGaussianDemo";
+import VLMDemo from "./pages/demos/VLMDemo";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
+import Onboarding from "./pages/auth/Onboarding";
 
 export function App() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
@@ -29,7 +30,6 @@ export function App() {
     const unsub = onAuthStateChanged(auth, (user) => {
       console.log("Auth state changed:", user ? "logged in" : "logged out");
       if (user) {
-        // Save user data when Firebase auth state changes
         const userData = {
           uid: user.uid,
           email: user.email,
@@ -62,9 +62,10 @@ export function App() {
       <Router>
         <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-white">
           <Routes>
+            <Route path="/onboarding" element={<Onboarding />} />
             <Route path="/login" element={<Login onLogin={handleLogin} />} />
             <Route path="/register" element={<Register onLogin={handleLogin} />} />
-            <Route path="*" element={<Navigate to="/login" replace />} />
+            <Route path="*" element={<Navigate to="/onboarding" replace />} />
           </Routes>
         </div>
       </Router>
@@ -73,16 +74,16 @@ export function App() {
 
   return (
     <Router>
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-black text-white overflow-x-hidden">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-black text-white">
         {/* Responsive Layout Container */}
-        <div className="relative flex h-screen md:h-full">
+        <div className="relative flex min-h-screen md:h-screen">
           {/* Desktop Sidebar - hidden on mobile */}
           <div className="hidden md:block">
             <Sidebar collapsed={sidebarCollapsed} />
           </div>
 
           {/* Main Content Area */}
-          <div className="flex flex-col flex-1 w-full h-screen md:h-full overflow-hidden">
+          <div className="flex flex-col flex-1 w-full min-h-screen md:h-screen">
             {/* Desktop Top Bar - hidden on mobile */}
             <div className="hidden md:block">
               <TopBar onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)} sidebarCollapsed={sidebarCollapsed} />
@@ -105,49 +106,42 @@ export function App() {
               </div>
             </div>
 
-            {/* Shared Content Area */}
-            <MainContent />
+            {/* Shared Content Area - Mobile needs padding bottom for nav */}
+            <main className="flex-1 overflow-y-auto px-3 py-4 md:p-6 bg-black/30 backdrop-blur-sm pb-20 md:pb-6">
+              <Routes>
+                <Route path="/" element={<Dashboard />} />
+                <Route
+                  path="/scan"
+                  element={
+                    <React.Suspense
+                      fallback={
+                        <div className="flex items-center justify-center h-full">
+                          <div className="text-center">
+                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+                            <p className="text-gray-400">Loading Scanner...</p>
+                          </div>
+                        </div>
+                      }
+                    >
+                      <ScanCapture key="scan-capture" />
+                    </React.Suspense>
+                  }
+                />
+                <Route path="/gaussian" element={<GaussianDemo />} />
+                <Route path="/blender-gaussian" element={<BlenderGaussianDemo />} />
+                <Route path="/drone" element={<DroneCamera />} />
+                <Route path="/test-gaussian" element={<TestGaussianViewer />} />
+                <Route path="/easy-viewer" element={<Easy3DViewerDemo />} />
+                <Route path="/vlm-demo" element={<VLMDemo />} />
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </main>
 
-            {/* Mobile Bottom Navigation - hidden on desktop */}
-            <div className="md:hidden sticky bottom-0 z-30">
-              <BottomNavigation />
-            </div>
+            {/* Mobile Bottom Navigation - FIXED POSITION */}
+            <BottomNavigation />
           </div>
         </div>
       </div>
     </Router>
   );
 }
-
-/* Komponen agar tidak duplicate */
-const MainContent = () => (
-  <main className="flex-1 overflow-y-auto px-3 py-4 md:p-6 bg-black/30 backdrop-blur-sm safe-bottom">
-    <Routes>
-      <Route path="/" element={<Dashboard />} />
-      <Route
-        path="/scan"
-        element={
-          <React.Suspense
-            fallback={
-              <div className="flex items-center justify-center h-full">
-                <div className="text-center">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-                  <p className="text-gray-400">Loading Scanner...</p>
-                </div>
-              </div>
-            }
-          >
-            <ScanCapture key="scan-capture" />
-          </React.Suspense>
-        }
-      />
-      <Route path="/gaussian" element={<GaussianDemo />} />
-      <Route path="/blender-gaussian" element={<BlenderGaussianDemo />} />
-      <Route path="/drone" element={<DroneCamera />} />
-      <Route path="/test-gaussian" element={<TestGaussianViewer />} />
-      <Route path="/easy-viewer" element={<Easy3DViewerDemo />} />
-      <Route path="/vlm-demo" element={<VLMDemo />} />
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
-  </main>
-);
