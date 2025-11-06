@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./lib/firebase";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { saveUserSession, getUserSession, isSessionValid } from "./utils/authPersistence";
 import Sidebar from "./components/navigation/Sidebar";
 import TopBar from "./components/navigation/TopBar";
 import BottomNavigation from "./components/navigation/BottomNavigation";

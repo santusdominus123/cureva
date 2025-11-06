@@ -92,24 +92,24 @@ export const VLMDemo: React.FC = () => {
 
   return (
     <div className="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 pb-20 md:pb-0 min-h-screen">
-      {/* Header */}
+      {/* Header - Compact Mobile */}
       <div className="bg-white/95 backdrop-blur-sm shadow-sm border-b sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-3 sm:py-4">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 py-2 sm:py-3">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 sm:gap-3">
+            <div className="flex items-center gap-1.5 sm:gap-3">
               <button
                 onClick={() => navigate(-1)}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors touch-manipulation active:scale-95"
+                className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-lg transition-colors touch-manipulation active:scale-95"
                 aria-label="Kembali"
               >
-                <ArrowLeft className="w-5 h-5" />
+                <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
-              <div className="flex items-center gap-2">
-                <div className="bg-gradient-to-br from-blue-500 to-indigo-600 p-1.5 rounded-lg">
-                  <Brain className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <div className="bg-gradient-to-br from-blue-500 to-indigo-600 p-1 sm:p-1.5 rounded-lg">
+                  <Brain className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-white" />
                 </div>
                 <div>
-                  <h1 className="text-base sm:text-lg font-bold text-gray-900">VLM Analyzer</h1>
+                  <h1 className="text-sm sm:text-lg font-bold text-gray-900">VLM Analyzer</h1>
                   <p className="text-xs text-gray-500 hidden sm:block">AI Vision Analysis</p>
                 </div>
               </div>
@@ -118,63 +118,63 @@ export const VLMDemo: React.FC = () => {
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
-        <div className="lg:grid lg:grid-cols-5 lg:gap-6 space-y-4 lg:space-y-0">
+      {/* Main Content - Compact */}
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 py-2 sm:py-4 lg:py-6">
+        <div className="lg:grid lg:grid-cols-5 lg:gap-4 space-y-2 lg:space-y-0">
 
           {/* Left Column */}
-          <div className="lg:col-span-2 space-y-4">
+          <div className="lg:col-span-2 space-y-2 sm:space-y-3">
 
-            {/* Image Input Card */}
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
-              <div className="bg-gradient-to-r from-blue-500 to-indigo-600 px-4 py-3">
-                <h2 className="text-base sm:text-lg font-semibold text-white flex items-center gap-2">
-                  <Camera className="w-5 h-5" />
+            {/* Image Input Card - Compact */}
+            <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+              <div className="bg-gradient-to-r from-blue-500 to-indigo-600 px-2 sm:px-4 py-2 sm:py-2.5">
+                <h2 className="text-sm sm:text-base font-semibold text-white flex items-center gap-1.5 sm:gap-2">
+                  <Camera className="w-4 h-4 sm:w-5 sm:h-5" />
                   Input Gambar
                 </h2>
               </div>
 
-              <div className="p-4 space-y-4">
-                {/* Capture Mode Toggle */}
-                <div className="flex gap-2">
+              <div className="p-2 sm:p-3 space-y-2 sm:space-y-3">
+                {/* Capture Mode Toggle - Compact */}
+                <div className="flex gap-1.5 sm:gap-2">
                   <button
                     onClick={() => {
                       setCaptureMode('upload');
                       stopCamera();
                     }}
-                    className={`flex-1 flex items-center justify-center gap-2 px-3 py-3 sm:py-3.5 rounded-xl transition-all touch-manipulation active:scale-95 ${
+                    className={`flex-1 flex items-center justify-center gap-1.5 px-2 py-2 sm:py-2.5 rounded-lg transition-all touch-manipulation active:scale-95 ${
                       captureMode === 'upload'
                         ? 'bg-blue-600 text-white shadow-md'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                   >
-                    <Upload className="w-4 h-4 sm:w-5 sm:h-5" />
-                    <span className="text-sm sm:text-base font-medium">Upload</span>
+                    <Upload className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                    <span className="text-xs sm:text-sm font-medium">Upload</span>
                   </button>
                   <button
                     onClick={() => {
                       setCaptureMode('camera');
                       if (!isCameraActive) startCamera();
                     }}
-                    className={`flex-1 flex items-center justify-center gap-2 px-3 py-3 sm:py-3.5 rounded-xl transition-all touch-manipulation active:scale-95 ${
+                    className={`flex-1 flex items-center justify-center gap-1.5 px-2 py-2 sm:py-2.5 rounded-lg transition-all touch-manipulation active:scale-95 ${
                       captureMode === 'camera'
                         ? 'bg-blue-600 text-white shadow-md'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                   >
-                    <Camera className="w-4 h-4 sm:w-5 sm:h-5" />
-                    <span className="text-sm sm:text-base font-medium">Kamera</span>
+                    <Camera className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                    <span className="text-xs sm:text-sm font-medium">Kamera</span>
                   </button>
                 </div>
 
-                {/* Upload Mode */}
+                {/* Upload Mode - Compact */}
                 {captureMode === 'upload' && (
                   <div>
                     <label className="block">
-                      <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 sm:p-8 text-center hover:border-blue-500 cursor-pointer transition-all hover:bg-blue-50/50 touch-manipulation active:scale-[0.98]">
-                        <Upload className="w-10 h-10 sm:w-12 sm:h-12 text-gray-400 mx-auto mb-3" />
-                        <p className="text-sm sm:text-base text-gray-600 mb-1 font-medium">Tap untuk upload gambar</p>
-                        <p className="text-xs sm:text-sm text-gray-500">PNG, JPG hingga 10MB</p>
+                      <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 sm:p-6 text-center hover:border-blue-500 cursor-pointer transition-all hover:bg-blue-50/50 touch-manipulation active:scale-[0.98]">
+                        <Upload className="w-8 h-8 sm:w-10 sm:h-10 text-gray-400 mx-auto mb-2" />
+                        <p className="text-xs sm:text-sm text-gray-600 mb-0.5 font-medium">Tap untuk upload</p>
+                        <p className="text-xs text-gray-500">PNG, JPG max 10MB</p>
                       </div>
                       <input
                         type="file"
@@ -186,10 +186,10 @@ export const VLMDemo: React.FC = () => {
                   </div>
                 )}
 
-                {/* Camera Mode */}
+                {/* Camera Mode - Compact */}
                 {captureMode === 'camera' && (
-                  <div className="space-y-3">
-                    <div className="relative rounded-xl overflow-hidden bg-black shadow-lg">
+                  <div className="space-y-2">
+                    <div className="relative rounded-lg overflow-hidden bg-black shadow-lg">
                       <video
                         ref={videoRef}
                         autoPlay
@@ -199,22 +199,22 @@ export const VLMDemo: React.FC = () => {
                       />
                       {!isCameraActive && (
                         <div className="absolute inset-0 flex items-center justify-center bg-gray-900">
-                          <Camera className="w-12 h-12 text-gray-600" />
+                          <Camera className="w-10 h-10 sm:w-12 sm:h-12 text-gray-600" />
                         </div>
                       )}
                     </div>
                     {isCameraActive && (
-                      <div className="flex gap-2">
+                      <div className="flex gap-1.5 sm:gap-2">
                         <button
                           onClick={capturePhoto}
-                          className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-3.5 rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all shadow-md flex items-center justify-center gap-2 font-medium touch-manipulation active:scale-95"
+                          className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-3 py-2.5 sm:py-3 rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all shadow-md flex items-center justify-center gap-1.5 font-medium touch-manipulation active:scale-95 text-xs sm:text-sm"
                         >
-                          <Camera className="w-5 h-5" />
+                          <Camera className="w-4 h-4 sm:w-5 sm:h-5" />
                           Ambil Foto
                         </button>
                         <button
                           onClick={stopCamera}
-                          className="px-4 py-3.5 bg-gray-200 rounded-xl hover:bg-gray-300 transition-colors font-medium touch-manipulation active:scale-95"
+                          className="px-3 py-2.5 sm:py-3 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors font-medium touch-manipulation active:scale-95 text-xs sm:text-sm"
                         >
                           Batal
                         </button>
@@ -225,26 +225,26 @@ export const VLMDemo: React.FC = () => {
               </div>
             </div>
 
-            {/* Analysis Type Selection */}
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+            {/* Analysis Type Selection - Compact */}
+            <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
               <button
                 onClick={() => setShowAnalysisOptions(!showAnalysisOptions)}
-                className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 px-4 py-3 flex items-center justify-between touch-manipulation active:scale-[0.99]"
+                className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 px-2 sm:px-4 py-2 sm:py-2.5 flex items-center justify-between touch-manipulation active:scale-[0.99]"
               >
-                <div className="flex items-center gap-2 text-white">
-                  <Scroll className="w-5 h-5" />
-                  <span className="text-base sm:text-lg font-semibold">Jenis Analisis</span>
+                <div className="flex items-center gap-1.5 sm:gap-2 text-white">
+                  <Scroll className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <span className="text-sm sm:text-base font-semibold">Jenis Analisis</span>
                 </div>
-                <ChevronDown className={`w-5 h-5 text-white transition-transform lg:hidden ${showAnalysisOptions ? 'rotate-180' : ''}`} />
+                <ChevronDown className={`w-4 h-4 sm:w-5 sm:h-5 text-white transition-transform lg:hidden ${showAnalysisOptions ? 'rotate-180' : ''}`} />
               </button>
 
-              <div className={`${showAnalysisOptions ? 'block' : 'hidden'} lg:block p-4 space-y-2`}>
-                {/* Current Selection (Mobile) */}
-                <div className="lg:hidden mb-3 p-3 bg-indigo-50 rounded-xl border border-indigo-200">
-                  <div className="flex items-center gap-2">
-                    <span className="text-2xl">{currentAnalysisType?.icon}</span>
+              <div className={`${showAnalysisOptions ? 'block' : 'hidden'} lg:block p-2 sm:p-3 space-y-1.5 sm:space-y-2`}>
+                {/* Current Selection (Mobile) - Compact */}
+                <div className="lg:hidden mb-2 p-2 bg-indigo-50 rounded-lg border border-indigo-200">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xl">{currentAnalysisType?.icon}</span>
                     <div>
-                      <div className="font-semibold text-indigo-900 text-sm">{currentAnalysisType?.label}</div>
+                      <div className="font-semibold text-indigo-900 text-xs">{currentAnalysisType?.label}</div>
                       <div className="text-xs text-indigo-700">{currentAnalysisType?.desc}</div>
                     </div>
                   </div>
@@ -253,7 +253,7 @@ export const VLMDemo: React.FC = () => {
                 {analysisTypes.map((type) => (
                   <label
                     key={type.value}
-                    className={`flex items-start gap-3 p-3 sm:p-4 rounded-xl border-2 cursor-pointer transition-all touch-manipulation active:scale-[0.98] ${
+                    className={`flex items-start gap-2 sm:gap-2.5 p-2 sm:p-3 rounded-lg border-2 cursor-pointer transition-all touch-manipulation active:scale-[0.98] ${
                       analysisType === type.value
                         ? 'border-indigo-500 bg-indigo-50 shadow-sm'
                         : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
@@ -268,14 +268,14 @@ export const VLMDemo: React.FC = () => {
                         setAnalysisType(e.target.value as 'general' | 'artifact' | 'building' | 'nature');
                         setShowAnalysisOptions(false);
                       }}
-                      className="mt-1 w-4 h-4"
+                      className="mt-0.5 w-3.5 h-3.5 sm:w-4 sm:h-4"
                     />
                     <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xl">{type.icon}</span>
-                        <span className="font-semibold text-gray-900 text-sm sm:text-base">{type.label}</span>
+                      <div className="flex items-center gap-1.5 mb-0.5">
+                        <span className="text-base sm:text-lg">{type.icon}</span>
+                        <span className="font-semibold text-gray-900 text-xs sm:text-sm">{type.label}</span>
                       </div>
-                      <div className="text-xs sm:text-sm text-gray-600">{type.desc}</div>
+                      <div className="text-xs text-gray-600">{type.desc}</div>
                     </div>
                   </label>
                 ))}
@@ -296,35 +296,35 @@ export const VLMDemo: React.FC = () => {
 
           {/* Right Column */}
           <div className="lg:col-span-3">
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
-              {/* Tab Selector */}
+            <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+              {/* Tab Selector - Compact */}
               <div className="flex border-b bg-gray-50">
                 <button
                   onClick={() => setViewMode('analysis')}
-                  className={`flex-1 flex items-center justify-center gap-2 px-3 sm:px-4 py-3.5 sm:py-4 font-medium transition-all touch-manipulation ${
+                  className={`flex-1 flex items-center justify-center gap-1.5 px-2 sm:px-3 py-2.5 sm:py-3 font-medium transition-all touch-manipulation ${
                     viewMode === 'analysis'
                       ? 'bg-white text-indigo-600 border-b-2 border-indigo-600 shadow-sm'
                       : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                   }`}
                 >
-                  <Brain className="w-4 h-4 sm:w-5 sm:h-5" />
-                  <span className="text-sm sm:text-base">Analisis Detail</span>
+                  <Brain className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  <span className="text-xs sm:text-sm">Analisis Detail</span>
                 </button>
                 <button
                   onClick={() => setViewMode('chat')}
-                  className={`flex-1 flex items-center justify-center gap-2 px-3 sm:px-4 py-3.5 sm:py-4 font-medium transition-all touch-manipulation ${
+                  className={`flex-1 flex items-center justify-center gap-1.5 px-2 sm:px-3 py-2.5 sm:py-3 font-medium transition-all touch-manipulation ${
                     viewMode === 'chat'
                       ? 'bg-white text-indigo-600 border-b-2 border-indigo-600 shadow-sm'
                       : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                   }`}
                 >
-                  <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5" />
-                  <span className="text-sm sm:text-base">Chat AI</span>
+                  <MessageSquare className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  <span className="text-xs sm:text-sm">Chat AI</span>
                 </button>
               </div>
 
-              {/* Content Area */}
-              <div className="p-4 sm:p-6">
+              {/* Content Area - Compact */}
+              <div className="p-2 sm:p-4">
                 {viewMode === 'analysis' ? (
                   <VLMAnalyzerEnhanced
                     imageFile={selectedImage || undefined}
@@ -334,7 +334,7 @@ export const VLMDemo: React.FC = () => {
                     withReferences={true}
                   />
                 ) : (
-                  <div className="h-[500px] sm:h-[600px]">
+                  <div className="h-[400px] sm:h-[500px] md:h-[600px]">
                     <ImageChatInterface
                       imageFile={selectedImage || undefined}
                       autoStart={false}

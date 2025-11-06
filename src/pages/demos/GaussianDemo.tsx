@@ -355,13 +355,13 @@ const GaussianDemo: React.FC = () => {
                 )}
               </div>
 
-              <div className="flex-shrink-0 border-t border-gray-800 px-4 py-2 bg-gray-900/70">
-                <div className="flex items-center justify-between text-xs text-gray-400">
+              <div className="flex-shrink-0 border-t border-gray-800 px-3 py-1.5 bg-gray-900/70">
+                <div className="flex items-center justify-between text-[10px] text-gray-400">
                   <div>
                     <strong className="text-gray-300">Kontrol:</strong> Klik Kiri: Rotasi | Klik Kanan: Geser | Scroll: Zoom
                   </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></div>
                     <span className="text-emerald-400 font-medium">Live</span>
                   </div>
                 </div>
@@ -369,47 +369,47 @@ const GaussianDemo: React.FC = () => {
             </div>
 
             {/* File Metadata */}
-            <div className="flex-shrink-0 bg-gray-900/50 backdrop-blur-md rounded-xl border border-gray-800 p-5">
-              <div className="flex items-center gap-2 mb-4">
-                <Database className="w-5 h-5 text-indigo-400" />
-                <h3 className="font-semibold text-base">File Metadata</h3>
+            <div className="flex-shrink-0 bg-gray-900/50 backdrop-blur-md rounded-xl border border-gray-800 p-3">
+              <div className="flex items-center gap-1.5 mb-2.5">
+                <Database className="w-4 h-4 text-indigo-400" />
+                <h3 className="font-semibold text-xs">File Metadata</h3>
               </div>
 
               {fileMetadata ? (
-                <div className="grid grid-cols-2 gap-3.5">
-                  <div className="bg-gray-800/50 rounded-lg p-3">
-                    <div className="text-xs text-gray-400 mb-1">Filename</div>
-                    <div className="font-medium text-sm truncate">{fileMetadata.name}</div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="bg-gray-800/50 rounded-lg p-2">
+                    <div className="text-[9px] text-gray-400 mb-0.5">Filename</div>
+                    <div className="font-medium text-[10px] truncate">{fileMetadata.name}</div>
                   </div>
-                  <div className="bg-gray-800/50 rounded-lg p-3">
-                    <div className="text-xs text-gray-400 mb-1">Format</div>
-                    <div className="font-medium text-sm uppercase">{fileMetadata.format}</div>
+                  <div className="bg-gray-800/50 rounded-lg p-2">
+                    <div className="text-[9px] text-gray-400 mb-0.5">Format</div>
+                    <div className="font-medium text-[10px] uppercase">{fileMetadata.format}</div>
                   </div>
-                  <div className="bg-gray-800/50 rounded-lg p-3">
-                    <div className="text-xs text-gray-400 mb-1">File Size</div>
-                    <div className="font-medium text-sm">{formatFileSize(fileMetadata.size)}</div>
+                  <div className="bg-gray-800/50 rounded-lg p-2">
+                    <div className="text-[9px] text-gray-400 mb-0.5">File Size</div>
+                    <div className="font-medium text-[10px]">{formatFileSize(fileMetadata.size)}</div>
                   </div>
-                  <div className="bg-gray-800/50 rounded-lg p-3">
-                    <div className="text-xs text-gray-400 mb-1">Uploaded</div>
-                    <div className="font-medium text-sm">{fileMetadata.uploaded.toLocaleDateString()}</div>
+                  <div className="bg-gray-800/50 rounded-lg p-2">
+                    <div className="text-[9px] text-gray-400 mb-0.5">Uploaded</div>
+                    <div className="font-medium text-[10px]">{fileMetadata.uploaded.toLocaleDateString()}</div>
                   </div>
                   {fileMetadata.vertices && (
-                    <div className="bg-gray-800/50 rounded-lg p-3">
-                      <div className="text-xs text-gray-400 mb-1">Vertices</div>
-                      <div className="font-medium text-sm">{fileMetadata.vertices.toLocaleString()}</div>
+                    <div className="bg-gray-800/50 rounded-lg p-2">
+                      <div className="text-[9px] text-gray-400 mb-0.5">Vertices</div>
+                      <div className="font-medium text-[10px]">{fileMetadata.vertices.toLocaleString()}</div>
                     </div>
                   )}
                   {fileMetadata.faces && (
-                    <div className="bg-gray-800/50 rounded-lg p-3">
-                      <div className="text-xs text-gray-400 mb-1">Faces</div>
-                      <div className="font-medium text-sm">{fileMetadata.faces.toLocaleString()}</div>
+                    <div className="bg-gray-800/50 rounded-lg p-2">
+                      <div className="text-[9px] text-gray-400 mb-0.5">Faces</div>
+                      <div className="font-medium text-[10px]">{fileMetadata.faces.toLocaleString()}</div>
                     </div>
                   )}
                 </div>
               ) : (
-                <div className="text-center py-6 text-gray-500">
-                  <FileText className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                  <p className="text-sm">No file loaded yet</p>
+                <div className="text-center py-3 text-gray-500">
+                  <FileText className="w-8 h-8 mx-auto mb-1.5 opacity-50" />
+                  <p className="text-[10px]">No file loaded yet</p>
                 </div>
               )}
             </div>
@@ -559,28 +559,28 @@ const GaussianDemo: React.FC = () => {
     );
   }
 
-  // Mobile Layout with Tabs
+  // Mobile Layout with Tabs - Compact
   return (
     <div className="h-screen flex flex-col pb-0 overflow-hidden">
-      {/* Mobile Header */}
-      <div className="flex-shrink-0 bg-gray-900/95 backdrop-blur-md border-b border-gray-800 px-4 py-3">
-        <div className="flex items-center justify-between mb-3">
-          <h1 className="text-lg font-bold flex items-center gap-2">
-            <Sparkles size={20} className="text-purple-400" />
+      {/* Mobile Header - Ultra Compact */}
+      <div className="flex-shrink-0 bg-gray-900/95 backdrop-blur-md border-b border-gray-800 px-2 py-2">
+        <div className="flex items-center justify-between mb-2">
+          <h1 className="text-sm font-bold flex items-center gap-1.5">
+            <Sparkles size={16} className="text-purple-400" />
             3D Studio
           </h1>
-          <div className="flex gap-2">
+          <div className="flex gap-1.5">
             <button
               onClick={captureScreenshot}
-              className="bg-purple-600 text-white p-2 rounded-lg"
+              className="bg-purple-600 text-white p-1.5 rounded-lg active:scale-95 transition-transform"
             >
-              <Camera className="w-4 h-4" />
+              <Camera className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="bg-blue-600 text-white p-2 rounded-lg"
+              className="bg-blue-600 text-white p-1.5 rounded-lg active:scale-95 transition-transform"
             >
-              <Upload className="w-4 h-4" />
+              <Upload className="w-3.5 h-3.5" />
             </button>
           </div>
           <input
@@ -592,63 +592,63 @@ const GaussianDemo: React.FC = () => {
           />
         </div>
 
-        {/* Mobile Tabs */}
-        <div className="grid grid-cols-4 gap-1 bg-gray-800/50 rounded-lg p-1">
+        {/* Mobile Tabs - Compact */}
+        <div className="grid grid-cols-5 gap-0.5 bg-gray-800/50 rounded-lg p-0.5">
           <button
             onClick={() => setActivePanel('viewer')}
-            className={`py-2 px-2 rounded text-xs font-medium transition-colors ${
+            className={`py-1.5 px-1 rounded text-xs font-medium transition-all active:scale-95 ${
               activePanel === 'viewer'
                 ? 'bg-blue-600 text-white'
                 : 'text-gray-400 hover:text-white'
             }`}
           >
-            <Box className="w-4 h-4 mx-auto mb-1" />
-            Viewer
+            <Box className="w-3.5 h-3.5 mx-auto mb-0.5" />
+            <span className="text-[10px]">Viewer</span>
           </button>
           <button
             onClick={() => setActivePanel('chat')}
-            className={`py-2 px-2 rounded text-xs font-medium transition-colors ${
+            className={`py-1.5 px-1 rounded text-xs font-medium transition-all active:scale-95 ${
               activePanel === 'chat'
                 ? 'bg-green-600 text-white'
                 : 'text-gray-400 hover:text-white'
             }`}
           >
-            <MessageSquare className="w-4 h-4 mx-auto mb-1" />
-            Chat
+            <MessageSquare className="w-3.5 h-3.5 mx-auto mb-0.5" />
+            <span className="text-[10px]">Chat</span>
           </button>
           <button
             onClick={() => setActivePanel('analysis')}
-            className={`py-2 px-2 rounded text-xs font-medium transition-colors ${
+            className={`py-1.5 px-1 rounded text-xs font-medium transition-all active:scale-95 ${
               activePanel === 'analysis'
                 ? 'bg-purple-600 text-white'
                 : 'text-gray-400 hover:text-white'
             }`}
           >
-            <Eye className="w-4 h-4 mx-auto mb-1" />
-            AI
+            <Eye className="w-3.5 h-3.5 mx-auto mb-0.5" />
+            <span className="text-[10px]">AI</span>
           </button>
           <button
             onClick={() => setActivePanel('reconstruct')}
             disabled={!capturedImage}
-            className={`py-2 px-2 rounded text-xs font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+            className={`py-1.5 px-1 rounded text-xs font-medium transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed ${
               activePanel === 'reconstruct'
                 ? 'bg-green-600 text-white'
                 : 'text-gray-400 hover:text-white'
             }`}
           >
-            <Wrench className="w-4 h-4 mx-auto mb-1" />
-            Repair
+            <Wrench className="w-3.5 h-3.5 mx-auto mb-0.5" />
+            <span className="text-[10px]">Repair</span>
           </button>
           <button
             onClick={() => setActivePanel('metadata')}
-            className={`py-2 px-2 rounded text-xs font-medium transition-colors ${
+            className={`py-1.5 px-1 rounded text-xs font-medium transition-all active:scale-95 ${
               activePanel === 'metadata'
                 ? 'bg-indigo-600 text-white'
                 : 'text-gray-400 hover:text-white'
             }`}
           >
-            <Database className="w-4 h-4 mx-auto mb-1" />
-            Info
+            <Database className="w-3.5 h-3.5 mx-auto mb-0.5" />
+            <span className="text-[10px]">Info</span>
           </button>
         </div>
       </div>
@@ -669,24 +669,24 @@ const GaussianDemo: React.FC = () => {
           </div>
         )}
 
-        {/* Chat Panel */}
+        {/* Chat Panel - Compact */}
         {activePanel === 'chat' && (
           <div className="h-full flex flex-col bg-gray-900/50">
-            <div className="flex-1 overflow-y-auto p-3 space-y-2">
+            <div className="flex-1 overflow-y-auto p-2 space-y-1.5">
               {chatMessages.map((msg, idx) => (
                 <div
                   key={idx}
                   className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
                   <div
-                    className={`max-w-[80%] rounded-lg px-3 py-2 ${
+                    className={`max-w-[85%] rounded-lg px-2.5 py-1.5 ${
                       msg.role === 'user'
                         ? 'bg-blue-600 text-white'
                         : 'bg-gray-800 text-gray-100'
                     }`}
                   >
                     <p className="text-xs leading-relaxed">{msg.content}</p>
-                    <p className="text-xs opacity-70 mt-1">
+                    <p className="text-[10px] opacity-70 mt-0.5">
                       {msg.timestamp.toLocaleTimeString()}
                     </p>
                   </div>
@@ -694,39 +694,39 @@ const GaussianDemo: React.FC = () => {
               ))}
               {isChatLoading && (
                 <div className="flex justify-start">
-                  <div className="bg-gray-800 rounded-lg px-3 py-2">
-                    <Loader2 className="w-4 h-4 animate-spin text-gray-400" />
+                  <div className="bg-gray-800 rounded-lg px-2.5 py-1.5">
+                    <Loader2 className="w-3.5 h-3.5 animate-spin text-gray-400" />
                   </div>
                 </div>
               )}
               <div ref={chatEndRef} />
             </div>
 
-            <form onSubmit={handleChatSubmit} className="p-3 border-t border-gray-800">
-              <div className="flex gap-2">
+            <form onSubmit={handleChatSubmit} className="p-2 border-t border-gray-800">
+              <div className="flex gap-1.5">
                 <input
                   type="text"
                   value={chatInput}
                   onChange={(e) => setChatInput(e.target.value)}
                   placeholder="Tanya AI..."
-                  className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm"
+                  className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-2.5 py-1.5 text-xs text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500"
                   disabled={isChatLoading}
                 />
                 <button
                   type="submit"
                   disabled={!chatInput.trim() || isChatLoading}
-                  className="bg-blue-600 text-white p-2 rounded-lg disabled:bg-gray-700"
+                  className="bg-blue-600 text-white p-1.5 rounded-lg disabled:bg-gray-700 active:scale-95 transition-transform"
                 >
-                  <Send className="w-4 h-4" />
+                  <Send className="w-3.5 h-3.5" />
                 </button>
               </div>
             </form>
           </div>
         )}
 
-        {/* Analysis Panel */}
+        {/* Analysis Panel - Compact */}
         {activePanel === 'analysis' && (
-          <div className="h-full overflow-y-auto p-3 bg-gray-900/50">
+          <div className="h-full overflow-y-auto p-2 bg-gray-900/50">
             {showVLM && getCurrentImage() ? (
               <VLMAnalyzerEnhanced
                 imageFile={getCurrentImage()}
@@ -735,58 +735,58 @@ const GaussianDemo: React.FC = () => {
                 withReferences={true}
               />
             ) : (
-              <div className="text-center py-12 text-gray-500">
-                <Camera className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                <p className="text-sm">Ambil screenshot atau upload gambar</p>
+              <div className="text-center py-8 text-gray-500">
+                <Camera className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                <p className="text-xs">Ambil screenshot atau upload gambar</p>
               </div>
             )}
           </div>
         )}
 
-        {/* Reconstruction Panel */}
+        {/* Reconstruction Panel - Compact */}
         {activePanel === 'reconstruct' && (
-          <div className="h-full overflow-y-auto p-3 bg-gray-900/50">
+          <div className="h-full overflow-y-auto p-2 bg-gray-900/50">
             {capturedImage ? (
               <ModelReconstructor
                 imageData={capturedImage}
                 onClose={() => setActivePanel('viewer')}
               />
             ) : (
-              <div className="text-center py-12 text-gray-500">
-                <Wrench className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                <p className="text-sm mb-2">Ambil screenshot terlebih dahulu</p>
-                <p className="text-xs">Gunakan tombol "Ambil Gambar" di viewer</p>
+              <div className="text-center py-8 text-gray-500">
+                <Wrench className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                <p className="text-xs mb-1">Ambil screenshot terlebih dahulu</p>
+                <p className="text-[10px] text-gray-600">Gunakan tombol "Ambil Gambar"</p>
               </div>
             )}
           </div>
         )}
 
-        {/* Metadata Panel */}
+        {/* Metadata Panel - Compact */}
         {activePanel === 'metadata' && (
-          <div className="h-full overflow-y-auto p-4 bg-gray-900/50">
-            <h3 className="font-semibold mb-3 flex items-center gap-2">
-              <Info className="w-5 h-5 text-indigo-400" />
-              File Information
+          <div className="h-full overflow-y-auto p-2 bg-gray-900/50">
+            <h3 className="font-semibold mb-2 flex items-center gap-1.5 text-sm">
+              <Info className="w-4 h-4 text-indigo-400" />
+              File Info
             </h3>
             {fileMetadata ? (
-              <div className="space-y-2">
-                <div className="bg-gray-800/50 rounded-lg p-3">
-                  <div className="text-xs text-gray-400 mb-1">Filename</div>
-                  <div className="font-medium text-sm">{fileMetadata.name}</div>
+              <div className="space-y-1.5">
+                <div className="bg-gray-800/50 rounded-lg p-2">
+                  <div className="text-[10px] text-gray-400 mb-0.5">Filename</div>
+                  <div className="font-medium text-xs truncate">{fileMetadata.name}</div>
                 </div>
-                <div className="bg-gray-800/50 rounded-lg p-3">
-                  <div className="text-xs text-gray-400 mb-1">Format</div>
-                  <div className="font-medium text-sm uppercase">{fileMetadata.format}</div>
+                <div className="bg-gray-800/50 rounded-lg p-2">
+                  <div className="text-[10px] text-gray-400 mb-0.5">Format</div>
+                  <div className="font-medium text-xs uppercase">{fileMetadata.format}</div>
                 </div>
-                <div className="bg-gray-800/50 rounded-lg p-3">
-                  <div className="text-xs text-gray-400 mb-1">Size</div>
-                  <div className="font-medium text-sm">{formatFileSize(fileMetadata.size)}</div>
+                <div className="bg-gray-800/50 rounded-lg p-2">
+                  <div className="text-[10px] text-gray-400 mb-0.5">Size</div>
+                  <div className="font-medium text-xs">{formatFileSize(fileMetadata.size)}</div>
                 </div>
               </div>
             ) : (
-              <div className="text-center py-12 text-gray-500">
-                <FileText className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                <p className="text-sm">Load file 3D terlebih dahulu</p>
+              <div className="text-center py-8 text-gray-500">
+                <FileText className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                <p className="text-xs">Load file 3D terlebih dahulu</p>
               </div>
             )}
           </div>

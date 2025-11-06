@@ -378,47 +378,6 @@
       fileReader.readAsArrayBuffer(file);
     };
 
-    // Convert File
-    window.convertFile = function() {
-      const fileInput = document.getElementById("convertFile");
-      const file = fileInput.files[0];
-
-      if (!file) {
-        setConvertError("Please choose a file to convert");
-        return;
-      }
-
-      const fileReader = new FileReader();
-      fileReader.onload = function() {
-        try {
-          setConvertStatus("Converting...");
-
-          const format = GaussianSplats3D.LoaderUtils.sceneFormatFromPath(file.name);
-          let splatBuffer;
-
-          if (format === GaussianSplats3D.SceneFormat.Ply) {
-            splatBuffer = GaussianSplats3D.PlyLoader.loadFromFileData(fileReader.result, 1, 1);
-          } else if (format === GaussianSplats3D.SceneFormat.Splat) {
-            splatBuffer = GaussianSplats3D.SplatLoader.loadFromFileData(fileReader.result, 1, 1);
-          } else {
-            setConvertError("File already in .ksplat format");
-            return;
-          }
-
-          splatBuffer.then((buffer) => {
-            GaussianSplats3D.KSplatLoader.downloadFile(buffer, 'converted.ksplat');
-            setConvertStatus("✓ Conversion complete!");
-          });
-        } catch (e) {
-          console.error(e);
-          setConvertError("Could not convert file");
-        }
-      };
-
-      setConvertStatus("Loading file...");
-      fileReader.readAsArrayBuffer(file);
-    };
-
     function setViewStatus(msg) {
       document.getElementById("viewStatus").innerHTML = msg;
       document.getElementById("viewError").innerHTML = "";
@@ -427,16 +386,6 @@
     function setViewError(msg) {
       document.getElementById("viewError").innerHTML = msg;
       document.getElementById("viewStatus").innerHTML = "";
-    }
-
-    function setConvertStatus(msg) {
-      document.getElementById("convertStatus").innerHTML = msg;
-      document.getElementById("convertError").innerHTML = "";
-    }
-
-    function setConvertError(msg) {
-      document.getElementById("convertError").innerHTML = msg;
-      document.getElementById("convertStatus").innerHTML = "";
     }
 
     window.onFileChange = function(input, labelId) {
@@ -465,30 +414,22 @@
         <div class="error-text" id="viewError"></div>
       </div>
 
-      <!-- Convert Panel -->
+      <!-- Instructions Panel -->
       <div class="panel">
-        <div class="panel-title">🔄 Konversi ke .ksplat</div>
-
-        <div style="margin-bottom: 16px;">
-          <label for="convertFile" class="file-label">Pilih File</label>
-          <input type="file" id="convertFile" class="input-file" accept=".ply,.splat" onchange="onFileChange(this, 'convertFileName')">
-          <span id="convertFileName" class="file-name">(Belum ada file dipilih)</span>
-        </div>
-
-        <button class="button" onclick="convertFile()">Konversi</button>
-
-        <div class="status-text" id="convertStatus"></div>
-        <div class="error-text" id="convertError"></div>
-      </div>
-
-      <!-- Mouse Controls -->
-      <div class="panel">
-        <div class="panel-title">🖱️ Kontrol Mouse</div>
+        <div class="panel-title">📋 Cara Upload File PLY</div>
         <ul>
-          <li>Klik kiri + seret: Rotasi</li>
-          <li>Klik kanan + seret: Geser</li>
-          <li>Scroll roda: Zoom</li>
+          <li><strong>Klik "Pilih File"</strong> di panel sebelah kiri</li>
+          <li>Pilih file <strong>.ply</strong> Gaussian Splat Anda</li>
+          <li>Klik tombol <strong>"Lihat"</strong> untuk memvisualisasikan</li>
+          <li>Format yang didukung: <strong>.ply, .splat, .ksplat</strong></li>
+          <li>Gunakan tombol <strong>"Ambil Gambar"</strong> untuk screenshot & analisis AI</li>
         </ul>
+        <div style="margin-top: 12px; padding: 12px; background: #1a1a1a; border-radius: 6px; border: 1px solid #3b82f6;">
+          <div style="color: #60a5fa; font-weight: bold; margin-bottom: 6px;">💡 Tips:</div>
+          <div style="font-size: 13px; color: #d1d5db; line-height: 1.6;">
+            Pastikan file PLY Anda dalam format <strong>Gaussian Splatting 3D</strong>. File akan langsung divisualisasikan dalam viewer 3D interaktif.
+          </div>
+        </div>
       </div>
     </div>
   </div>

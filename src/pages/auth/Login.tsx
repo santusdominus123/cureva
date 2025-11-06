@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { MailIcon, LockIcon, EyeIcon, EyeOffIcon, ArrowLeftIcon } from "lucide-react";
 import logoImg from "../../assets/cureva_logo.jpg";
+import BackgroundImage from "../../components/ui/BackgroundImage";
 
 interface LoginProps {
   onLogin: (user: any) => void; // Updated to pass user data
@@ -63,15 +64,43 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
       const { auth } = await import("../../lib/firebase");
 
       const provider = new GoogleAuthProvider();
+      provider.setCustomParameters({
+        prompt: "select_account",
+      });
+
+      console.log("Initiating Google Sign-In...");
       const userCredential = await signInWithPopup(auth, provider);
+      console.log("Google Sign-In successful:", userCredential.user);
+
       const userData = saveUserData(userCredential.user);
+      console.log("User data saved:", userData);
+
       onLogin(userData);
     } catch (error: any) {
+      console.error("Google sign in error details:", error);
+      console.error("Error code:", error?.code);
+      console.error("Error message:", error?.message);
+
       // Don't show error if user closed the popup
-      if (error?.code !== "auth/popup-closed-by-user" && error?.code !== "auth/cancelled-popup-request") {
-        console.error("Google sign in error:", error);
-        alert("Google sign in failed. Please try again.");
+      if (error?.code === "auth/popup-closed-by-user" || error?.code === "auth/cancelled-popup-request") {
+        console.log("User closed the sign-in popup");
+        setLoading(false);
+        return;
       }
+
+      // Show error for actual problems
+      const errorMessage =
+        error?.code === "auth/unauthorized-domain"
+          ? "Domain tidak diotorisasi. Pastikan domain sudah ditambahkan di Firebase Console."
+          : error?.code === "auth/popup-blocked"
+          ? "Popup diblokir browser. Mohon izinkan popup untuk login dengan Google."
+          : error?.code === "auth/network-request-failed"
+          ? "Koneksi internet bermasalah. Silakan cek koneksi Anda."
+          : error?.code === "auth/too-many-requests"
+          ? "Terlalu banyak percobaan. Silakan coba lagi nanti."
+          : `Google sign in gagal: ${error?.message || "Silakan coba lagi."}`;
+
+      alert(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -85,15 +114,39 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
       const { auth } = await import("../../lib/firebase");
 
       const provider = new GithubAuthProvider();
+      console.log("Initiating GitHub Sign-In...");
       const userCredential = await signInWithPopup(auth, provider);
+      console.log("GitHub Sign-In successful:", userCredential.user);
+
       const userData = saveUserData(userCredential.user);
+      console.log("User data saved:", userData);
+
       onLogin(userData);
     } catch (error: any) {
+      console.error("GitHub sign in error details:", error);
+      console.error("Error code:", error?.code);
+      console.error("Error message:", error?.message);
+
       // Don't show error if user closed the popup
-      if (error?.code !== "auth/popup-closed-by-user" && error?.code !== "auth/cancelled-popup-request") {
-        console.error("GitHub sign in error:", error);
-        alert("GitHub sign in failed. Please try again.");
+      if (error?.code === "auth/popup-closed-by-user" || error?.code === "auth/cancelled-popup-request") {
+        console.log("User closed the sign-in popup");
+        setLoading(false);
+        return;
       }
+
+      // Show error for actual problems
+      const errorMessage =
+        error?.code === "auth/unauthorized-domain"
+          ? "Domain tidak diotorisasi. Pastikan domain sudah ditambahkan di Firebase Console."
+          : error?.code === "auth/popup-blocked"
+          ? "Popup diblokir browser. Mohon izinkan popup untuk login dengan GitHub."
+          : error?.code === "auth/account-exists-with-different-credential"
+          ? "Email ini sudah terdaftar dengan metode login lain. Silakan gunakan metode login yang sama."
+          : error?.code === "auth/network-request-failed"
+          ? "Koneksi internet bermasalah. Silakan cek koneksi Anda."
+          : `GitHub sign in gagal: ${error?.message || "Silakan coba lagi."}`;
+
+      alert(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -101,41 +154,37 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
 
   /* ---------- Login Form ---------- */
   return (
-    <div className="relative min-h-screen flex items-center justify-center p-4 overflow-hidden">
-      {/* Background Image - Same as Onboarding */}
-      <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{
-          backgroundImage: `url('/src/introbg/1.jpg')`,
-        }}
-      >
-        {/* Dark Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-indigo-950/70 to-black/80" />
-      </div>
+    <div className="fixed inset-0 w-full h-full flex items-center justify-center p-2 overflow-y-auto overflow-x-hidden">
+      {/* Optimized Background Image with Preloading */}
+      <BackgroundImage
+        src="/src/introbg/1.jpg"
+        alt="Cureva Login Background"
+        overlayClassName="bg-gradient-to-br from-black/80 via-indigo-950/70 to-black/80"
+      />
 
       {/* Content Container */}
-      <div className="relative z-10 max-w-md w-full space-y-6 bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl shadow-2xl shadow-purple-500/20 p-8">
+      <div className="relative z-10 max-w-[340px] sm:max-w-md w-full my-auto space-y-2 sm:space-y-3 bg-white/5 backdrop-blur-2xl border border-white/10 rounded-xl sm:rounded-2xl shadow-2xl shadow-purple-500/20 p-3 sm:p-4">
         {/* Back to Onboarding Button */}
-        <Link to="/onboarding" className="absolute top-4 left-4 flex items-center gap-2 text-gray-300 hover:text-white transition-colors duration-200">
-          <ArrowLeftIcon size={20} />
-          <span className="text-sm">Kembali ke Pengenalan</span>
+        <Link to="/onboarding" className="absolute top-2 left-2 sm:top-3 sm:left-3 flex items-center gap-1 text-gray-300 hover:text-white transition-colors duration-200">
+          <ArrowLeftIcon size={16} className="sm:w-5 sm:h-5" />
+          <span className="text-xs sm:text-sm">Kembali</span>
         </Link>
 
         {/* Logo */}
-        <div className="text-center">
-          <img src={logoImg} alt="Cureva Logo" className="mx-auto h-20 w-20 rounded-full object-cover border-2 border-white/20" />
-          <h2 className="mt-4 text-5xl font-extrabold text-white">Cureva</h2>
-          <p className="mt-1 text-sm text-gray-300">Masuk untuk melanjutkan</p>
+        <div className="text-center pt-4 sm:pt-2">
+          <img src={logoImg} alt="Cureva Logo" className="mx-auto h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 rounded-full object-cover border-2 border-white/20" />
+          <h2 className="mt-1.5 sm:mt-2 text-xl sm:text-2xl md:text-3xl font-extrabold text-white">Cureva</h2>
+          <p className="mt-0.5 text-xs sm:text-sm text-gray-300">Masuk untuk melanjutkan</p>
         </div>
 
-        <form className="space-y-5" onSubmit={handleSubmit}>
+        <form className="space-y-2 sm:space-y-2.5" onSubmit={handleSubmit}>
           {/* Email */}
           <div>
             <label htmlFor="email" className="sr-only">
               Alamat email
             </label>
             <div className="relative">
-              <MailIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <MailIcon className="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
               <input
                 id="email"
                 type="email"
@@ -143,7 +192,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={loading}
-                className="w-full pl-10 pr-3 py-3 border border-white/20 rounded-lg bg-white/5 placeholder-gray-400 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+                className="w-full pl-9 sm:pl-10 pr-3 py-2 sm:py-2.5 text-sm sm:text-base border border-white/20 rounded-lg bg-white/5 placeholder-gray-400 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
                 placeholder="Alamat email"
               />
             </div>
@@ -155,7 +204,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
               Kata sandi
             </label>
             <div className="relative">
-              <LockIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <LockIcon className="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
               <input
                 id="password"
                 type={showPassword ? "text" : "password"}
@@ -163,22 +212,22 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={loading}
-                className="w-full pl-10 pr-10 py-3 border border-white/20 rounded-lg bg-white/5 placeholder-gray-400 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+                className="w-full pl-9 sm:pl-10 pr-9 sm:pr-10 py-2 sm:py-2.5 text-sm sm:text-base border border-white/20 rounded-lg bg-white/5 placeholder-gray-400 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
                 placeholder="Kata sandi"
               />
-              <button type="button" onClick={() => setShowPassword(!showPassword)} disabled={loading} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white disabled:opacity-50">
-                {showPassword ? <EyeOffIcon size={20} /> : <EyeIcon size={20} />}
+              <button type="button" onClick={() => setShowPassword(!showPassword)} disabled={loading} className="absolute right-2.5 sm:right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white disabled:opacity-50">
+                {showPassword ? <EyeOffIcon size={16} className="sm:w-5 sm:h-5" /> : <EyeIcon size={16} className="sm:w-5 sm:h-5" />}
               </button>
             </div>
           </div>
 
           {/* Options */}
-          <div className="flex items-center justify-between text-sm">
+          <div className="flex items-center justify-between text-xs">
             <label className="flex items-center text-gray-300">
-              <input type="checkbox" className="h-4 w-4 mr-2 rounded bg-white/5 border-white/30" />
-              Ingat saya
+              <input type="checkbox" className="h-3 w-3 mr-1.5 rounded bg-white/5 border-white/30" />
+              <span className="text-[11px] sm:text-xs">Ingat saya</span>
             </label>
-            <a href="#" className="text-blue-400 hover:text-blue-300">
+            <a href="#" className="text-blue-400 hover:text-blue-300 text-[11px] sm:text-xs">
               Lupa kata sandi?
             </a>
           </div>
@@ -186,27 +235,27 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full flex justify-center py-3 px-4 rounded-lg text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full flex justify-center py-2 sm:py-2.5 px-4 text-sm rounded-lg text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
           >
             {loading ? "Sedang masuk..." : "Masuk"}
           </button>
         </form>
 
-        <p className="text-center text-sm text-gray-300">
+        <p className="text-center text-xs sm:text-sm text-gray-300">
           Belum punya akun?{" "}
-          <Link to="/register" className="text-blue-400 hover:text-blue-300">
+          <Link to="/register" className="text-blue-400 hover:text-blue-300 font-medium">
             Daftar
           </Link>
         </p>
 
         {/* ---------- Social Login ---------- */}
-        <div className="space-y-3 mt-4">
+        <div className="space-y-1.5 sm:space-y-2">
           <button
             onClick={handleGoogleSignIn}
             disabled={loading}
-            className="w-full flex items-center justify-center py-2.5 px-4 border border-white/20 rounded-lg bg-white/5 hover:bg-white/10 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full flex items-center justify-center py-1.5 sm:py-2 px-3 text-xs sm:text-sm border border-white/20 rounded-lg bg-white/5 hover:bg-white/10 transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24">
+            <svg className="h-4 w-4 mr-2" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
               <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
               <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
@@ -218,9 +267,9 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
           <button
             onClick={handleGitHubSignIn}
             disabled={loading}
-            className="w-full flex items-center justify-center py-2.5 px-4 border border-white/20 rounded-lg bg-white/5 hover:bg-white/10 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full flex items-center justify-center py-1.5 sm:py-2 px-3 text-xs sm:text-sm border border-white/20 rounded-lg bg-white/5 hover:bg-white/10 transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <svg className="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+            <svg className="h-4 w-4 mr-2" fill="currentColor" viewBox="0 0 24 24">
               <path
                 fillRule="evenodd"
                 clipRule="evenodd"
@@ -232,13 +281,13 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
         </div>
 
         {/* Partnership Logos */}
-        <div className="mt-8 pt-6 border-t border-white/10">
-          <p className="text-center text-sm text-gray-200 mb-5">Didukung oleh:</p>
-          <div className="flex justify-center items-center gap-4 flex-nowrap">
+        <div className="pt-2 border-t border-white/10">
+          <p className="text-center text-[9px] sm:text-[10px] text-gray-200 mb-1">Didukung oleh:</p>
+          <div className="flex justify-center items-center gap-1 sm:gap-1.5 flex-wrap">
             <img
               src="/src/introbg/udayana logo.png"
               alt="Universitas Udayana"
-              className="h-10 w-auto object-contain drop-shadow-lg hover:scale-105 transition-transform duration-300"
+              className="h-4 sm:h-5 md:h-6 w-auto object-contain drop-shadow-lg hover:scale-105 transition-transform duration-300"
               onError={(e) => {
                 e.currentTarget.style.display = "none";
               }}
@@ -246,7 +295,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
             <img
               src="/src/introbg/Logo Kemdiktisaintek RI Warna.png"
               alt="Kemdiktisaintek RI"
-              className="h-10 w-auto object-contain drop-shadow-lg hover:scale-105 transition-transform duration-300"
+              className="h-4 sm:h-5 md:h-6 w-auto object-contain drop-shadow-lg hover:scale-105 transition-transform duration-300"
               onError={(e) => {
                 e.currentTarget.style.display = "none";
               }}
@@ -254,7 +303,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
             <img
               src="/src/introbg/Logo Diktisaintek Berdampak_Horizontal Logo.png"
               alt="Dikti Saintek Berdampak"
-              className="h-10 w-auto object-contain drop-shadow-lg hover:scale-105 transition-transform duration-300"
+              className="h-4 sm:h-5 md:h-6 w-auto object-contain drop-shadow-lg hover:scale-105 transition-transform duration-300"
               onError={(e) => {
                 e.currentTarget.style.display = "none";
               }}
@@ -262,7 +311,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
             <img
               src="/src/introbg/Logo Belmawa Bersinergi - Warna.png"
               alt="Belmawa Bersinergi"
-              className="h-16 w-auto object-contain drop-shadow-lg hover:scale-105 transition-transform duration-300"
+              className="h-5 sm:h-6 md:h-7 w-auto object-contain drop-shadow-lg hover:scale-105 transition-transform duration-300"
               onError={(e) => {
                 e.currentTarget.style.display = "none";
               }}
@@ -270,7 +319,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
             <img
               src="/src/introbg/Logo PKM - Warna.png"
               alt="PKM"
-              className="h-12 w-auto object-contain drop-shadow-lg hover:scale-105 transition-transform duration-300"
+              className="h-4 sm:h-5 md:h-6 w-auto object-contain drop-shadow-lg hover:scale-105 transition-transform duration-300"
               onError={(e) => {
                 e.currentTarget.style.display = "none";
               }}

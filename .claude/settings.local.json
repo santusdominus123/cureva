@@ -17,7 +17,11 @@
       "Bash(dir /s /b)",
       "Bash(cat:*)",
       "Bash(tasklist)",
-      "Bash(npm run dev:*)"
+      "Bash(npm run dev:*)",
+      "Bash(git checkout:*)",
+      "Bash(then grep -E \"VITE_FIREBASE\" .env)",
+      "Bash(npm run build:*)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []
