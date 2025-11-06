@@ -36,9 +36,25 @@ src/**/dist/
 
 # Environment variables
 .env
+.env.*
+!.env.example
 .env.local
 .env.*.local
 .env.production
+.env.development
+
+# API Keys and Secrets
+*.key
+*.pem
+*.p12
+*.pfx
+secrets.json
+secrets.*.json
+config.secret.json
+
+# Service Account Keys
+*-service-account.json
+serviceAccountKey.json
 
 # Google OAuth credentials
 credentials.json
